@@ -1,0 +1,20 @@
+*{
+    font-family: "VT323", monospace;
+  font-weight: 400;
+  font-style: normal;
+}
+body{
+    padding: 4rem;
+}
+p{
+    font-size: 50px;
+    text-align: justify;
+    color: #999999;
+}
+span{
+    font-size: 50px;
+    text-align: justify;
+    color: #999999;
+    margin: 0;
+    padding: 0;
+}
