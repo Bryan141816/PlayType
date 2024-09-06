@@ -33,7 +33,6 @@ STATIC_URL = '/static/'
 # Directory where static files will be collected for production
 STATICFILES_DIRS = [BASE_DIR/'type_master/static/']
 
-print(STATICFILES_DIRS)
 
 # Application definition
 

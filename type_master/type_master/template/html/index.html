@@ -12,9 +12,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-
+    <script src="{% static 'js/jquery.js' %}"></script>
 </head>
 <body>
-    <p>{{ random_word|settencefy }}</p>
+    <p>
+        {% for words in random_word %}
+            <span class="words_type">{{words}}</span>
+        {% endfor %}
+    </p>
+    <input type="text" id="type_text">
+
+    <script src="{% static 'js/index.js' %}"></script>
 </body>
 </html>
