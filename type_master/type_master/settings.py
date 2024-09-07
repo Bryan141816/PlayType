@@ -37,6 +37,7 @@ STATICFILES_DIRS = [BASE_DIR/'type_master/static/']
 # Application definition
 
 INSTALLED_APPS = [
+    'type_master',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

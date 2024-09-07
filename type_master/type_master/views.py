@@ -3,24 +3,31 @@ import nltk
 from nltk.corpus import words
 import random
 from django.template.defaulttags import register
+from .models import Word
+import re
 
 
 def index(request):
 
-    nltk.download('words')
+    random_words = Word.objects.order_by('?').values_list('word', flat=True)[:100]
 
-    word_list = words.words()
-
-    random_word = []
-    for _ in range(100):
-        random_word.append((random.choice(word_list)).lower())
 
     context = {
-        'random_word': random_word
+        'random_word': random_words
     }
 
     return render(request, 'html\index.html', context )
 
+def get_words(request):
+    if request.method == 'GET':
+        random_words = Word.objects.order_by('?').values_list('word', flat=True)[:100]
+
+        context = {
+            'random_word': random_words
+        }
+
+        return render(request, 'html\words_container.html', context )
+
 @register.filter
-def settencefy(lists):
-    return ' '.join(lists)
+def letter_token(word):
+    return list(word)

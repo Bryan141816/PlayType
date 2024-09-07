@@ -1,6 +1,5 @@
 {% load static %}
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,20 +7,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="{% static 'css/index.css' %}">
-
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
+    
     <script src="{% static 'js/jquery.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 </head>
 <body>
-    <p>
-        {% for words in random_word %}
-            <span class="words_type">{{words}}</span>
+    <div id="counter" class="hidden">
+    </div>
+    <div class="paragraph" id="paragraph">
+        {% for word in random_word %}
+        <div class="word_container">
+            {% for letter in word|letter_token %}
+            <span class="letter">{{letter}}</span>
+            {% endfor %}
+        </div>
         {% endfor %}
-    </p>
-    <input type="text" id="type_text">
+    </div>
+    
+    <input type="text" id="text_input">
+    <button id="retry_button">
+        <i class="fas fa-redo"></i>
+    </button>
 
-    <script src="{% static 'js/index.js' %}"></script>
+    <script src="{% static 'js/index.js' %}">
+    </script>
 </body>
 </html>
