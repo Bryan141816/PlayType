@@ -1,14 +1,39 @@
+
+class Timer {
+    constructor(set_time, timer_label, on_done) {
+        this.set_time = set_time;
+        this.timer_label = timer_label;
+        this.on_done = on_done;
+    }
+
+    start() {
+        console.log(this.set_time, this.timer_label);
+        this.countdown = setInterval(() => { // Use arrow function
+            this.set_time--;
+            this.timer_label.text(this.set_time);
+
+            if (this.set_time <= 0) {
+                clearInterval(this.countdown);
+                this.on_done();
+            }
+        }, 1000);
+    }
+
+    stop() {
+        clearInterval(this.countdown);
+    }
+}
+
 $(document).ready(function() {
 
-    
+
+
     let current_index = 0
     $('.word_container').first().addClass('active');
     let activeWordsType = $('.word_container.active');
     let active_text = activeWordsType.find('.letter').map(function() {
         return $(this).text();
     }).get();
-
-    $('.word_container').first().find('.letter').first().addClass('current_pointer');
     let space_counter = 0;
 
     let started = false;
@@ -18,6 +43,10 @@ $(document).ready(function() {
     let countdown;
     const text_input = $('#text_input')
     let total_characters = 0;
+    let pointer_left_value = 0;
+
+    let timer = new Timer(set_time, countdownElement, timer_done)
+
 
     text_input.focus();
 
@@ -29,60 +58,56 @@ $(document).ready(function() {
 
     text_input.on('input', function() {
 
-        
-        const current_input = $(this).val().split('');    
+
+        const current_input = $(this).val().split('');
         activeWordsType.find('.letter').removeClass('correct');
         activeWordsType.find('.letter').removeClass('incorrect');
-        activeWordsType.find('.letter').removeClass('current_pointer');
-        activeWordsType.find('.letter').removeClass('current_pointer_edge');
 
         current_count = current_input.length
-        
+
         if (!started) {
             countdownElement.removeClass('hidden');
-            countdown = setInterval(function() {
-                timeLeft--;
-                countdownElement.text(timeLeft);
-        
-                if (timeLeft <= 0) {
+            timer.start()
 
-                    total_characters += current_count
+            // countdown = setInterval(function() {
+            //     timeLeft--;
+            //     countdownElement.text(timeLeft);
 
-                    clearInterval(countdown);
-                    const count = $('.letter.correct').length;
-                    const minute = set_time / 60;
-                    let wpm = ((count + space_counter) / 5) / minute;
-                    let accuracy = ((((total_characters)+space_counter)-incorrect_counter)/(total_characters+space_counter))*100
-                    console.log(count)
-                    console.log(total_characters)
-                    console.log(incorrect_counter)
-                    console.log(space_counter)
+            //     if (timeLeft <= 0) {
 
-                    wpm = Math.ceil(wpm);
-                    accuracy = Math.ceil(accuracy)
+            //         total_characters += current_count
 
-                    let wpm_display = $(`
-                        <div class="wpm_container">
-                            <h2>${wpm} WPM</h2>
-                            <br>
-                            <h2>${accuracy}%</h2>
-                        </div>`);
-                    $('#paragraph').html(wpm_display);
-                    $('#paragraph').removeClass('text_input_unfocused');
-                    countdownElement.addClass('hidden');
-                    $('#retry_button').focus();
-                }
-            }, 1000);
-        }        
+            //         clearInterval(countdown);
+            //         const count = $('.letter.correct').length;
+            //         const minute = set_time / 60;
+            //         let wpm = ((count + space_counter) / 5) / minute;
+            //         let accuracy = ((((total_characters)+space_counter)-incorrect_counter)/(total_characters+space_counter))*100
+
+            //         wpm = Math.ceil(wpm);
+            //         accuracy = Math.ceil(accuracy)
+
+            //         let wpm_display = $(`
+            //             <div class="wpm_container">
+            //                 <h2>${wpm} WPM</h2>
+            //                 <br>
+            //                 <h2>${accuracy}%</h2>
+            //             </div>`);
+            //         $('#paragraph').html(wpm_display);
+            //         $('#paragraph').removeClass('text_input_unfocused');
+            //         countdownElement.addClass('hidden');
+            //         $('#retry_button').focus();
+            //     }
+            // }, 1000);
+        }
         started = true;
 
         if((previous_input_length>current_input.length)&&(current_input.length+1>active_text.length)&&previous_input_length!=0){
             $('.word_container.active .letter:last').remove();
         }
-    
+
         current_input.forEach(function(value, index) {
             if (index < active_text.length) {
-                
+
                 if(current_input[index] == active_text[index]){
                     activeWordsType.find('.letter').eq(index).addClass('correct');
                 }
@@ -99,15 +124,24 @@ $(document).ready(function() {
                 }
             }
         });
-        previous_input_length = current_input.length
-        
-        if(activeWordsType.find('.letter').length == current_input.length){
-            $('.word_container.active').find('.letter').eq(current_input.length -1).addClass('current_pointer_edge');
-        }else{
-            $('.word_container.active').find('.letter').eq(current_input.length).addClass('current_pointer');
+        // $('#pointer').stop(true, true).css('left', pointer_left_value + 'px');
+        // if(pointer_left_value<=0){
+        //     pointer_left_value = parseFloat($('#pointer').css('left'));
+        // }
 
-        }
-        
+        // if (current_input.length > previous_input_length) {
+        //     pointer_left_value += 13;
+        // } else {
+        //     pointer_left_value -= 13;
+        // }
+
+        // $('#pointer').animate({
+        //     left: pointer_left_value + 'px'
+        // }, 50);
+
+        previous_input_length = current_input.length
+
+
     });
 
     text_input.on('keydown', function(event) {
@@ -118,8 +152,6 @@ $(document).ready(function() {
                 current_index++;
                 $('.word_container').each(function(index) {
                     $(this).removeClass('active');
-                    $(this).find('.letter').removeClass('current_pointer')
-                    $(this).find('.letter').removeClass('current_pointer_edge')
                     previous_input_length = 0;
                     if (index === current_index) {
                         $(this).addClass('active');
@@ -129,12 +161,11 @@ $(document).ready(function() {
                 active_text = activeWordsType.find('.letter').map(function() {
                     return $(this).text();
                 }).get();
-                $('.active').find('.letter').first().addClass('current_pointer');
                 space_counter++;
                 get_relative_position()
             }
             $(this).val('');
-            event.preventDefault(); 
+            event.preventDefault();
         }
         else if (event.key === "Enter" || event.keyCode === 13) {
             // Prevent the default action for the Enter key
@@ -145,12 +176,12 @@ $(document).ready(function() {
     $(document).keypress(function(event) {
         let char = String.fromCharCode(event.which); // Get the character
         let isAlphanumeric = /^[a-z0-9]$/i.test(char); // Check if it's alphanumeric
-    
+
         if (isAlphanumeric) {
             text_input.focus();
         }
     });
-    
+
     $('#paragraph').click(()=>{
         text_input.focus();
     });
@@ -179,7 +210,28 @@ $(document).ready(function() {
             }
         });
     });
-    
+
+    function timer_done(){
+        total_characters += current_count
+        clearInterval(countdown);
+        const count = $('.letter.correct').length;
+        const minute = set_time / 60;
+        let wpm = ((count + space_counter) / 5) / minute;
+        let accuracy = ((((total_characters)+space_counter)-incorrect_counter)/(total_characters+space_counter))*100
+        wpm = Math.ceil(wpm);
+        accuracy = Math.ceil(accuracy)
+        let wpm_display = $(`
+            <div class="wpm_container">
+                <h2>${wpm} WPM</h2>
+                <br>
+                <h2>${accuracy}%</h2>
+            </div>`);
+        $('#paragraph').html(wpm_display);
+        $('#paragraph').removeClass('text_input_unfocused');
+        countdownElement.addClass('hidden');
+        $('#retry_button').focus();
+    }
+
     function reset_values(){
         current_index = 0
         $('.word_container').first().addClass('active');
@@ -187,21 +239,20 @@ $(document).ready(function() {
         active_text = activeWordsType.find('.letter').map(function() {
             return $(this).text();
         }).get();
-    
-        $('.word_container').first().find('.letter').first().addClass('current_pointer');
-        
-    
+
+
+
         space_counter = 0;
 
         started = false;
         timeLeft = set_time;
-    
+
         text_input.focus();
 
         text_input.val('')
-    
+
         previous_input_length = 0;
-        clearInterval(countdown);
+        timer.stop();
         countdownElement.text(set_time).addClass('hidden');
 
         const container = document.querySelector('.paragraph');
@@ -225,8 +276,8 @@ $(document).ready(function() {
         const relativeY = elementRect.top - containerRect.top;
         if(relativeY > (containerRect.height*0.60)){
             container.scrollBy({
-                top: containerRect.height/2, 
-                behavior: 'smooth' 
+                top: containerRect.height/2,
+                behavior: 'smooth'
             });
         }
 
