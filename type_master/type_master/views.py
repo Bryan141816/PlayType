@@ -1,15 +1,13 @@
 from django.shortcuts import render
-import nltk
-from nltk.corpus import words
-import random
 from django.template.defaulttags import register
 from .models import Word
-import re
+
 
 
 def index(request):
 
     random_words = Word.objects.order_by('?').values_list('word', flat=True)[:100]
+
 
 
     context = {

@@ -131,3 +131,22 @@ body {
         color: #999999;
     }
 }
+#option-selector{
+    display: flex;
+    background-color: rgba(16, 16, 16, 0.26);;
+    height: 2.5rem;
+    width: 50rem;
+    align-items: center;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-top: 4rem;
+}
+.text-button{
+    background-color: transparent;
+    border: none;
+    color: #999999;
+    font-size: 1.2rem;
+}
+.option-active{
+    color: #00b4d8;
+}

@@ -26,6 +26,13 @@ class Timer {
         this.stop()
         this.set_time = this.original_time; 
     }
+
+    update(newTime){
+        this.stop()
+        this.set_time = newTime
+        this.original_time = newTime
+        this.timer_label.text(newTime);
+    }
 }
 
 class TypingTest {
@@ -68,8 +75,9 @@ class TypingTest {
     handleInput() {
         const currentInput = this.textInput.val().split('');
         this.updateLetterClasses(currentInput);
-
-        if((this.previousInputLength>currentInput.length)&&(currentInput.length+1>this.activeText.length)&&this.previousInputLength!=0){
+        if((this.previousInputLength>currentInput.length)&&(currentInput.length+1>this.activeText.length)&&this.previousInputLength>0){
+            console.log(this.previousInputLength, currentInput.length, this.activeText.length)
+            console.log('why did you delete it?')
             $('.word_container.active .letter:last').remove();
         }
         if (!this.started) {
@@ -86,32 +94,30 @@ class TypingTest {
         let x = 0;
         let y = 0;
         if(currentInput.length!=0 && currentInput.length != activeContainer.children.length){
+            console.log('1 is moving the pointer')
             let activeLetter = activeContainer.children[currentInput.length]
             const relativePosition =this.getRelativePosition(activeContainer,activeLetter);
-    
             x = relativePosition.childrenPos.x - relativePosition.containerPos.x;
             y = relativePosition.childrenPos.y - relativePosition.containerPos.y;
-            console.log(x/currentInput.length)
-            console.log(`Container: ${relativePosition.containerPos.x}, Element: ${relativePosition.elementPos.x}, Children: ${relativePosition.childrenPos.x}`)
         }
-        else if(currentInput.length == 0){
+        else if(currentInput.length == 0 || currentInput.length == 1){
+            console.log('2 is moving the pointer')
             let activeLetter = activeContainer.children[0]
             const relativePosition =this.getRelativePosition(activeContainer,activeLetter);
             x = relativePosition.childrenPos.x - relativePosition.containerPos.x;
             y = relativePosition.childrenPos.y - relativePosition.containerPos.y;
-            console.log(`Container: ${relativePosition.containerPos.x}, Element: ${relativePosition.elementPos.x}, Children: ${relativePosition.childrenPos.x}`)
+            if(currentInput.length == 1){
+                x = x + relativePosition.childrenPos.width;
+            }
         }
         else{
+            console.log('3 is moving the pointer')
             let activeLetter = activeContainer.children[currentInput.length-1]
             const relativePosition =this.getRelativePosition(activeContainer,activeLetter);
             x = relativePosition.childrenPos.x - relativePosition.containerPos.x;
             y = relativePosition.childrenPos.y - relativePosition.containerPos.y;
             let xRelativeToParent = parseFloat(relativePosition.childrenPos.x-relativePosition.elementPos.x);
-            
             x = x + (xRelativeToParent/currentInput.length-1)
-
-            console.log(`Container: ${relativePosition.containerPos.x}, Element: ${relativePosition.elementPos.x}, Children: ${relativePosition.childrenPos.x}`)
-
             
         }
         this.movePointerTo(x,y);
@@ -158,6 +164,7 @@ class TypingTest {
     }
 
     moveToNextWord() {
+        this.previousInputLength = 0;
         this.currentIndex++;
         $('.word_container').removeClass('active');
         $('.word_container').eq(this.currentIndex).addClass('active');
@@ -261,10 +268,26 @@ class TypingTest {
         this.timer.reset();
         this.countdownElement.text(this.setTime).addClass('hidden');
         this.textInput.val('').focus();
+        $("#paragraph").scrollTop(0);
         $('#pointer').addClass('flash-animation');
+    }
+    changeSetTime(second){
+        this.timer.update(second);
+        this.setTime = second;
+        this.resetTest();
     }
 }
 
 $(document).ready(function() {
     const typingTest = new TypingTest('#text_input', '#paragraph', '#counter', '#retry_button', 15);
+
+
+    $('.text-button').on('click', (event) => {
+        if (!$(event.target).hasClass('option-active')) {
+            $('.text-button.option-active').removeClass('option-active')
+            $(event.target).addClass('option-active')
+            const targetTime = parseInt($(event.target).text())
+            typingTest.changeSetTime(targetTime)
+        }
+    });      
 });
