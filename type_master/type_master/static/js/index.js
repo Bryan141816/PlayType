@@ -90,6 +90,12 @@ class TypingTest {
         this.previousInputLength = currentInput.length;
     }
     calculatePointerPosition(currentInput){
+
+        // TODO fix pointer position bug 
+        
+        // In the last scroll for the paragraphElement it may less than the height of scroll causing
+        // a offset on the pointer
+
         let activeContainer = document.querySelector('.active');
         let x = 0;
         let y = 0;
