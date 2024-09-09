@@ -42,9 +42,9 @@ body {
     padding: 0;
     font-size: 35px;
     font-weight: 200;
-    width: 15px;
-    box-sizing: border-box;
+    width: 17px;
 }
+
 #pointer {
     position: absolute;
     top: 0;
@@ -52,6 +52,16 @@ body {
     width: 2px;
     height: 35px;
     background-color: #00b4d8;
+}
+.pointer-area-field{
+    position: absolute;
+    z-index: 999;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+.flash-animation{
     animation: flash 1s infinite;
 }
 

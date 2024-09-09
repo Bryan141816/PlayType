@@ -1,8 +1,9 @@
 {% load static %}
 
-
+<div class="pointer-area-field">
+    <div id="pointer" class="flash-animation"></div>
+</div>
 {% for word in random_word %}
-<div id="pointer"></div>
 <div class="word_container">
     {% for letter in word|letter_token %}
     <span class="letter">{{letter}}</span>

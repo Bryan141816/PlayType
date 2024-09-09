@@ -1,14 +1,13 @@
-
 class Timer {
     constructor(set_time, timer_label, on_done) {
+        this.original_time = set_time;
         this.set_time = set_time;
         this.timer_label = timer_label;
         this.on_done = on_done;
     }
 
     start() {
-        console.log(this.set_time, this.timer_label);
-        this.countdown = setInterval(() => { // Use arrow function
+        this.countdown = setInterval(() => { 
             this.set_time--;
             this.timer_label.text(this.set_time);
 
@@ -22,266 +21,251 @@ class Timer {
     stop() {
         clearInterval(this.countdown);
     }
+
+    reset() {
+        this.stop()
+        this.set_time = this.original_time; 
+    }
 }
 
-$(document).ready(function() {
+class TypingTest {
+    constructor(textInput, paragraphElement, countdownElement, retryButton, setTime) {
+        this.textInput = $(textInput);
+        this.paragraphElement = $(paragraphElement);
+        this.countdownElement = $(countdownElement);
+        this.retryButton = $(retryButton);
+        this.setTime = setTime;
+        this.started = false;
+        this.currentIndex = 0;
+        this.spaceCounter = 0;
+        this.totalCharacters = 0;
+        this.previousInputLength = 0;
+        this.incorrectCounter = 0;
+        this.timer = new Timer(setTime, this.countdownElement, this.timerDone.bind(this));
+        this.init();
+    }
 
+    init() {
+        this.setupInitialWord();
+        this.countdownElement.text(this.setTime);
+        this.textInput.on('input', this.handleInput.bind(this));
+        this.textInput.on('keydown', this.handleKeydown.bind(this));
+        $(document).keypress(this.handleKeyPress.bind(this));
+        this.paragraphElement.click(() => this.textInput.focus());
+        this.textInput.on('focus', () => this.paragraphElement.removeClass('text_input_unfocused'));
+        this.textInput.on('blur', () => this.paragraphElement.addClass('text_input_unfocused'));
+        this.retryButton.click(this.resetTest.bind(this));
+    }
 
+    setupInitialWord() {
+        $('.word_container').first().addClass('active');
+        this.activeWordsType = $('.word_container.active');
+        this.activeText = this.activeWordsType.find('.letter').map(function() {
+            return $(this).text();
+        }).get();
+    }
 
-    let current_index = 0
-    $('.word_container').first().addClass('active');
-    let activeWordsType = $('.word_container.active');
-    let active_text = activeWordsType.find('.letter').map(function() {
-        return $(this).text();
-    }).get();
-    let space_counter = 0;
+    handleInput() {
+        const currentInput = this.textInput.val().split('');
+        this.updateLetterClasses(currentInput);
 
-    let started = false;
-    let set_time = 15;
-    let timeLeft = set_time;
-    const countdownElement = $('#counter');
-    let countdown;
-    const text_input = $('#text_input')
-    let total_characters = 0;
-    let pointer_left_value = 0;
-
-    let timer = new Timer(set_time, countdownElement, timer_done)
-
-
-    text_input.focus();
-
-    countdownElement.text(set_time);
-
-    let previous_input_length = 0;
-    let current_count = 0;
-    let incorrect_counter = 0;
-
-    text_input.on('input', function() {
-
-
-        const current_input = $(this).val().split('');
-        activeWordsType.find('.letter').removeClass('correct');
-        activeWordsType.find('.letter').removeClass('incorrect');
-
-        current_count = current_input.length
-
-        if (!started) {
-            countdownElement.removeClass('hidden');
-            timer.start()
-
-            // countdown = setInterval(function() {
-            //     timeLeft--;
-            //     countdownElement.text(timeLeft);
-
-            //     if (timeLeft <= 0) {
-
-            //         total_characters += current_count
-
-            //         clearInterval(countdown);
-            //         const count = $('.letter.correct').length;
-            //         const minute = set_time / 60;
-            //         let wpm = ((count + space_counter) / 5) / minute;
-            //         let accuracy = ((((total_characters)+space_counter)-incorrect_counter)/(total_characters+space_counter))*100
-
-            //         wpm = Math.ceil(wpm);
-            //         accuracy = Math.ceil(accuracy)
-
-            //         let wpm_display = $(`
-            //             <div class="wpm_container">
-            //                 <h2>${wpm} WPM</h2>
-            //                 <br>
-            //                 <h2>${accuracy}%</h2>
-            //             </div>`);
-            //         $('#paragraph').html(wpm_display);
-            //         $('#paragraph').removeClass('text_input_unfocused');
-            //         countdownElement.addClass('hidden');
-            //         $('#retry_button').focus();
-            //     }
-            // }, 1000);
-        }
-        started = true;
-
-        if((previous_input_length>current_input.length)&&(current_input.length+1>active_text.length)&&previous_input_length!=0){
+        if((this.previousInputLength>currentInput.length)&&(currentInput.length+1>this.activeText.length)&&this.previousInputLength!=0){
             $('.word_container.active .letter:last').remove();
         }
+        if (!this.started) {
+            this.countdownElement.removeClass('hidden');
+            this.timer.start();
+        }
+        this.started = true;
+        $('#pointer').removeClass('flash-animation');
+        this.calculatePointerPosition(currentInput);
+        this.previousInputLength = currentInput.length;
+    }
+    calculatePointerPosition(currentInput){
+        let activeContainer = document.querySelector('.active');
+        let x = 0;
+        let y = 0;
+        if(currentInput.length!=0 && currentInput.length != activeContainer.children.length){
+            let activeLetter = activeContainer.children[currentInput.length]
+            const relativePosition =this.getRelativePosition(activeContainer,activeLetter);
+    
+            x = relativePosition.childrenPos.x - relativePosition.containerPos.x;
+            y = relativePosition.childrenPos.y - relativePosition.containerPos.y;
+            console.log(x/currentInput.length)
+            console.log(`Container: ${relativePosition.containerPos.x}, Element: ${relativePosition.elementPos.x}, Children: ${relativePosition.childrenPos.x}`)
+        }
+        else if(currentInput.length == 0){
+            let activeLetter = activeContainer.children[0]
+            const relativePosition =this.getRelativePosition(activeContainer,activeLetter);
+            x = relativePosition.childrenPos.x - relativePosition.containerPos.x;
+            y = relativePosition.childrenPos.y - relativePosition.containerPos.y;
+            console.log(`Container: ${relativePosition.containerPos.x}, Element: ${relativePosition.elementPos.x}, Children: ${relativePosition.childrenPos.x}`)
+        }
+        else{
+            let activeLetter = activeContainer.children[currentInput.length-1]
+            const relativePosition =this.getRelativePosition(activeContainer,activeLetter);
+            x = relativePosition.childrenPos.x - relativePosition.containerPos.x;
+            y = relativePosition.childrenPos.y - relativePosition.containerPos.y;
+            let xRelativeToParent = parseFloat(relativePosition.childrenPos.x-relativePosition.elementPos.x);
+            
+            x = x + (xRelativeToParent/currentInput.length-1)
 
-        current_input.forEach(function(value, index) {
-            if (index < active_text.length) {
+            console.log(`Container: ${relativePosition.containerPos.x}, Element: ${relativePosition.elementPos.x}, Children: ${relativePosition.childrenPos.x}`)
 
-                if(current_input[index] == active_text[index]){
-                    activeWordsType.find('.letter').eq(index).addClass('correct');
+            
+        }
+        this.movePointerTo(x,y);
+    }
+
+    updateLetterClasses(currentInput) {
+        this.activeWordsType.find('.letter').removeClass('correct incorrect');
+        currentInput.forEach((value, index) => {
+            if (index < this.activeText.length) {
+                const letterElement = this.activeWordsType.find('.letter').eq(index);
+                if (currentInput[index] === this.activeText[index]) {
+                    letterElement.addClass('correct');
+                } else {
+                    letterElement.addClass('incorrect');
+                    this.incorrectCounter++;
                 }
-                else if(current_input[index] != active_text[index]){
-                    activeWordsType.find('.letter').eq(index).addClass('incorrect');
-                    incorrect_counter++;
-                }
-            }
-            else{
-                if(index+1>previous_input_length){
-                    let insert_overflow_text = $(`<span class="letter incorrect_extra">${current_input[current_input.length-1]}</span>`);
-                    activeWordsType.append(insert_overflow_text);
-                    incorrect_counter++;
-                }
+            } else if (index + 1 > this.previousInputLength) {
+                let insertOverflowText = $(`<span class="letter incorrect_extra">${currentInput[currentInput.length - 1]}</span>`);
+                this.activeWordsType.append(insertOverflowText);
+                this.incorrectCounter++;
             }
         });
-        // $('#pointer').stop(true, true).css('left', pointer_left_value + 'px');
-        // if(pointer_left_value<=0){
-        //     pointer_left_value = parseFloat($('#pointer').css('left'));
-        // }
+    }
 
-        // if (current_input.length > previous_input_length) {
-        //     pointer_left_value += 13;
-        // } else {
-        //     pointer_left_value -= 13;
-        // }
-
-        // $('#pointer').animate({
-        //     left: pointer_left_value + 'px'
-        // }, 50);
-
-        previous_input_length = current_input.length
-
-
-    });
-
-    text_input.on('keydown', function(event) {
+    handleKeydown(event) {
         if (event.key === " " || event.keyCode === 32) {
-            let inputed = $(this).val().trim()
-            if( inputed!=""){
-                total_characters += active_text.length
-                current_index++;
-                $('.word_container').each(function(index) {
-                    $(this).removeClass('active');
-                    previous_input_length = 0;
-                    if (index === current_index) {
-                        $(this).addClass('active');
-                    }
-                });
-                activeWordsType = $('.word_container.active');
-                active_text = activeWordsType.find('.letter').map(function() {
-                    return $(this).text();
-                }).get();
-                space_counter++;
-                get_relative_position()
+            let inputted = this.textInput.val().trim();
+            if (inputted !== "") {
+                this.totalCharacters += this.activeText.length;
+                this.moveToNextWord();
             }
-            $(this).val('');
+            this.textInput.val('');
             event.preventDefault();
+        } else if (event.key === "Enter" || event.keyCode === 13) {
+            event.preventDefault(); 
         }
-        else if (event.key === "Enter" || event.keyCode === 13) {
-            // Prevent the default action for the Enter key
-            event.preventDefault();
+    }
+
+    handleKeyPress(event) {
+        const char = String.fromCharCode(event.which);
+        if (/^[a-z0-9]$/i.test(char)) {
+            this.textInput.focus();
         }
-    });
+    }
 
-    $(document).keypress(function(event) {
-        let char = String.fromCharCode(event.which); // Get the character
-        let isAlphanumeric = /^[a-z0-9]$/i.test(char); // Check if it's alphanumeric
+    moveToNextWord() {
+        this.currentIndex++;
+        $('.word_container').removeClass('active');
+        $('.word_container').eq(this.currentIndex).addClass('active');
+        this.activeWordsType = $('.word_container.active');
+        this.activeText = this.activeWordsType.find('.letter').map(function() {
+            return $(this).text();
+        }).get();
+        this.spaceCounter++;
+        const activeELement = document.querySelector('.active')
+        const relativePosition = this.getRelativePosition(activeELement);
 
-        if (isAlphanumeric) {
-            text_input.focus();
+        let scrollOffset = 0;
+
+        const container = document.querySelector('.paragraph');
+        if (relativePosition.elementPos.top - relativePosition.containerPos.top > relativePosition.containerPos.height * 0.6) {
+            scrollOffset = relativePosition.containerPos.height / 2;
+            container.scrollBy({
+                top: scrollOffset,
+                behavior: 'smooth'
+            });
+            let topValue = parseInt($('.pointer-area-field').css('top'), 10);
+            $('.pointer-area-field').css(
+                'top',topValue + scrollOffset +'px'
+            )
         }
-    });
+        let x = relativePosition.elementPos.x - relativePosition.containerPos.x;
+        let y = relativePosition.elementPos.y - relativePosition.containerPos.y - scrollOffset;
+        this.movePointerTo(x,y);
+    }
 
-    $('#paragraph').click(()=>{
-        text_input.focus();
-    });
+    movePointerTo(x,y){
+        $('#pointer').stop(true, true).css(
+            'top', y + 'px',
+            'left', x + 'px'
+        );
+        $('#pointer').animate({
+            top:  y + 'px',
+            left: x + 'px'
+        }, 100);
+    }
 
-    text_input.on('focus', function() {
-        $('#paragraph').removeClass('text_input_unfocused')
-    });
+    getRelativePosition(activeELement, childrenElement = null) {
+        const element = activeELement;
+        const container = document.querySelector('.paragraph');
+        const elementRect = element.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        if(childrenElement!=null){
+            const childrenRect = childrenElement.getBoundingClientRect();
+            return {elementPos: elementRect,childrenPos: childrenRect ,containerPos: containerRect}
+        }
+        else{
+            return {elementPos: elementRect, containerPos: containerRect}
+        }
+    }
 
-    text_input.on('blur', function() {
-        $('#paragraph').addClass('text_input_unfocused')
-    });
+    timerDone() {
+        this.totalCharacters += this.previousInputLength;
+        const correctCount = $('.letter.correct').length;
+        const minute = this.setTime / 60;
+        let wpm = ((correctCount + this.spaceCounter) / 5) / minute;
+        let accuracy = ((this.totalCharacters + this.spaceCounter - this.incorrectCounter) / (this.totalCharacters + this.spaceCounter)) * 100;
 
-
-    $('#retry_button').click(function() {
-        $.ajax({
-            url: 'refresh_words/',  // URL defined in urls.py
-            method: 'GET',  // HTTP method
-            data: {
-                'csrfmiddlewaretoken': '{{ csrf_token }}',  // CSRF token
-            },
-            success: function(response) {
-                $('#paragraph').html(response)
-                reset_values()
-            },
-            error: function(xhr, status, error) {
-            }
-        });
-    });
-
-    function timer_done(){
-        total_characters += current_count
-        clearInterval(countdown);
-        const count = $('.letter.correct').length;
-        const minute = set_time / 60;
-        let wpm = ((count + space_counter) / 5) / minute;
-        let accuracy = ((((total_characters)+space_counter)-incorrect_counter)/(total_characters+space_counter))*100
         wpm = Math.ceil(wpm);
-        accuracy = Math.ceil(accuracy)
-        let wpm_display = $(`
+        accuracy = Math.ceil(accuracy);
+        let resultDisplay = $(`
             <div class="wpm_container">
                 <h2>${wpm} WPM</h2>
                 <br>
                 <h2>${accuracy}%</h2>
-            </div>`);
-        $('#paragraph').html(wpm_display);
-        $('#paragraph').removeClass('text_input_unfocused');
-        countdownElement.addClass('hidden');
-        $('#retry_button').focus();
+            </div>
+        `);
+        this.paragraphElement.html(resultDisplay);
+        this.countdownElement.addClass('hidden');
+        this.retryButton.focus();
     }
 
-    function reset_values(){
-        current_index = 0
-        $('.word_container').first().addClass('active');
-        activeWordsType = $('.word_container.active');
-        active_text = activeWordsType.find('.letter').map(function() {
-            return $(this).text();
-        }).get();
-
-
-
-        space_counter = 0;
-
-        started = false;
-        timeLeft = set_time;
-
-        text_input.focus();
-
-        text_input.val('')
-
-        previous_input_length = 0;
-        timer.stop();
-        countdownElement.text(set_time).addClass('hidden');
-
-        const container = document.querySelector('.paragraph');
-        container.scrollTop = 0;
-        total_characters =0;
-        incorrect_counter =0;
-    }
-    function get_relative_position(){
-
-        // Get the element and its container
-        const element = document.querySelector('.active');
-        const container = document.querySelector('.paragraph');
-
-        // Get bounding rectangles
-        const elementRect = element.getBoundingClientRect();
-        const containerRect = container.getBoundingClientRect();
-
-
-        // Calculate the position relative to the container
-        const relativeX = elementRect.left - containerRect.left;
-        const relativeY = elementRect.top - containerRect.top;
-        if(relativeY > (containerRect.height*0.60)){
-            container.scrollBy({
-                top: containerRect.height/2,
-                behavior: 'smooth'
-            });
-        }
-
-
+    resetTest() {
+        $.ajax({
+            url: 'refresh_words/',
+            method: 'GET',
+            data: {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+            },
+            success: (response) => {
+                this.paragraphElement.html(response);
+                this.resetValues();
+            },
+            error: function(xhr, status, error) {
+                console.error('Error refreshing words:', error);
+            }
+        });
     }
 
+    resetValues() {
+        this.currentIndex = 0;
+        this.setupInitialWord();
+        this.spaceCounter = 0;
+        this.started = false;
+        this.totalCharacters = 0;
+        this.incorrectCounter = 0;
+        this.previousInputLength = 0;
+        this.timer.reset();
+        this.countdownElement.text(this.setTime).addClass('hidden');
+        this.textInput.val('').focus();
+        $('#pointer').addClass('flash-animation');
+    }
+}
+
+$(document).ready(function() {
+    const typingTest = new TypingTest('#text_input', '#paragraph', '#counter', '#retry_button', 15);
 });
