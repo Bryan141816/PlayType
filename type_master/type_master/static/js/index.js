@@ -231,7 +231,6 @@ class TypingTest {
         `);
         this.paragraphElement.html(resultDisplay);
         this.countdownElement.addClass('hidden');
-        this.retryButton.focus();
     }
 
     resetTest() {
