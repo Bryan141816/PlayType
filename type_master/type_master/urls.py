@@ -21,5 +21,6 @@ from . import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name="index"),
+    path('3D', views.ThreeDOBject, name="test3d"),
     path('refresh_words/', views.get_words, name='refresh_words'),
 ]
