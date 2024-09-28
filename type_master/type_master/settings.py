@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-!4okda0&xtr^$j1@+o_tm3tmz6#d@h4+vhbdr+sbrig(r+s220
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['7a6a-112-198-193-12.ngrok-free.app']
 
 STATIC_URL = '/static/'
 
@@ -44,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -54,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware', 
 ]
 
 ROOT_URLCONF = 'type_master.urls'
@@ -74,6 +77,7 @@ TEMPLATES = [
         },
     },
 ]
+redirect_uri = "https://7a6a-112-198-193-12.ngrok-free.app/social-auth/complete/facebook/"
 
 WSGI_APPLICATION = 'type_master.wsgi.application'
 
@@ -91,6 +95,14 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
+# settings.py
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.facebook.FacebookOAuth2',
+    'django.contrib.auth.backends.ModelBackend',  # Keep this if you're using Django's default auth
+)
+
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -106,6 +118,14 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+# Add your Facebook App credentials
+SOCIAL_AUTH_FACEBOOK_KEY = config('fb_app_id')
+SOCIAL_AUTH_FACEBOOK_SECRET = config('fb_app_secret')
+
+# Redirect URL after successful login
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 
 # Internationalization

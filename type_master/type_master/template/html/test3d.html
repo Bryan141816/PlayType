@@ -1,0 +1,92 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Load FBX with Looping Animation in Three.js</title>
+    <!-- Load Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Load fflate library -->
+    <script src="https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.min.js"></script>
+    <!-- Load FBXLoader after fflate -->
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/FBXLoader.js"></script>
+</head>
+<body>
+    <canvas id="myCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('myCanvas');
+        const gl = canvas.getContext('webgl', { antialias: true });
+        // Basic Three.js setup
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        var renderer = new THREE.WebGLRenderer(canvas);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Set the scene's background color to gray
+        scene.background = new THREE.Color(0xaaaaaa); // Light gray
+
+        camera.position.set(0, 200, 300);
+
+        // Add even ambient light to the scene (no shadows)
+        var ambientLight = new THREE.AmbientLight(0xffffff, 1);  // White light, full intensity
+        scene.add(ambientLight);
+
+        var mixer; // Variable to hold the AnimationMixer
+        var object; // Variable to hold the loaded object
+
+        // Load the FBX model with animations
+        var loader = new THREE.FBXLoader();
+        loader.load("{% static '3dobjects/joker.fbx' %}", function (loadedObject) {
+            object = loadedObject;
+            object.scale.set(1, 1, 1);  // Scale the model
+            object.rotation.y = Math.PI / 7;
+
+            object.position.set(0, 80, 0);  // Example position
+            object.traverse(function (child) {
+                if (child.isMesh) {
+                    if (child.material) {
+                        child.material.side = THREE.DoubleSide;  // Enable rendering both sides
+                        console.log('Material:', child.material);
+                        if (child.material.map) {
+                            console.log('Embedded texture map found:', child.material.map);
+                        }
+                        
+                    }
+                }
+                
+            });
+            
+
+            scene.add(object);
+
+            // Set up animation
+            mixer = new THREE.AnimationMixer(object);
+
+            // Loop through all animations in the loaded object
+            object.animations.forEach(function (clip) {
+                var action = mixer.clipAction(clip);
+                action.loop = THREE.LoopRepeat;  // Set to loop the animation
+                action.play();  // Start playing the animation
+            });
+        }, undefined, function (error) {
+            console.error(error);  // Handle loading errors
+        });
+
+
+        // Render the scene with animation
+        function animate() {
+            requestAnimationFrame(animate);
+            if (mixer) {
+                mixer.update(0.015);  // Adjust the delta time for different animation speeds
+            }
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>

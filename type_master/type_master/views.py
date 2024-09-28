@@ -22,6 +22,10 @@ def get_words(request):
         return render(request, 'html\words_container.html', context )
 def ThreeDOBject(request):
     return render(request, 'html\\test3d.html')
+def data_privary(request):
+    return render(request, 'html\\data-privacy.html')
+def deletion(request):
+    return render(request, 'html\\user-deletetion.html')
 @register.filter
 def letter_token(word):
     word = word.lower()
