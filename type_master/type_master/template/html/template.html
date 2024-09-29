@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block head %}{% endblock %}
+    <link rel="stylesheet" href="{% static 'css/template.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <script src="{% static 'js/jquery.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+</head>
+<body>
+    <div id="upper-tab">
+        <button id="profile-button">
+            {% if user.is_authenticated %}
+                <i class="fas fa-user"></i>
+            {% else %}
+                <i class="fas fa-user"></i>
+            {% endif %}
+        </button>
+    </div>
+    <a href="{% url 'logout'%}">Log Out</a>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <script>
+        const user = {
+            isAuthenticated: "{{ user.is_authenticated|lower }}",
+            username: "{{ user.username|escapejs }}",
+            email: "{{ user.email|escapejs }}",
+        };
+        $('#profile-button').on('click', () => {
+            console.log(typeof(user.isAuthenticated))
+            if (user.isAuthenticated == 'true') {
+                alert(`Welcome, ${user.username}!`);
+            } else {
+                window.location.href = "{% url 'login'%}"
+            }
+        });
+    </script>
+</body>
+</html>

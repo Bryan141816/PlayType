@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-!4okda0&xtr^$j1@+o_tm3tmz6#d@h4+vhbdr+sbrig(r+s220
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['7a6a-112-198-193-12.ngrok-free.app']
+ALLOWED_HOSTS = ['127.0.0.1','sweet-walls-nail.loca.lt']
 
 STATIC_URL = '/static/'
 
@@ -57,7 +57,15 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware', 
+    'django.middleware.security.SecurityMiddleware'
 ]
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.github.GithubOAuth2',
+    'social_core.backends.google.GoogleOAuth2',  
+    'django.contrib.auth.backends.ModelBackend', 
+)
+
 
 ROOT_URLCONF = 'type_master.urls'
 
@@ -77,13 +85,9 @@ TEMPLATES = [
         },
     },
 ]
-redirect_uri = "https://7a6a-112-198-193-12.ngrok-free.app/social-auth/complete/facebook/"
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 WSGI_APPLICATION = 'type_master.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -91,17 +95,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
-# settings.py
-
-AUTHENTICATION_BACKENDS = (
-    'social_core.backends.facebook.FacebookOAuth2',
-    'django.contrib.auth.backends.ModelBackend',  # Keep this if you're using Django's default auth
-)
-
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -119,13 +112,19 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Add your Facebook App credentials
-SOCIAL_AUTH_FACEBOOK_KEY = config('fb_app_id')
-SOCIAL_AUTH_FACEBOOK_SECRET = config('fb_app_secret')
 
 # Redirect URL after successful login
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('google_app_id')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('google_secret')
+SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = 'http://localhost:8000/social-auth/complete/google-oauth2/'
+
+SOCIAL_AUTH_GITHUB_KEY = config('github_app_id')
+SOCIAL_AUTH_GITHUB_SECRET = config('github_secret')
+SOCIAL_AUTH_GITHUB_OAUTH2_REDIRECT_URI = 'http://127.0.0.1:8000/social-auth/complete/github/'
+
 
 
 # Internationalization
