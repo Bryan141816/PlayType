@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-!4okda0&xtr^$j1@+o_tm3tmz6#d@h4+vhbdr+sbrig(r+s220
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','sweet-walls-nail.loca.lt']
+ALLOWED_HOSTS = ['127.0.0.1','sweet-walls-nail.loca.lt','965b-112-198-193-12.ngrok-free.app']
 
 STATIC_URL = '/static/'
 
@@ -56,15 +56,16 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'social_django.middleware.SocialAuthExceptionMiddleware', 
-    'django.middleware.security.SecurityMiddleware'
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
+
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.github.GithubOAuth2',
     'social_core.backends.google.GoogleOAuth2',  
     'django.contrib.auth.backends.ModelBackend', 
 )
+
 
 
 ROOT_URLCONF = 'type_master.urls'
@@ -119,11 +120,37 @@ LOGOUT_REDIRECT_URL = '/'
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('google_app_id')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('google_secret')
-SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = 'http://localhost:8000/social-auth/complete/google-oauth2/'
 
 SOCIAL_AUTH_GITHUB_KEY = config('github_app_id')
 SOCIAL_AUTH_GITHUB_SECRET = config('github_secret')
-SOCIAL_AUTH_GITHUB_OAUTH2_REDIRECT_URI = 'http://127.0.0.1:8000/social-auth/complete/github/'
+
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+]
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = [
+    ('name', 'name'),
+    ('given_name', 'given_name'),
+    ('family_name', 'family_name'),
+    ('picture', 'picture'),
+    ('email', 'email'),
+]
+
+SOCIAL_AUTH_GITHUB_SCOPE = [
+    'user',            # Access user profile
+    'user:email',      # Access user's email
+]
+
+SOCIAL_AUTH_GITHUB_EXTRA_DATA = [
+    ('login', 'username'),           # GitHub username
+    ('name', 'name'),                # Full name (if provided)
+    ('avatar_url', 'picture'),       # Profile picture URL
+    ('email', 'email'),              # Primary email address
+]
+
 
 
 

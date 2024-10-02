@@ -1,0 +1,119 @@
+#side-panel{
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex ;
+    flex-direction: column;
+    width: 25%;
+    height: 100%;
+    background-color: rgb(12, 12, 12, 0.5);
+    padding: 2rem;
+    padding-top: 4rem;
+    align-items: center;
+    gap: 15px;
+    transform: translateX(500px);
+    z-index: 999;
+    pointer-events: all;
+}
+.active-side-panel{
+    animation: slideIn 0.5s ease forwards; 
+}
+@keyframes slideIn {
+    from {
+        transform: translateX(100%); /* Start off-screen to the left */
+    }
+    to {
+        transform: translateX(0); /* Move to its original position */
+    }
+}
+.slide-out {
+    animation: slideOut 0.5s ease forwards; 
+}
+@keyframes slideOut {
+    from {
+        transform: translateX(0); /* Start at original position */
+    }
+    to {
+        transform: translateX(100%) /* Move off-screen to the left */
+    }
+}
+#profile-image{
+    width: 200px;
+    height: 200px;
+    border-radius: 100%;
+}
+#lvl-bar{
+    display: flex;
+    height: 20px;
+    width: 100%;
+    padding: 0;
+    flex-direction: column;
+    position: relative;
+}
+.lvl-amount-container{
+    display: flex;
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    gap: 10px;
+    align-items: center;
+}
+.medium-text{
+    color: white;
+    font-size: 30px;
+}
+.normal-text{
+    color: white;
+    font-size: 20px;
+    white-space: nowrap;
+}
+.small-text{
+    color: white;
+    font-size: 16px;
+    white-space: nowrap;
+}
+#lvl-bar-bg{
+    background-color: #222222;
+    width: 100%;
+    height: 60%;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+#lvl-amount{
+    position: relative;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 70%;
+    background-color: #00b4d8;
+}
+#lvl-value-meter{
+    margin-left: auto;
+}
+#log-out-form{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 2rem;
+}
+#log-out{
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-size: 40px;
+    font-weight: 200;
+}
+#close-button{
+    pointer-events: all;
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-size: 30px;
+    font-weight: 200;
+    position: absolute;
+    z-index: 998;
+    top: 2rem;
+    right: 2rem;
+}

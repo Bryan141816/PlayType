@@ -1,0 +1,25 @@
+{% load static %}
+
+<div id="side-panel">
+    <button id="close-button">
+        <i class="fas fa-times"></i>
+    </button>
+    {% if profile_image %}
+        <img src="{{ profile_image }}" id="profile-image" alt="Profile Image">
+    {% else %}
+        <img src="{% static 'images/default-profile.jpg' %}" id="profile-image" alt="Profile Image">
+    {% endif %}
+    <span class="medium-text">{{name}}</span>
+    <div id="lvl-bar">
+        <div class="lvl-amount-container">
+            <span class="normal-text name">LVL 36</span>
+            <div id="lvl-bar-bg">
+                <div id="lvl-amount"></div>
+            </div>
+        </div>
+        <span id="lvl-value-meter" class="small-text">1000/1500</span>
+    </div>
+    <form action="{% url 'logout'%}" id="log-out-form">
+        <button type="submit" id="log-out"><i class="fas fa-sign-out-alt"></i></button>
+    </form>      
+</div>

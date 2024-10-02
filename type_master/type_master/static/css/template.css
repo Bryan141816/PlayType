@@ -8,15 +8,29 @@ html{
     height: 100dvh;
     width: 100%;
 }
+#side-panel-container{
+    display: flex;
+    width: 100%;
+    position: absolute;
+    height: 100%;
+    top: 0;
+    right: 0;
+    pointer-events:none;
+    overflow: hidden;
+    z-index: 999;
+}
+.side-panel-container-active{
+    backdrop-filter: blur(10px);
+}
 body {
     padding: 4rem;
-    padding-top: 1rem;
     background-color: #222222;
     display: flex;
     flex-direction: column;
     align-items: center;
     margin: 0;
     height: 100%;
+    position: relative;
 }
 main{
     display: flex;
@@ -34,9 +48,14 @@ main{
 #profile-button{
     background-color: transparent;
     border: none;
-    font-size: 20px;
+    font-size: 30px;
     margin-left: auto;
     & i{
         color: white;
     }
+}
+#profile{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
