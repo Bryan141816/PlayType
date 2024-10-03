@@ -138,6 +138,7 @@
 }
 .text-button i,.text-mode i{
     font-size: 14px;
+    pointer-events: none;
 } 
 .option-active{
     color: #0057d6;

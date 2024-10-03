@@ -298,12 +298,18 @@ $(document).ready(function() {
     const typingTest = new TypingTest('#text_input', '#paragraph', '#counter', '#retry_button', 15);
 
 
-    $('.text-button').on('click', (event) => {
+    $('button.text-button').on('click', (event) => {
         if (!$(event.target).hasClass('option-active')) {
             $('.text-button.option-active').removeClass('option-active')
             $(event.target).addClass('option-active')
             const targetTime = parseInt($(event.target).text())
             typingTest.changeSetTime(targetTime)
         }
-    });      
+    });
+    $('button.text-mode').on('click', (event) => {
+        if (!$(event.target).hasClass('option-active')) {
+            $('.text-mode.option-active').removeClass('option-active')
+            $(event.target).addClass('option-active')
+        }
+    });       
 });
