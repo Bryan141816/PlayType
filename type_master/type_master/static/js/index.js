@@ -76,8 +76,6 @@ class TypingTest {
         const currentInput = this.textInput.val().split('');
         this.updateLetterClasses(currentInput);
         if((this.previousInputLength>currentInput.length)&&(currentInput.length+1>this.activeText.length)&&this.previousInputLength>0){
-            console.log(this.previousInputLength, currentInput.length, this.activeText.length)
-            console.log('why did you delete it?')
             $('.word_container.active .letter:last').remove();
         }
         if (!this.started) {
@@ -100,14 +98,12 @@ class TypingTest {
         let x = 0;
         let y = 0;
         if(currentInput.length!=0 && currentInput.length != activeContainer.children.length){
-            console.log('1 is moving the pointer')
             let activeLetter = activeContainer.children[currentInput.length]
             const relativePosition =this.getRelativePosition(activeContainer,activeLetter);
             x = relativePosition.childrenPos.x - relativePosition.containerPos.x;
             y = relativePosition.childrenPos.y - relativePosition.containerPos.y;
         }
         else if(currentInput.length == 0 || currentInput.length == 1){
-            console.log('2 is moving the pointer')
             let activeLetter = activeContainer.children[0]
             const relativePosition =this.getRelativePosition(activeContainer,activeLetter);
             x = relativePosition.childrenPos.x - relativePosition.containerPos.x;
@@ -117,7 +113,6 @@ class TypingTest {
             }
         }
         else{
-            console.log('3 is moving the pointer')
             let activeLetter = activeContainer.children[currentInput.length-1]
             const relativePosition =this.getRelativePosition(activeContainer,activeLetter);
             x = relativePosition.childrenPos.x - relativePosition.containerPos.x;
@@ -186,16 +181,31 @@ class TypingTest {
 
         const container = document.querySelector('.paragraph');
         if (relativePosition.elementPos.top - relativePosition.containerPos.top > relativePosition.containerPos.height * 0.6) {
+            // Calculate the desired scroll offset
             scrollOffset = relativePosition.containerPos.height / 2;
+        
+            // Check if the scroll would overscroll the container
+            if ((container.scrollTop + (scrollOffset * 2)) >= (container.scrollHeight - container.clientHeight)) {
+                // Adjust scrollOffset to prevent overscroll
+                scrollOffset = (container.scrollHeight - container.scrollTop - container.clientHeight);
+            }
+        
+            // Ensure scrollOffset is not negative
+            scrollOffset = Math.max(scrollOffset, 0);
+        
+            // Scroll the container
             container.scrollBy({
                 top: scrollOffset,
                 behavior: 'smooth'
             });
+        
+            // Update the position of the pointer area field
             let topValue = parseInt($('.pointer-area-field').css('top'), 10);
             $('.pointer-area-field').css(
-                'top',topValue + scrollOffset +'px'
-            )
+                'top', topValue + scrollOffset + 'px'
+            );
         }
+        
         let x = relativePosition.elementPos.x - relativePosition.containerPos.x;
         let y = relativePosition.elementPos.y - relativePosition.containerPos.y - scrollOffset;
         this.movePointerTo(x,y);
