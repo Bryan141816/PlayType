@@ -44,6 +44,9 @@ main{
     display: flex;
     width: 100%;
     height: 50px;
+    align-self: center;
+    padding-left: 10%;
+    padding-right: 10%;
 }
 #profile-button{
     background-color: transparent;
@@ -53,6 +56,13 @@ main{
     & i{
         color: white;
     }
+}
+#logo{
+    display: flex;
+    color:#999999;
+    gap: 10px;
+    align-items: center;
+    font-size: 40px;
 }
 #profile{
     display: flex;

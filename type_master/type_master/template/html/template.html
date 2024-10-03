@@ -12,12 +12,17 @@
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <script src="{% static 'js/jquery.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="{% static 'images/logo.svg' %}">
 </head>
 <body>
     <div id="side-panel-container">
 
     </div>
     <div id="upper-tab">
+        <div id="logo">
+            <img src="{% static 'images/logo.svg' %}" alt="logo" style=" height:30px;">
+            <span>PlayType</span>
+        </div>
         <button id="profile-button">
             {% if user.is_authenticated %}
                 {% if profile_image %}
@@ -48,7 +53,6 @@
                     $('#side-panel').addClass('active-side-panel')
                     $('#side-panel-container').addClass('side-panel-container-active')
                     $('#close-button').on('click',()=>{
-                        console.log('ha')
                         $("#side-panel-container").removeClass('side-panel-container-active')
                         $('#side-panel').removeClass('active-side-panel')
                         $('#side-panel').addClass('slide-out')
@@ -61,6 +65,19 @@
 
             } else {
                 window.location.href = "{% url 'login'%}"
+            }
+        });
+        $(document).on('click', function(event) {
+            console.log('ha')
+            if ($('#side-panel').hasClass('active-side-panel')) {
+                if (!$('#side-panel').is(event.target) && $('#side-panel').has(event.target).length === 0) {
+                    $("#side-panel-container").removeClass('side-panel-container-active')
+                    $('#side-panel').removeClass('active-side-panel')
+                    $('#side-panel').addClass('slide-out')
+                    setTimeout(function(){
+                        $('#side-panel').remove()
+                    },500)   
+                }
             }
         });
     </script>
