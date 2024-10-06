@@ -6,8 +6,16 @@
     height: 30%;
     overflow-y: hidden;
     position: relative;
-    scrollbar-width: none;  /* Hide scrollbar */
+    align-items: start;
+    scrollbar-width: none; 
     -ms-overflow-style: none
+}
+#paragraph-container{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    width: 100%;
+    height: auto;
 }
 
 .word_container {
@@ -20,19 +28,20 @@
 
 .letter {
     margin: 0;
+    margin-left: 3px;
     padding: 0;
     font-size: 35px;
     font-weight: 200;
-    width: 17px;
 }
 
 #pointer {
     position: absolute;
     top: 0;
     left: 0;
-    width: 2px;
+    width: 3px;
     height: 35px;
     background-color: #0057d6;
+    border-radius: 1px;
 }
 .pointer-area-field{
     position: absolute;
@@ -103,11 +112,42 @@
     display: flex;
     height: 100%;
     width: 100%;
-    justify-content: center;
-    align-items: center;
+    justify-content: space-around;
+    & .blocker{
+        display: block;
+        position: absolute;
+        background-color: #0057d6;
+        height: 250%;
+        width: 120%;
+        transform: rotate(-45deg) translateX(0);
+        pointer-events: none;
+        transition: transform 0.3s;
+    }
+    & .blocker-hide{
+        transform: rotate(-45deg) translateX(100%);
+    }
+    & div{
+        display: flex;
+        width: 33%;
+        height: auto;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        position: relative;
+    }
     & h2{
+        margin: 0;
+        padding: 0;
         font-size: 100px;
+        color: #0057d6;
+    }
+    & h3{
+        margin: 0;
+        padding: 0;
+        font-size: 60px;
         color: #999999;
+        height: auto;
     }
 }
 #option-selector{

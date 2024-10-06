@@ -68,7 +68,6 @@
             }
         });
         $(document).on('click', function(event) {
-            console.log('ha')
             if ($('#side-panel').hasClass('active-side-panel')) {
                 if (!$('#side-panel').is(event.target) && $('#side-panel').has(event.target).length === 0) {
                     $("#side-panel-container").removeClass('side-panel-container-active')

@@ -3,6 +3,8 @@ from django.template.defaulttags import register
 from .models import Word
 from django.contrib.auth import logout
 from social_django.models import UserSocialAuth
+import random
+
 
 
 def login_view(request):
@@ -12,7 +14,6 @@ def logout_view(request):
     return redirect('index')
 
 def index(request):
-    random_words = Word.objects.order_by('?').values_list('word', flat=True)[:100]
     user = request.user
 
     if user.is_authenticated:
@@ -42,7 +43,6 @@ def index(request):
                     # Handle other providers similarly if needed
 
                 context = {
-                    'random_word': random_words,
                     'user': user,
                     'name': full_name,
                     'login_origin': login_origin,
@@ -51,7 +51,6 @@ def index(request):
             else:
                 # No social auth records found, fallback to username
                 context = {
-                    'random_word': random_words,
                     'user': user,
                     'name': user.username,
                     'login_origin': 'Local Authentication',
@@ -59,29 +58,40 @@ def index(request):
                 }
         except UserSocialAuth.DoesNotExist:
             context = {
-                'random_word': random_words,
                 'user': user,
                 'name': user.username,
                 'login_origin': 'Local Authentication',
                 'profile_image': None
             }
     else:
-        # User is not authenticated
-        context = {
-            'random_word': random_words
-        }
+        context = {}
 
     return render(request, 'html/index.html', context)
 
 def get_words(request):
     if request.method == 'GET':
-        random_words = Word.objects.order_by('?').values_list('word', flat=True)[:100]
+        amount = int(request.GET.get('amount', 100))
+        all_random_words = list(Word.objects.order_by('?').values_list('word', 'length')[:(max(1000, (10 * amount)))])
+
+        short_words = [word for word, length in all_random_words if length <= 5]
+        long_words = [word for word, length in all_random_words if length > 5]
+
+        # Calculate the number of short and long words to select based on the desired amount
+        short_count = min(92, amount)  # Ensure we don't select more than available
+        long_count = max(0, amount - short_count)  # Remainder goes to long words
+
+        selected_words = random.choices(short_words, k=short_count) + random.choices(long_words, k=long_count)
+
+        random.shuffle(selected_words)
+
+        random_words = selected_words[:amount]
 
         context = {
             'random_word': random_words
         }
 
-        return render(request, 'html\words_container.html', context )
+        return render(request, 'html/words_container.html', context)
+
 
 def show_profile(request):
     user = request.user

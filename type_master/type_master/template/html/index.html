@@ -11,13 +11,15 @@
         <div class="pointer-area-field">
             <div id="pointer" class="flash-animation"></div>
         </div>
-        {% for word in random_word %}
-        <div class="word_container">
-            {% for letter in word|letter_token %}
-            <span class="letter">{{letter}}</span>
+        <div id="paragraph-container">
+            {% for word in random_word %}
+            <div class="word_container">
+                {% for letter in word|letter_token %}
+                <span class="letter">{{letter}}</span>
+                {% endfor %}
+            </div>
             {% endfor %}
         </div>
-        {% endfor %}
     </div>
     
     <input type="text" id="text_input">
@@ -34,13 +36,14 @@
         </div>
         <div class="option-separator"></div>
         <div class="text-button-container">
-            <button class="text-mode option-active"><i class="fas fa-stopwatch"></i>TIME</button>
-            <button class="text-mode"><i class="fas fa-bold"></i>WORDS</button>
-            <button class="text-mode"><i class="fas fa-trophy"></i>CHALLENGE</button>
-            <button class="text-mode"><i class="fas fa-gamepad"></i>GAMES</button>
-            <button class="text-mode"><i class="fas fa-wrench"></i>CUSTOM</button>
+            <button class="text-mode option-active"><i class="fas fa-stopwatch"></i>time</button>
+            <button class="text-mode"><i class="fas fa-bold"></i>words</button>
+            <button class="text-mode"><i class="fas fa-trophy"></i>challenge</button>
+            <button class="text-mode"><i class="fas fa-gamepad"></i>games</button>
+            <button class="text-mode"><i class="fas fa-pen"></i>custom</button>
         </div>
     </div>
-    <script src="{% static 'js/index.js' %}">
-    </script>
+    <script src="{% static 'js/timer.js' %}"></script>
+    <script src="{% static 'js/typetest.js' %}"></script>
+    <script src="{% static 'js/index.js' %}"></script>
 {% endblock %}
