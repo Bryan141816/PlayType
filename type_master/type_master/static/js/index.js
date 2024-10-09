@@ -107,24 +107,33 @@ $(document).ready(function() {
         let accuracy = ((resultData.totalCharacters + resultData.spaceCounter - (resultData.incorrectCounter + resultData.extraLetterCounter)) / (resultData.totalCharacters + resultData.spaceCounter)) * 100;
         wpm = Math.ceil(wpm);
         accuracy = Math.ceil(accuracy);
-
+        let stat = `${correctCount}/${resultData.incorrectCounter}/${resultData.extraLetterCounter}`
+        if(accuracy<=0){
+            wpm = '0'
+            accuracy = '0'
+            stat = 'invalid'
+        }
+        else{
+            
+        }
+        
         let resultDisplay = $(`
             <div class="wpm_container">
-                <div>
-                    <div class="blocker"></div>
-                    <h2>${wpm}</h2>
-                    <h3>wpm</h3>
-                </div>
-                <div>
-                    <div class="blocker"></div>
-                    <h2>${accuracy}%</h2>
-                    <h3>acc</h3>
-                </div>
-                <div>
-                    <div class="blocker"></div>
-                    <h2>${correctCount}/${resultData.incorrectCounter}/${resultData.extraLetterCounter}</h2>
-                    <h3>cor/mis/ex</h3>
-                </div>
+            <div>
+            <div class="blocker"></div>
+            <h2>${wpm}</h2>
+            <h3>wpm</h3>
+            </div>
+            <div>
+            <div class="blocker"></div>
+            <h2>${accuracy}%</h2>
+            <h3>acc</h3>
+            </div>
+            <div>
+            <div class="blocker"></div>
+            <h2>${stat}</h2>
+            <h3>cor/mis/ex</h3>
+            </div>
             </div>
         `);
 
