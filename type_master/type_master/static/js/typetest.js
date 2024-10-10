@@ -44,7 +44,6 @@ class TypingTest {
             $('.word_container.active .letter:last').remove();
         }
         if (!this.started) {
-            console.log(this.testType)
             if(this.testType == 'words'){
                 $('#counter').text(`0/${this.amount}`);
             }
@@ -157,25 +156,20 @@ class TypingTest {
 
         const container = document.querySelector('.paragraph');
         if (relativePosition.elementPos.top - relativePosition.containerPos.top > relativePosition.containerPos.height * 0.6) {
-            // Calculate the desired scroll offset
+    
             scrollOffset = relativePosition.containerPos.height / 2;
         
-            // Check if the scroll would overscroll the container
             if ((container.scrollTop + (scrollOffset + (scrollOffset/2))) >= (container.scrollHeight - container.clientHeight)) {
-                // Adjust scrollOffset to prevent overscroll
                 scrollOffset = (container.scrollHeight - container.scrollTop - container.clientHeight);
             }
         
-            // Ensure scrollOffset is not negative
             scrollOffset = Math.max(scrollOffset, 0);
-        
-            // Scroll the container
+
             container.scrollBy({
                 top: scrollOffset,
                 behavior: 'smooth'
             });
-        
-            // Update the position of the pointer area field
+
             let topValue = parseInt($('.pointer-area-field').css('top'), 10);
             $('.pointer-area-field').css(
                 'top', topValue + scrollOffset + 'px'
@@ -247,7 +241,6 @@ class TypingTest {
         this.extraLetterCounter = 0;
         this.previousInputLength = 0;
         this.timer.reset();
-        console.log(this.amount)
         this.resetTestBinding()
         $('#counter').addClass('hidden')
         this.textInput.val('').focus();

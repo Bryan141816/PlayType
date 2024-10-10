@@ -39,6 +39,7 @@ main{
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    overflow: auto;
 }
 #upper-tab{
     display: flex;

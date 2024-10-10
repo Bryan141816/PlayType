@@ -41,7 +41,7 @@
 
         // Load the FBX model with animations
         var loader = new THREE.FBXLoader();
-        loader.load("{% static '3dobjects/joker.fbx' %}", function (loadedObject) {
+        loader.load("{% static '3dobjects/ff_running.fbx' %}", function (loadedObject) {
             object = loadedObject;
             object.scale.set(1, 1, 1);  // Scale the model
             object.rotation.y = Math.PI / 7;

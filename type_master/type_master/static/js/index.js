@@ -10,7 +10,6 @@ $(document).ready(function() {
                 typingTest = new TypingTest('#text_input', '#paragraph', '#retry_button', timer, testDone, resetTest, 50, 'time');
             }
             else{
-                console.log('1')
                 typingTest.updateTimer(timer)
             }
 
@@ -23,17 +22,17 @@ $(document).ready(function() {
                 typingTest = new TypingTest('#text_input', '#paragraph', '#retry_button', timer, testDone, resetTest, 50, 'words');
             }
             else{
-                console.log('2')
                 typingTest.updateTimer(timer)
             }
 
             function resetTest() {
-                $('#counter').text('0').removeClass('hidden'); // Reset for count-up mode
+                $('#counter').text('0').removeClass('hidden');
             }
         }
     }
 
     $('button.text-button').on('click', (event) => {
+
         if (!$(event.target).hasClass('option-active')) {
             $('.text-button.option-active').removeClass('option-active');
             $(event.target).addClass('option-active');
@@ -100,7 +99,7 @@ $(document).ready(function() {
         const minute = (timer instanceof CountdownTimer)
             ? (timer.original_time - timer.getRemainingTime()) / 60
             : (timer instanceof CountupTimer)
-                ? (timer.getRemainingTime()) / 60 // Change to getElapsedTime for CountupTimer
+                ? (timer.getRemainingTime()) / 60 
                 : null;
 
         let wpm = ((correctCount + resultData.spaceCounter) / 5) / minute;
@@ -108,13 +107,11 @@ $(document).ready(function() {
         wpm = Math.ceil(wpm);
         accuracy = Math.ceil(accuracy);
         let stat = `${correctCount}/${resultData.incorrectCounter}/${resultData.extraLetterCounter}`
+
         if(accuracy<=0){
             wpm = '0'
             accuracy = '0'
             stat = 'invalid'
-        }
-        else{
-            
         }
         
         let resultDisplay = $(`
