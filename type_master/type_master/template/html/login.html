@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LogIn</title>
     <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/colors.css' %}">
     <link rel="stylesheet" href="{% static 'css/login.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,7 +24,10 @@
         <i class="fab fa-github"></i>
         Login with Github
     </button>
+    <script src="{% static 'js/lazychameleon.js' %}"></script>
     <script>
+        const themesjson = "{% static 'json/themes.json' %}"
+        const lazychameleon = new LazyChameleon('playtype', themesjson);
         $('#google-login').on('click',()=>{
             window.location.href = "{% url 'social:begin' 'google-oauth2' %}"
         })

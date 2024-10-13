@@ -151,6 +151,9 @@ def ask_username(request, backend=None):
     return render(request, 'html\\ask-username.html')
 
 
+def challenges(request):
+    return render(request, 'html\\challenges-template.html')
+
 def ThreeDOBject(request):
     return render(request, 'html\\test3d.html')
 def data_privary(request):

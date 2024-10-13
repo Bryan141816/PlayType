@@ -8,6 +8,10 @@ html{
     height: 100dvh;
     width: 100%;
 }
+.profile_image{
+    border-radius: 100%;
+    border: 2px solid var(--high-color-value);
+}
 #side-panel-container{
     display: flex;
     width: 100%;
@@ -24,7 +28,7 @@ html{
 }
 body {
     padding: 4rem;
-    background-color: #222222;
+    background-color: var(--background-color);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -34,9 +38,9 @@ body {
 }
 main{
     display: flex;
-    height: 80%;
-    width: 100%;
     flex-direction: column;
+    height: 80vh; /* Make sure main has a specific height */
+    width: 100%;
     justify-content: center;
     align-items: center;
 }
@@ -50,16 +54,17 @@ main{
 }
 #profile-button{
     background-color: transparent;
-    border: none;
     font-size: 30px;
     margin-left: auto;
+    border-radius: 100%;
+    border: none;
     & i{
-        color: white;
+        color: var(--high-color-value);
     }
 }
 #logo{
     display: flex;
-    color:#999999;
+    color: var(--medium-color-value);
     gap: 10px;
     align-items: center;
     font-size: 40px;

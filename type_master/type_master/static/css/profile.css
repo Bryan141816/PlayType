@@ -6,7 +6,7 @@
     flex-direction: column;
     width: 25%;
     height: 100%;
-    background-color: rgb(12, 12, 12, 0.5);
+    background-color: var(--sidebar-background-color);
     padding: 2rem;
     padding-top: 4rem;
     align-items: center;
@@ -41,6 +41,7 @@
     width: 200px;
     height: 200px;
     border-radius: 100%;
+    border: 2px solid var(--high-color-value);
 }
 #lvl-bar{
     display: flex;
@@ -59,16 +60,16 @@
     align-items: center;
 }
 .medium-text{
-    color: white;
+    color: var(--high-color-value);
     font-size: 30px;
 }
 .normal-text{
-    color: white;
+    color: var(--high-color-value);
     font-size: 20px;
     white-space: nowrap;
 }
 .small-text{
-    color: white;
+    color: var(--high-color-value);
     font-size: 16px;
     white-space: nowrap;
 }
@@ -86,7 +87,7 @@
     left: 0;
     height: 100%;
     width: 70%;
-    background-color: #00b4d8;
+    background-color: #0057d6;
 }
 #lvl-value-meter{
     margin-left: auto;
@@ -101,7 +102,7 @@
     width: 100%;
     background-color: transparent;
     border: none;
-    color: white;
+    color: var(--high-color-value);
     font-size: 40px;
     font-weight: 200;
 }
@@ -109,7 +110,7 @@
     pointer-events: all;
     background-color: transparent;
     border: none;
-    color: white;
+    color: var(--high-color-value);
     font-size: 30px;
     font-weight: 200;
     position: absolute;

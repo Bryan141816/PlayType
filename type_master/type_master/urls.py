@@ -10,6 +10,8 @@ urlpatterns = [
     path('3D', views.ThreeDOBject, name="test3d"),
     path('data-privacy', views.data_privary, name="test3d"),
     path('user-data-deletion', views.deletion, name="test3d"),
+
+    path('challenges', views.challenges, name="challenges"),
     
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% block head %}{% endblock %}
     <link rel="stylesheet" href="{% static 'css/template.css' %}">
+    <link rel="stylesheet" href="{% static 'css/colors.css' %}">
     <link rel="stylesheet" href="{% static 'css/profile.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,11 +23,14 @@
         <div id="logo">
             <img src="{% static 'images/logo.svg' %}" alt="logo" style=" height:30px;">
             <span>PlayType</span>
+            <button id="theme-change" class="dark">
+                <i class="fas fa-sun"></i>
+            </button>
         </div>
         <button id="profile-button">
             {% if user.is_authenticated %}
                 {% if profile_image %}
-                    <img src="{{ profile_image }}" alt="Profile Image" style="width:40px; height:40px; border-radius:50%;">
+                    <img src="{{ profile_image }}" alt="Profile Image" style="width:40px; height:40px; border-radius:50%;" class="profile_image">
                 {% else %}
                     <img src="{% static 'images/default-profile.jpg' %}" alt="Profile Image" style="width:40px; height:40px; border-radius:50%;">
                 {% endif %}
@@ -38,7 +42,23 @@
     <main>
         {% block content %}{% endblock %}
     </main>
+    <script src="{% static 'js/lazychameleon.js' %}"></script>
     <script>
+        const themesjson = "{% static 'json/themes.json' %}"
+        const lazychameleon = new LazyChameleon('playtype', themesjson);
+
+        $('#theme-change').click(function() {
+            if ($(this).hasClass('dark')) {
+                $(this).removeClass('dark');
+                $(this).addClass('light');
+                lazychameleon.setTheme('light')
+            } else if ($(this).hasClass('light')) {
+                $(this).removeClass('light');
+                $(this).addClass('dark');
+                lazychameleon.setTheme('dark')
+            }
+        });
+
         const user = {
             isAuthenticated: "{{ user.is_authenticated|lower }}",
             username: "{{ user.username|escapejs }}",
