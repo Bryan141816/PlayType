@@ -1,0 +1,111 @@
+* {
+    font-family: "VT323", monospace;
+    font-weight: 100;
+    font-style: normal;
+    box-sizing: border-box;
+}
+html{
+    height: 100dvh;
+    width: 100%;
+}
+body {
+    padding: 4rem;
+    background-color: var(--background-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    height: 100%;
+    position: relative;
+}
+#settings-modal{
+    display: grid;
+    grid-template-rows: auto 1fr;
+    grid-template-columns: 25% 75%;
+    height: fit-content;
+    width: 50%;
+    border-radius: 2%;
+    position: relative;
+    overflow: auto;
+    background-color: var(--sidebar-background-color);
+}
+header{
+    grid-column: span 2;
+    display: flex;
+    flex-direction: row;
+    height: fit-content;
+    padding: 10px;
+    padding-left: 25px;
+    padding-right: 25px;
+    color: var(--high-color-value);
+    border-bottom: 1px solid var(--high-color-value);
+}
+h1{
+    width: 100%;
+    height: fit-content;
+    margin: 0;
+    padding: 10px;
+}
+#settings-tab{
+    display: flex;
+    flex-direction: column;
+    color: white;
+    font-size: 30px;
+    padding: 20px;
+    overflow: auto;
+    gap: 15px;
+    & a{
+        color: var(--high-color-value);
+        text-decoration: none;
+        & div{
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 5px;
+            padding-left: 15px;
+            gap: 10px;
+            background-color: rgb(70, 70, 70, 0.5);
+            border-radius: 10px;
+        }
+    }
+    & i{
+        font-size: 20px;
+    }
+}
+#settings-content{
+    display: flex;
+    flex-direction: column;
+    color: white;
+    font-size: 30px;
+    padding: 20px;
+    gap: 15px;
+    overflow: auto
+}
+#close-button-settings-modal{
+    pointer-events: all;
+    background-color: transparent;
+    border: none;
+    color: var(--high-color-value);
+    font-size: 30px;
+    font-weight: 200;
+    z-index: 998;
+    top: 2rem;
+    right: 2rem;
+}
+#settings-tab::-webkit-scrollbar,#settings-content::-webkit-scrollbar {
+    background-color: transparent;
+    width: 15px;
+}
+#settings-tab::-webkit-scrollbar-track,#settings-content::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+#settings-tab::-webkit-scrollbar-thumb, #settings-content::-webkit-scrollbar-thumb {
+    border-radius: 20px;
+    border: 4px solid transparent;
+    background-color: transparent; 
+    background-clip: content-box;
+}
+
+#settings-tab:hover::-webkit-scrollbar-thumb, #settings-content:hover::-webkit-scrollbar-thumb  {
+    background-color: var(--scrollbar-background-color);
+}
