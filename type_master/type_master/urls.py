@@ -13,6 +13,8 @@ urlpatterns = [
 
     path('challenges', views.challenges, name="challenges"),
     
+    path('settings', views.settings, name="settings"),
+    
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
 
