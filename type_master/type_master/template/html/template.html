@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{% static 'css/template.css' %}">
     <link rel="stylesheet" href="{% static 'css/colors.css' %}">
     <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+    <link rel="stylesheet" href="{% static 'css/settings.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
@@ -16,17 +17,16 @@
     <link rel="icon" type="image/x-icon" href="{% static 'images/logo.svg' %}">
 </head>
 <body>
-    <div id="side-panel-container">
-
-    </div>
+    <div id="settings-modal-container"></div>
+    <div id="side-panel-container"></div>
     <div id="upper-tab">
         <div id="logo">
             <img src="{% static 'images/logo.svg' %}" alt="logo" style=" height:30px;">
             <span>PlayType</span>
-            <button id="theme-change" class="dark">
+            <!-- <button id="theme-change" class="dark">
                 <i class="fas fa-sun"></i>
-            </button>
-            <button>
+            </button> -->
+            <button id="settings-button">
                 <i class="fas fa-cog"></i>
             </button>
         </div>
@@ -46,9 +46,23 @@
         {% block content %}{% endblock %}
     </main>
     <script src="{% static 'js/lazychameleon.js' %}"></script>
+    <script src="{% static 'js/settings.js' %}"></script>
     <script>
+        let clickOutsideEnabled = false;
         const themesjson = "{% static 'json/themes.json' %}"
         const lazychameleon = new LazyChameleon('playtype', themesjson);
+
+        $.get("{% url 'settings'%}", function(data) {
+            $('#settings-modal-container').append(data);
+            settings_init();
+        });
+
+        $('#settings-button').click(function(){
+            $('#settings-modal-container').addClass('settings-modal-container-active')
+            setTimeout(function() {
+                clickOutsideEnabled = true;
+            }, 200);
+        });
 
         $('#theme-change').click(function() {
             if ($(this).hasClass('dark')) {
@@ -99,6 +113,12 @@
                     setTimeout(function(){
                         $('#side-panel').remove()
                     },500)   
+                }
+            }
+            if (clickOutsideEnabled && $('#settings-modal-container').hasClass('settings-modal-container-active')) {
+                if (!$(event.target).closest('#settings-modal').length) {
+                    $('#settings-modal-container').removeClass('settings-modal-container-active');
+                    clickOutsideEnabled = false; // Reset the flag
                 }
             }
         });

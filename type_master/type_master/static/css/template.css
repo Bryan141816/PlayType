@@ -23,8 +23,27 @@ html{
     overflow: hidden;
     z-index: 999;
 }
+#settings-modal-container{
+    display: none;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    position: absolute;
+    height: 100%;
+    top: 0;
+    right: 0;
+    overflow: hidden;
+    pointer-events:none;
+    z-index: 990;
+}
+
+.settings-modal-container-active{
+    pointer-events:all !important;
+    display: flex !important;
+    background-color: rgba(10, 10, 10, 0.6);
+}
 .side-panel-container-active{
-    backdrop-filter: blur(10px);
+    background-color: rgba(10, 10, 10, 0.6);
 }
 body {
     padding: 4rem;
@@ -49,6 +68,7 @@ main{
     width: 100%;
     height: 50px;
     align-self: center;
+    justify-content: center;
     padding-left: 10%;
     padding-right: 10%;
 }
@@ -62,12 +82,31 @@ main{
         color: var(--high-color-value);
     }
 }
+#settings-button{
+    background-color: transparent;
+    font-size: 20px;
+    height: fit-content;
+    border: none;
+    color: var(--medium-color-value);
+    & i{
+        margin-top: 35%;
+    }
+}
+#settings-button:hover{
+    color: var(--high-color-value);
+}
 #logo{
     display: flex;
+    justify-content: center;
     color: var(--medium-color-value);
     gap: 10px;
     align-items: center;
     font-size: 40px;
+    & span{
+        height: fit-content;
+        margin: 0;
+        padding: 0;
+    }
 }
 #profile{
     display: flex;

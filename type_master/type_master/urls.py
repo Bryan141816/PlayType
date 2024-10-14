@@ -13,7 +13,7 @@ urlpatterns = [
 
     path('challenges', views.challenges, name="challenges"),
     
-    path('test-page', views.testpage, name="test-page"),
+    path('settings', views.settings, name="settings"),
     
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),

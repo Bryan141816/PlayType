@@ -19,12 +19,12 @@
                 "value": "rgba(16, 16, 16, 0.26)"
             },
             {
-                "name": "--sidebar-background-color",
-                "value": "rgb(12, 12, 12, 0.5)"
-            },
-            {
                 "name": "--log-in-color-value",
                 "value": "#b9b9b9"
+            },
+            {
+                "name": "--gray-container-value",
+                "value": "rgba(70, 70, 70, 0.5)"
             }
         ]
     },
@@ -48,12 +48,12 @@
                 "value": "rgba(183, 183, 183, 0.26)"
             },
             {
-                "name": "--sidebar-background-color",
-                "value": "rgb(190, 190, 190, 0.5)"
-            },
-            {
                 "name": "--log-in-color-value",
                 "value": "#333333"
+            },
+            {
+                "name": "--gray-container-value",
+                "value": "rgba(183, 183, 183, 0.5)"
             }
         ]
     }

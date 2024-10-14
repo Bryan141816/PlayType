@@ -154,7 +154,7 @@ def ask_username(request, backend=None):
 def challenges(request):
     return render(request, 'html\\challenges-template.html')
 
-def testpage(request):
+def settings(request):
     return render(request, 'html\\settings.html')
 
 def ThreeDOBject(request):
