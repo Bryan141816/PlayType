@@ -17,15 +17,14 @@
     <link rel="icon" type="image/x-icon" href="{% static 'images/logo.svg' %}">
 </head>
 <body>
-    <div id="settings-modal-container"></div>
+    <div id="settings-modal-container">
+        {% include 'html/settings.html' %}
+    </div>
     <div id="side-panel-container"></div>
     <div id="upper-tab">
         <div id="logo">
             <img src="{% static 'images/logo.svg' %}" alt="logo" style=" height:30px;">
             <span>PlayType</span>
-            <!-- <button id="theme-change" class="dark">
-                <i class="fas fa-sun"></i>
-            </button> -->
             <button id="settings-button">
                 <i class="fas fa-cog"></i>
             </button>
@@ -48,80 +47,77 @@
     <script src="{% static 'js/lazychameleon.js' %}"></script>
     <script src="{% static 'js/settings.js' %}"></script>
     <script>
-        let clickOutsideEnabled = false;
-        const themesjson = "{% static 'json/themes.json' %}"
-        const lazychameleon = new LazyChameleon('playtype', themesjson);
-
-        $.get("{% url 'settings'%}", function(data) {
-            $('#settings-modal-container').append(data);
-            settings_init();
-        });
-
-        $('#settings-button').click(function(){
-            $('#settings-modal-container').addClass('settings-modal-container-active')
-            setTimeout(function() {
-                clickOutsideEnabled = true;
-            }, 200);
-        });
-
-        $('#theme-change').click(function() {
-            if ($(this).hasClass('dark')) {
-                $(this).removeClass('dark');
-                $(this).addClass('light');
-                lazychameleon.setTheme('light')
-            } else if ($(this).hasClass('light')) {
-                $(this).removeClass('light');
-                $(this).addClass('dark');
-                lazychameleon.setTheme('dark')
-            }
-        });
-
-        const user = {
-            isAuthenticated: "{{ user.is_authenticated|lower }}",
-            username: "{{ user.username|escapejs }}",
-
-            email: "{{ user.email|escapejs }}",
-        };
-        $('#profile-button').on('click', () => {
-            console.log(typeof(user.isAuthenticated))
-            if (user.isAuthenticated == 'true') {
-                $.get("{% url 'show-profile'%}", function(data) {
-                    $('#side-panel-container').append(data);
-                    $('#side-panel').addClass('active-side-panel')
-                    $('#side-panel-container').addClass('side-panel-container-active')
-                    $('#close-button').on('click',()=>{
+        $(document).ready(function(){
+            let clickOutsideEnabled = false;
+            const themesjson = "{% static 'json/themes.json' %}"
+            const lazychameleon = new LazyChameleon('playtype', themesjson);
+            settings_init()
+            $('#settings-button').click(function(){
+                $('#settings-modal-container').addClass('settings-modal-container-active')
+                setTimeout(function() {
+                    clickOutsideEnabled = true;
+                }, 200);
+            });
+    
+            $('#theme-change').click(function() {
+                if ($(this).hasClass('dark')) {
+                    $(this).removeClass('dark');
+                    $(this).addClass('light');
+                    lazychameleon.setTheme('light')
+                } else if ($(this).hasClass('light')) {
+                    $(this).removeClass('light');
+                    $(this).addClass('dark');
+                    lazychameleon.setTheme('dark')
+                }
+            });
+    
+            const user = {
+                isAuthenticated: "{{ user.is_authenticated|lower }}",
+                username: "{{ user.username|escapejs }}",
+    
+                email: "{{ user.email|escapejs }}",
+            };
+            $('#profile-button').on('click', () => {
+                console.log(typeof(user.isAuthenticated))
+                if (user.isAuthenticated == 'true') {
+                    $.get("{% url 'show-profile'%}", function(data) {
+                        $('#side-panel-container').append(data);
+                        $('#side-panel').addClass('active-side-panel')
+                        $('#side-panel-container').addClass('side-panel-container-active')
+                        $('#close-button').on('click',()=>{
+                            $("#side-panel-container").removeClass('side-panel-container-active')
+                            $('#side-panel').removeClass('active-side-panel')
+                            $('#side-panel').addClass('slide-out')
+                            setTimeout(function(){
+                                $('#side-panel').remove()
+                            },500)
+                            
+                        })
+                    });
+    
+                } else {
+                    window.location.href = "{% url 'login'%}"
+                }
+            });
+            $(document).on('click', function(event) {
+                if ($('#side-panel').hasClass('active-side-panel')) {
+                    if (!$('#side-panel').is(event.target) && $('#side-panel').has(event.target).length === 0) {
                         $("#side-panel-container").removeClass('side-panel-container-active')
                         $('#side-panel').removeClass('active-side-panel')
                         $('#side-panel').addClass('slide-out')
                         setTimeout(function(){
                             $('#side-panel').remove()
-                        },500)
-                        
-                    })
-                });
-
-            } else {
-                window.location.href = "{% url 'login'%}"
-            }
-        });
-        $(document).on('click', function(event) {
-            if ($('#side-panel').hasClass('active-side-panel')) {
-                if (!$('#side-panel').is(event.target) && $('#side-panel').has(event.target).length === 0) {
-                    $("#side-panel-container").removeClass('side-panel-container-active')
-                    $('#side-panel').removeClass('active-side-panel')
-                    $('#side-panel').addClass('slide-out')
-                    setTimeout(function(){
-                        $('#side-panel').remove()
-                    },500)   
+                        },500)   
+                    }
                 }
-            }
-            if (clickOutsideEnabled && $('#settings-modal-container').hasClass('settings-modal-container-active')) {
-                if (!$(event.target).closest('#settings-modal').length) {
-                    $('#settings-modal-container').removeClass('settings-modal-container-active');
-                    clickOutsideEnabled = false; // Reset the flag
+                if (clickOutsideEnabled && $('#settings-modal-container').hasClass('settings-modal-container-active')) {
+                    if (!$(event.target).closest('#settings-modal').length) {
+                        $('#settings-modal-container').removeClass('settings-modal-container-active');
+                        clickOutsideEnabled = false; // Reset the flag
+                    }
                 }
-            }
-        });
+            });
+        })
     </script>
 
 </body>

@@ -76,9 +76,8 @@ def get_words(request):
         short_words = [word for word, length in all_random_words if length <= 5]
         long_words = [word for word, length in all_random_words if length > 5]
 
-        # Calculate the number of short and long words to select based on the desired amount
-        short_count = min(92, amount)  # Ensure we don't select more than available
-        long_count = max(0, amount - short_count)  # Remainder goes to long words
+        short_count = min(92, amount)  
+        long_count = max(0, amount - short_count)  
 
         selected_words = random.choices(short_words, k=short_count) + random.choices(long_words, k=long_count)
 

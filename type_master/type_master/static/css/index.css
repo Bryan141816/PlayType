@@ -189,3 +189,23 @@
     width: 2px;
     background-color: #0057d6;
 }
+#edit-custom-sentence{
+    font-size: 25px;
+    color: var(--medium-color-value);
+    background-color: transparent;
+    border: none;
+    display: none;
+    gap: 10px;
+    align-items: center;
+
+    transition: color 0.1s ease-in;
+    & i{
+        font-size: 16px;
+    }
+}
+#edit-custom-sentence:hover{
+    color: var(--high-color-value);
+}
+.edit-custom-sentence-active{
+    display: flex !important;
+}

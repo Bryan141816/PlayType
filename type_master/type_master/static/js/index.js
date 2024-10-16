@@ -77,14 +77,19 @@ $(document).ready(function() {
             }
             switch($(event.target).text()){
                 case 'time':
+                    $('.edit-custom-sentence-active').removeClass('edit-custom-sentence-active')
                     typingTest.updateWordAmount(50)
                     typingTest.updateTestType('time')
                     timer.reset()
                     break;
                 case 'words':
+                    $('.edit-custom-sentence-active').removeClass('edit-custom-sentence-active')
                     typingTest.updateWordAmount(15)
                     typingTest.updateTestType('words')
                     timer.reset()
+                    break;
+                case 'custom':
+                    $('#edit-custom-sentence').addClass('edit-custom-sentence-active')
                     break;
             }
             setMode()

@@ -14,4 +14,15 @@ function settings_init(){
         }
     });
 
+    $('section.theme-selector-option').hover(
+        function() {
+            let selectedTheme = $(event.target).text().toLowerCase().trim();
+            lazychameleon.setTheme(selectedTheme);
+        },
+        function() {
+            let currentTheme = $('section.theme-selector-option.active-theme').text().toLowerCase().trim();
+            lazychameleon.setTheme(currentTheme);
+        }
+    )
+
 }

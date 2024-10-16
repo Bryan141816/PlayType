@@ -1,9 +1,9 @@
 #settings-modal{
     display: grid;
     grid-template-rows: auto 1fr;
-    grid-template-columns: 40% 60%;
+    grid-template-columns: 35% 65%;
     height: fit-content;
-    width: 30%;
+    width: 45%;
     border-radius: 2%;
     overflow: auto;
     background-color: var(--background-color);
