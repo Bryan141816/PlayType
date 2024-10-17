@@ -1,6 +1,7 @@
 $(document).ready(function() {
     let typingTest = null;
     let timer = null;
+    let prev_test_type = null;
     setMode();
 
     function setMode() {
@@ -25,6 +26,19 @@ $(document).ready(function() {
                 typingTest.updateTimer(timer)
             }
 
+            function resetTest() {
+                $('#counter').text('0').removeClass('hidden');
+            }
+        }
+        else if ($('.text-mode.option-active').text() == 'custom') {
+            console.log('custom')
+            timer = new CountupTimer();
+            if(!typingTest){
+                typingTest = new TypingTest('#text_input', '#paragraph', '#retry_button', timer, testDone, resetTest, 50, 'custom');
+            }
+            else{
+                typingTest.updateTimer(timer)
+            }
             function resetTest() {
                 $('#counter').text('0').removeClass('hidden');
             }
@@ -77,19 +91,41 @@ $(document).ready(function() {
             }
             switch($(event.target).text()){
                 case 'time':
+                    if(prev_test_type == 'custom'){
+                        $('#type-selector')
+                        .html(` <button class="text-button option-active">15</button>
+                                <button class="text-button">30</button>
+                                <button class="text-button">60</button>
+                                <button class="text-button">120</button>`)
+                    }
+                    prev_test_type = 'time';
                     $('.edit-custom-sentence-active').removeClass('edit-custom-sentence-active')
                     typingTest.updateWordAmount(50)
                     typingTest.updateTestType('time')
                     timer.reset()
                     break;
                 case 'words':
+                    if(prev_test_type == 'custom'){
+                        $('#type-selector')
+                        .html(` <button class="text-button option-active">15</button>
+                                <button class="text-button">30</button>
+                                <button class="text-button">60</button>
+                                <button class="text-button">120</button>`)
+                    }
+                    prev_test_type = 'words';
                     $('.edit-custom-sentence-active').removeClass('edit-custom-sentence-active')
                     typingTest.updateWordAmount(15)
                     typingTest.updateTestType('words')
                     timer.reset()
                     break;
                 case 'custom':
+                    $('#type-selector')
+                    .html(`<button id="edit-custom-sentence"><i class="fas fa-pen"></i>change</button>`)
+                    $('#edit-custom-sentence').on('click',edit_sentence);
+                    prev_test_type = 'custom';
                     $('#edit-custom-sentence').addClass('edit-custom-sentence-active')
+                    typingTest.updateTestType('custom')
+                    timer.reset()
                     break;
             }
             setMode()
@@ -151,4 +187,19 @@ $(document).ready(function() {
 
         $('#counter').addClass('hidden');
     }
+    function edit_sentence(){
+        $('#custom-sentence-modal-container').addClass('custom-sentence-modal-container-active');
+        setTimeout(function() {
+            clickOutsideEnabled = true;
+        }, 0);
+    }
+    $('#close-button-sentence-modal').on('click', ()=>{
+        $('#custom-sentence-modal-container').removeClass('custom-sentence-modal-container-active')
+        clickOutsideEnabled = false;
+    });
+    $('#enter-sentence').on('click',()=>{
+        typingTest.resetTest();
+        $('#custom-sentence-modal-container').removeClass('custom-sentence-modal-container-active')
+        clickOutsideEnabled = false;
+    })
 });

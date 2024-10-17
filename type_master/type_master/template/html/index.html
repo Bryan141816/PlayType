@@ -6,8 +6,9 @@
 {% endblock %}
 
 {% block content %}
-    <div id="counter" class="hidden"></div>
-    <button id="edit-custom-sentence"><i class="fas fa-pen"></i>change</button>
+    <div id="counter-container">
+        <div id="counter" class="hidden"></div>
+    </div>
     <div class="paragraph" id="paragraph">
         <div class="pointer-area-field">
             <div id="pointer" class="flash-animation"></div>
@@ -29,7 +30,7 @@
     </button>
 
     <nav id="option-selector">
-        <div class="text-button-container">
+        <div class="text-button-container" id="type-selector">
             <button class="text-button option-active">15</button>
             <button class="text-button">30</button>
             <button class="text-button">60</button>

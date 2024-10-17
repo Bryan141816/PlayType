@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{% static 'css/colors.css' %}">
     <link rel="stylesheet" href="{% static 'css/profile.css' %}">
     <link rel="stylesheet" href="{% static 'css/settings.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom-sentence.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
@@ -19,6 +20,9 @@
 <body>
     <div id="settings-modal-container">
         {% include 'html/settings.html' %}
+    </div>
+    <div id="custom-sentence-modal-container">
+        {% include 'html/custom-sentence.html' %}
     </div>
     <div id="side-panel-container"></div>
     <div id="upper-tab">
@@ -47,7 +51,6 @@
     <script src="{% static 'js/lazychameleon.js' %}"></script>
     <script src="{% static 'js/settings.js' %}"></script>
     <script>
-        $(document).ready(function(){
             let clickOutsideEnabled = false;
             const themesjson = "{% static 'json/themes.json' %}"
             const lazychameleon = new LazyChameleon('playtype', themesjson);
@@ -56,7 +59,7 @@
                 $('#settings-modal-container').addClass('settings-modal-container-active')
                 setTimeout(function() {
                     clickOutsideEnabled = true;
-                }, 200);
+                }, 0);
             });
     
             $('#theme-change').click(function() {
@@ -116,8 +119,13 @@
                         clickOutsideEnabled = false; // Reset the flag
                     }
                 }
+                if (clickOutsideEnabled && $('#custom-sentence-modal-container').hasClass('custom-sentence-modal-container-active')) {
+                    if (!$(event.target).closest('#sentence-modal').length) {
+                        $('#custom-sentence-modal-container').removeClass('custom-sentence-modal-container-active');
+                        clickOutsideEnabled = false; // Reset the flag
+                    }
+                }
             });
-        })
     </script>
 
 </body>

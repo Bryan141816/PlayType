@@ -92,6 +92,7 @@
 }
 
 #counter{
+    display: block;
     font-size: 50px;
     color: #0057d6;
 }
@@ -106,7 +107,12 @@
     border-radius: 20px;
 }
 .hidden{
-    opacity: 0;
+    display: none !important;
+}
+#counter-container{
+    display: flex;
+    height: 70px;
+    width: fit-content;
 }
 .wpm_container{
     display: flex;
@@ -190,22 +196,21 @@
     background-color: #0057d6;
 }
 #edit-custom-sentence{
-    font-size: 25px;
-    color: var(--medium-color-value);
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
     background-color: transparent;
     border: none;
-    display: none;
-    gap: 10px;
-    align-items: center;
-
+    color: var(--medium-color-value); 
+    font-size: 20px;
+    font-size: 1.2rem;
     transition: color 0.1s ease-in;
     & i{
-        font-size: 16px;
+        font-size: 14px;
+        pointer-events: none;
     }
 }
 #edit-custom-sentence:hover{
     color: var(--high-color-value);
-}
-.edit-custom-sentence-active{
-    display: flex !important;
 }

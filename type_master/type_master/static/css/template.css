@@ -23,7 +23,7 @@ html{
     overflow: hidden;
     z-index: 999;
 }
-#settings-modal-container{
+#settings-modal-container, #custom-sentence-modal-container{
     display: none;
     justify-content: center;
     align-items: center;
@@ -37,7 +37,7 @@ html{
     z-index: 990;
 }
 
-.settings-modal-container-active{
+.settings-modal-container-active, .custom-sentence-modal-container-active{
     pointer-events:all !important;
     display: flex !important;
     background-color: rgba(10, 10, 10, 0.6);

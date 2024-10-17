@@ -1,6 +1,8 @@
 class TypingTest {
     constructor(textInput, paragraphElement,retryButton, timer, onDone, resetTestBinding, amount, testType) {
-        this.getText(null, amount)
+        if(testType != 'custom'){
+            this.getText(null, amount)
+        }
         this.amount = amount
         this.textInput = $(textInput);
         this.paragraphElement = $(paragraphElement);
@@ -18,7 +20,6 @@ class TypingTest {
         this.testType = testType;
         this.init();
     }
-
     init() {
         this.textInput.on('input', this.handleInput.bind(this));
         this.textInput.on('keydown', this.handleKeydown.bind(this));
@@ -44,7 +45,7 @@ class TypingTest {
             $('.word_container.active .letter:last').remove();
         }
         if (!this.started) {
-            if(this.testType == 'words'){
+            if(this.testType == 'words' || this.testType == 'custom'){
                 $('#counter').text(`0/${this.amount}`);
             }
             $('#counter').removeClass('hidden');
@@ -135,7 +136,7 @@ class TypingTest {
 
         this.previousInputLength = 0;
         this.currentIndex++;
-        if(this.testType == 'words'){
+        if(this.testType == 'words' || this.testType == 'custom'){
             $('#counter').text(`${this.currentIndex}/${this.amount}`)
         }
         if(this.currentIndex > $('.word_container').length - 1 && $('.word_container').length > 0){
@@ -227,12 +228,51 @@ class TypingTest {
             }
         });
     }
+    useCustomSentence(param=null){
+        let sentence = $('#sentence-text').val().trim();
+        const words = sentence.split(" ");
+        const letters = words.map(word => word.split(""));
+
+
+        const pointer = $(`<div class="pointer-area-field">
+            <div id="pointer" class="flash-animation"></div>
+        </div>`)
+        const paragraph_container = $(`<div id="paragraph-container"></div>`)
+
+        this.paragraphElement.html("")
+        this.paragraphElement.append(pointer)
+
+
+        letters.forEach((word)=>{
+            const word_container = $(`<div class="word_container"></div>`);
+            word.forEach((letter)=>{
+                const letter_container = $(`<span class="letter">${letter}</span>`)
+                word_container.append(letter_container)
+            })
+            paragraph_container.append(word_container);
+        })
+        this.paragraphElement.append(paragraph_container)
+        $('.word_container').first().addClass('active');
+        this.activeWordsType = $('.word_container.active');
+        this.activeText = this.activeWordsType.find('.letter').map(function() {
+            return $(this).text();
+        }).get();
+        if(param){
+            param();
+        }
+    }
 
     resetTest() {
-        this.getText(this.resetValues.bind(this), this.amount);
+        if(this.testType != 'custom'){
+            this.getText(this.resetValues.bind(this), this.amount);
+        }
+        else{
+            this.useCustomSentence(this.resetValues.bind(this))
+        }
     }
 
     resetValues() {
+        console.log('reset')
         this.currentIndex = 0;
         this.spaceCounter = 0;
         this.started = false;

@@ -1,6 +1,7 @@
 function settings_init(){
     $('#close-button-settings-modal').click(function(){
         $('#settings-modal-container').removeClass('settings-modal-container-active')
+        clickOutsideEnabled = false;
     });
     let currentTheme = lazychameleon.getStoredTheme(); 
     $(`.${currentTheme}`).first().addClass('active-theme')
