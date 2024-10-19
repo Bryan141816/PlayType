@@ -8,7 +8,7 @@ import random
 
 
 def login_view(request):
-    return render(request, 'html\login.html')
+    return render(request, 'html/login.html')
 def logout_view(request):
     logout(request)
     return redirect('index')
@@ -147,21 +147,21 @@ def ask_username(request, backend=None):
             return redirect('social:complete', backend=backend)  # Correct social auth redirection
 
     # Render the form if GET request or no username provided
-    return render(request, 'html\\ask-username.html')
+    return render(request, 'html/ask-username.html')
 
 
 def challenges(request):
-    return render(request, 'html\\challenges-template.html')
+    return render(request, 'html/challenges-template.html')
 
 def settings(request):
-    return render(request, 'html\\settings.html')
+    return render(request, 'html/settings.html')
 
 def ThreeDOBject(request):
-    return render(request, 'html\\test3d.html')
+    return render(request, 'html/test3d.html')
 def data_privary(request):
-    return render(request, 'html\\data-privacy.html')
+    return render(request, 'html/data-privacy.html')
 def deletion(request):
-    return render(request, 'html\\user-deletetion.html')
+    return render(request, 'html/user-deletetion.html')
 @register.filter
 def letter_token(word):
     word = word.lower()

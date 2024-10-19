@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Word
+from .models import Word, UserSettings
 
 @admin.register(Word)
 class WordAdmin(admin.ModelAdmin):
@@ -9,4 +9,7 @@ class WordAdmin(admin.ModelAdmin):
     # Optional: Add filters and search functionality
     list_filter = ('lang',)
     search_fields = ('word', 'lang')
+@admin.register(UserSettings)
+class UserSettingsAdmin(admin.ModelAdmin):
+    list_display = ('social_auth','theme')
     

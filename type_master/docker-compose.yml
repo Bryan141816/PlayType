@@ -1,0 +1,19 @@
+version: '3'
+services:
+  django:
+    image: playtype  # Use the existing image named 'playtype'
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - DEBUG=1
+    develop:
+      watch:
+        - action: sync
+          path: ./
+          target: /usr/src/app
+          ignore:
+            - __pycache__/
+        - action: rebuild
+          path: requirements.txt

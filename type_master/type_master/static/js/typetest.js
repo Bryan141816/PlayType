@@ -98,6 +98,7 @@ class TypingTest {
                 } else {
                     letterElement.addClass('incorrect');
                     this.incorrectCounter++;
+                    console.log('incor')
                 }
             } else if (index + 1 > this.previousInputLength) {
                 let insertOverflowText = $(`<span class="letter incorrect_extra">${currentInput[currentInput.length - 1]}</span>`);

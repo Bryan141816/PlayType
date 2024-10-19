@@ -1,7 +1,7 @@
 #settings-modal{
     display: grid;
     grid-template-rows: auto 1fr;
-    grid-template-columns: 35% 65%;
+    grid-template-columns: auto 1fr;
     height: fit-content;
     width: 45%;
     border-radius: 2%;
@@ -29,6 +29,7 @@ h1{
 #settings-tab{
     display: flex;
     flex-direction: column;
+    width: fit-content;
     color: white;
     font-size: 30px;
     padding: 20px;
@@ -44,8 +45,10 @@ h1{
             padding: 5px;
             padding-left: 15px;
             gap: 10px;
-            background-color: var(--gray-container-value);
             border-radius: 10px;
+        }
+        & .setting-tab-active{
+            background-color: var(--gray-container-value);
         }
     }
     & i{
@@ -55,6 +58,7 @@ h1{
 #settings-content{
     display: flex;
     flex-direction: column;
+    width: auto;
     color: var(--high-color-value);
     font-size: 30px;
     padding: 20px;
@@ -63,6 +67,13 @@ h1{
     & span{
         font-size: 30px;
     }
+}
+.settings-content-container{
+    display: flex;
+    height: 100%;
+    width: 100%;
+    gap: 15px;
+    flex-direction: column;
 }
 #close-button-settings-modal{
     pointer-events: all;
