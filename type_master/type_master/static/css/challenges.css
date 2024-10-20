@@ -1,16 +1,104 @@
-#challenge-box-container {
-    margin: 2rem;
+#difficulty-container {
     display: flex;
-    gap: 10px;
-    height: 100%; /* Set a specific height for the container */
     width: 100%;
-    overflow: auto;
-    flex-direction: column;
+    height: 100%;
+    gap: 30px;
+    justify-content: center;
+}
+
+.option-card {
+    display: flex;
+    display: flex;
+    flex-direction: column; 
+    height: 100%;
+    width: 30%;
+    border-radius: 20px;
+    padding: 10px;
+    transform: scale(1);
+    transition: transform 0.2s ease;
+    background-color: var(--opaque-background-color);
     position: relative;
 }
-.challenge-box {
-    height: 15%; /* Fixed height */
-    background-color: blue;
-    flex-shrink: 0; /* Prevent shrinking */
-    flex-basis: auto; /* Respects height */
+
+/* .option-card:nth-child(1){
+    background-color: #65BB58;
+}
+.option-card:nth-child(2){
+    background-color: #F8A01A;
+}
+.option-card:nth-child(3){
+    background-color: #E74D4D;
+} */
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    border-radius: 15px;
+    overflow-y: hidden;
+    & h3{
+        color: var(--high-color-value);
+        font-size: 60px;
+        margin: 10px;
+    }
+}
+#easy-text{
+    color: #65BB58;
+}
+#medium-text{
+    color: #F8A01A;
+}
+#hard-text{
+    color: #E74D4D;
+}
+
+.description-card {
+    margin-top: auto;
+    height: 30%;
+    width: 100%;
+    background-color: var(--background-color);
+    transition: height 0.2s ease;
+    display: flex;
+    padding: 0;
+    border-radius: 15px;
+    padding: 10px;
+}
+
+.option-card:hover {
+    z-index: 100;
+    transform: scale(1.1);
+}
+.short-description{
+    display: inline;
+    color: var(--high-color-value);
+    font-size: 30px;
+    text-align: justify;
+    margin: 0;
+}
+.full-description{
+    display: none;
+    color: var(--high-color-value);
+    font-size: 30px;
+    text-align: justify;
+    margin: 0;
+}
+
+
+.option-card:hover .description-card{
+    height: 55%; 
+}
+.option-card:hover .short-description{
+    display: none; 
+}
+.option-card:hover .full-description{
+    display: inline; 
+}
+.stripes {
+    height: 250px;
+    width: 375px;
+    -webkit-background-size: 50px 50px;
+    -moz-background-size: 50px 50px;
+    background-size: 50px 50px;
 }

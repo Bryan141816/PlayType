@@ -5,29 +5,31 @@
     <link rel="stylesheet" href="{% static 'css/index.css' %}">
 {% endblock %}
 
-{% block content %}
-    <div id="counter-container">
-        <div id="counter" class="hidden"></div>
-    </div>
-    <div class="paragraph" id="paragraph">
-        <div class="pointer-area-field">
-            <div id="pointer" class="flash-animation"></div>
+{% block content %} 
+    <div id="typingtest-container">
+        <div id="counter-container">
+            <div id="counter" class="hidden"></div>
         </div>
-        <div id="paragraph-container">
-            {% for word in random_word %}
-            <div class="word_container">
-                {% for letter in word|letter_token %}
-                <span class="letter">{{letter}}</span>
+        <div class="paragraph" id="paragraph">
+            <div class="pointer-area-field">
+                <div id="pointer" class="flash-animation"></div>
+            </div>
+            <div id="paragraph-container">
+                {% for word in random_word %}
+                <div class="word_container">
+                    {% for letter in word|letter_token %}
+                    <span class="letter">{{letter}}</span>
+                    {% endfor %}
+                </div>
                 {% endfor %}
             </div>
-            {% endfor %}
         </div>
+        <input type="text" id="text_input">
+        <button id="retry_button">
+            <i class="fas fa-redo"></i>
+        </button>
     </div>
     
-    <input type="text" id="text_input">
-    <button id="retry_button">
-        <i class="fas fa-redo"></i>
-    </button>
 
     <nav id="option-selector">
         <div class="text-button-container" id="type-selector">

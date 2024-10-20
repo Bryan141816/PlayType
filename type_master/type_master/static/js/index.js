@@ -182,7 +182,7 @@ $(document).ready(function() {
         blockers.each((index, blocker) => {
             setTimeout(() => {
                 $(blocker).addClass('blocker-hide');
-            }, index * 100);
+            }, ((index+1) * 100));
         });
 
         $('#counter').addClass('hidden');

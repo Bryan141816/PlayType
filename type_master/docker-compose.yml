@@ -1,7 +1,8 @@
 version: '3'
 services:
   django:
-    image: playtype  # Use the existing image named 'playtype'
+    image: playtype
+    container_name: playtype_container
     ports:
       - "8000:8000"
     volumes:

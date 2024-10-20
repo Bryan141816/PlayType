@@ -38,54 +38,59 @@ class TypingTest {
         }).get();
     }
 
-    handleInput() {
-        const currentInput = this.textInput.val().split('');
-        this.updateLetterClasses(currentInput);
-        if((this.previousInputLength>currentInput.length)&&(currentInput.length+1>this.activeText.length)&&this.previousInputLength>0){
-            $('.word_container.active .letter:last').remove();
-        }
-        if (!this.started) {
-            if(this.testType == 'words' || this.testType == 'custom'){
-                $('#counter').text(`0/${this.amount}`);
+    handleInput() {     
+        let activeContainer = document.querySelector('.active');
+        if(activeContainer){
+            const currentInput = this.textInput.val().split('');
+            this.updateLetterClasses(currentInput);
+            if((this.previousInputLength>currentInput.length)&&(currentInput.length+1>this.activeText.length)&&this.previousInputLength>0){
+                $('.word_container.active .letter:last').remove();
             }
-            $('#counter').removeClass('hidden');
-            this.timer.start();
-        }
-        this.started = true;
-        $('#pointer').removeClass('flash-animation');
-        this.calculatePointerPosition(currentInput);
-        this.previousInputLength = currentInput.length;
+            if (!this.started) {
+                if(this.testType == 'words' || this.testType == 'custom'){
+                    $('#counter').text(`0/${this.amount}`);
+                }
+                $('#counter').removeClass('hidden');
+                this.timer.start();
+            }
+            this.started = true;
+            $('#pointer').removeClass('flash-animation');
+            this.calculatePointerPosition(currentInput);
+            this.previousInputLength = currentInput.length;
+        }     
     }
     calculatePointerPosition(currentInput){
 
         let activeContainer = document.querySelector('.active');
-        let x = 0;
-        let y = 0;
-        if(currentInput.length!=0 && currentInput.length != activeContainer.children.length){
-            let activeLetter = activeContainer.children[currentInput.length]
-            const relativePosition =this.getRelativePosition(activeContainer,activeLetter);
-            x = relativePosition.childrenPos.x - relativePosition.containerPos.x;
-            y = relativePosition.childrenPos.y - relativePosition.containerPos.y;
-        }
-        else if(currentInput.length == 0 || currentInput.length == 1){
-            let activeLetter = activeContainer.children[0]
-            const relativePosition =this.getRelativePosition(activeContainer,activeLetter);
-            x = relativePosition.childrenPos.x - relativePosition.containerPos.x;
-            y = relativePosition.childrenPos.y - relativePosition.containerPos.y;
-            if(currentInput.length == 1){
-                x = x + relativePosition.childrenPos.width;
+        if(activeContainer != null){
+            let x = 0;
+            let y = 0;
+            if(currentInput.length!=0 && currentInput.length != activeContainer.children.length){
+                let activeLetter = activeContainer.children[currentInput.length]
+                const relativePosition =this.getRelativePosition(activeContainer,activeLetter);
+                x = relativePosition.childrenPos.x - relativePosition.containerPos.x;
+                y = relativePosition.childrenPos.y - relativePosition.containerPos.y;
             }
+            else if(currentInput.length == 0 || currentInput.length == 1){
+                let activeLetter = activeContainer.children[0]
+                const relativePosition =this.getRelativePosition(activeContainer,activeLetter);
+                x = relativePosition.childrenPos.x - relativePosition.containerPos.x;
+                y = relativePosition.childrenPos.y - relativePosition.containerPos.y;
+                if(currentInput.length == 1){
+                    x = x + relativePosition.childrenPos.width;
+                }
+            }
+            else{
+                let activeLetter = activeContainer.children[currentInput.length-1]
+                const relativePosition =this.getRelativePosition(activeContainer,activeLetter);
+                x = relativePosition.childrenPos.x - relativePosition.containerPos.x;
+                y = relativePosition.childrenPos.y - relativePosition.containerPos.y;
+                let xRelativeToParent = parseFloat(relativePosition.childrenPos.x-relativePosition.elementPos.x);
+                x = x + (xRelativeToParent/currentInput.length-1)
+                
+            }
+            this.movePointerTo(x,y);
         }
-        else{
-            let activeLetter = activeContainer.children[currentInput.length-1]
-            const relativePosition =this.getRelativePosition(activeContainer,activeLetter);
-            x = relativePosition.childrenPos.x - relativePosition.containerPos.x;
-            y = relativePosition.childrenPos.y - relativePosition.containerPos.y;
-            let xRelativeToParent = parseFloat(relativePosition.childrenPos.x-relativePosition.elementPos.x);
-            x = x + (xRelativeToParent/currentInput.length-1)
-            
-        }
-        this.movePointerTo(x,y);
     }
 
     updateLetterClasses(currentInput) {
@@ -141,6 +146,7 @@ class TypingTest {
             $('#counter').text(`${this.currentIndex}/${this.amount}`)
         }
         if(this.currentIndex > $('.word_container').length - 1 && $('.word_container').length > 0){
+            this.testStopped = false;
             this.timer.stop()
             this.testDone()
         }
@@ -195,16 +201,18 @@ class TypingTest {
     }
 
     getRelativePosition(activeELement, childrenElement = null) {
-        const element = activeELement;
-        const container = document.querySelector('.paragraph');
-        const elementRect = element.getBoundingClientRect();
-        const containerRect = container.getBoundingClientRect();
-        if(childrenElement!=null){
-            const childrenRect = childrenElement.getBoundingClientRect();
-            return {elementPos: elementRect,childrenPos: childrenRect ,containerPos: containerRect}
-        }
-        else{
-            return {elementPos: elementRect, containerPos: containerRect}
+        if(activeELement != null){
+            const element = activeELement;
+            const container = document.querySelector('.paragraph');
+            const elementRect = element.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            if(childrenElement!=null){
+                const childrenRect = childrenElement.getBoundingClientRect();
+                return {elementPos: elementRect,childrenPos: childrenRect ,containerPos: containerRect}
+            }
+            else{
+                return {elementPos: elementRect, containerPos: containerRect}
+            }
         }
     }
     requestResultData(){

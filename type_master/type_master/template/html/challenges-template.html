@@ -1,24 +1,61 @@
 {% extends 'html/template.html' %}
 {% load static %}
 {% block head %}
-    <title>Challenges</title>
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
     <link rel="stylesheet" href="{% static 'css/challenges.css' %}">
 {% endblock %}
 
 {% block content %}
-<div id="challenge-box-container">
-    <div class="challenge-box">tes1</div>
-    <div class="challenge-box">tes2</div>
-    <div class="challenge-box">tes3</div>
-    <div class="challenge-box">tes4</div>
-    <div class="challenge-box">tes5</div>
-    <div class="challenge-box">tes6</div>
-    <div class="challenge-box">tes7</div>
-    <div class="challenge-box">tes8</div>
-    <div class="challenge-box">tes9</div>
-    <div class="challenge-box">tes10</div>
-    <div class="challenge-box">tes11</div>
-    <div class="challenge-box">tes12</div>
-</div>
+    <div id="typingtest-container">
+        <div id="difficulty-container">
+            <div class="option-card" id="card-1">
+                <div class="card-content">
+                    <h3 id="easy-text">Easy</h3>
+                    <div class="description-card">
+                        <p class="short-description">The Easy level consists of basic type patterns and familiar words...</p>
+                        <p class="full-description">The Easy level consists of basic type patterns and familiar words, allowing beginners to practice typing without stress while developing accuracy and speed.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="option-card" id="card-2">
+                <div class="card-content">
+                    <h3 id="medium-text">Medium</h3>
+                    <div class="description-card">
+                        <p class="short-description">The Medium level offers a mix of common and slightly complex words...</p>
+                        <p class="full-description">The Medium level offers a mix of common and slightly complex words, encouraging typists to increase their speed while maintaining accuracy.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="option-card" id="card-3">
+                <div class="card-content">
+                    <h3 id="hard-text">Hard</h3>
+                    <div class="description-card">
+                        <p class="short-description">The Hard level challenges advanced typists with long, intricate ...</p>
+                        <p class="full-description">The Hard level challenges advanced typists with long, intricate sentences and varied vocabulary, emphasizing both speed and precision.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <nav id="option-selector">
+        <div class="text-button-container" id="type-selector">
+            <button class="text-button option-active">15</button>
+            <button class="text-button">30</button>
+            <button class="text-button">60</button>
+            <button class="text-button">120</button>
+        </div>
+        <div class="option-separator"></div>
+        <div class="text-button-container">
+            <button class="text-mode option-active"><i class="fas fa-stopwatch"></i>time</button>
+            <button class="text-mode"><i class="fas fa-bold"></i>words</button>
+            <button class="text-mode"><i class="fas fa-trophy"></i>challenge</button>
+            <button class="text-mode"><i class="fas fa-gamepad"></i>games</button>
+            <button class="text-mode"><i class="fas fa-pen"></i>custom</button>
+        </div>
+    </nav>
+    <script src="{% static 'js/timer.js' %}"></script>
+    <script src="{% static 'js/typetest.js' %}"></script>
+    <script src="{% static 'js/index.js' %}"></script>
 {% endblock %}
