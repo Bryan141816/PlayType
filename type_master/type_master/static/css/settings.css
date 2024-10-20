@@ -35,10 +35,9 @@ h1{
     padding: 20px;
     overflow: auto;
     gap: 15px;
-    & a{
-        color: var(--high-color-value);
-        text-decoration: none;
         & div{
+            color: var(--high-color-value);
+            text-decoration: none;
             display: flex;
             align-items: center;
             width: 100%;
@@ -50,7 +49,6 @@ h1{
         & .setting-tab-active{
             background-color: var(--gray-container-value);
         }
-    }
     & i{
         font-size: 20px;
     }
@@ -69,11 +67,14 @@ h1{
     }
 }
 .settings-content-container{
-    display: flex;
+    display: none;
     height: 100%;
     width: 100%;
     gap: 15px;
     flex-direction: column;
+}
+.settings-content-container.active{
+    display: flex !important;
 }
 #close-button-settings-modal{
     pointer-events: all;

@@ -25,5 +25,19 @@ function settings_init(){
             lazychameleon.setTheme(currentTheme);
         }
     )
+    $('.settings-tab-link').on('click',(event)=>{
+        event.preventDefault()
+        if(!$(event.target).hasClass('setting-tab-active')){
+            $('.settings-tab-link.setting-tab-active').removeClass('setting-tab-active');
+            $(event.target).addClass('setting-tab-active')
+            $('.settings-content-container.active').removeClass('active')
+            if($(event.target).attr('id')==="general-option"){
+                $('#general-container').addClass('active')
+            }
+            else if($(event.target).attr('id')==="apperance-option"){
+                $('#apperance-container').addClass('active')
+            }
+        }
+    })
 
 }

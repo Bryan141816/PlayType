@@ -7,11 +7,43 @@
         </button>
     </header>
     <div id="settings-tab">
-        <a href="#"><div class="setting-tab-active"> <i class="fas fa-cog"></i>General</div></a>
-        <a href="#"><div> <i class="fas fa-keyboard"></i>Apperance</div></a>
+        <div class="setting-tab-active settings-tab-link" id="general-option"> <i class="fas fa-cog" style="pointer-events: none;"></i>General</div>
+        <div class="settings-tab-link" id="apperance-option"> <i class="fas fa-keyboard" style="pointer-events: none;"></i>Apperance</div>
     </div>
     <div id="settings-content">
-        <div class="settings-content-container">
+        <div class="settings-content-container active" id="general-container">
+            <span>Time Zone</span>
+            <select id="timezone" name="timezone">
+                <option value="UTC-12:00">UTC-12:00</option>
+                <option value="UTC-11:00">UTC-11:00</option>
+                <option value="UTC-10:00">UTC-10:00</option>
+                <option value="UTC-09:00">UTC-09:00</option>
+                <option value="UTC-08:00">UTC-08:00</option>
+                <option value="UTC-07:00">UTC-07:00</option>
+                <option value="UTC-06:00">UTC-06:00</option>
+                <option value="UTC-05:00">UTC-05:00</option>
+                <option value="UTC-04:00">UTC-04:00</option>
+                <option value="UTC-03:00">UTC-03:00</option>
+                <option value="UTC-02:00">UTC-02:00</option>
+                <option value="UTC-01:00">UTC-01:00</option>
+                <option value="UTC+00:00">UTC+00:00</option>
+                <option value="UTC+01:00">UTC+01:00</option>
+                <option value="UTC+02:00">UTC+02:00</option>
+                <option value="UTC+03:00">UTC+03:00</option>
+                <option value="UTC+04:00">UTC+04:00</option>
+                <option value="UTC+05:00">UTC+05:00</option>
+                <option value="UTC+06:00">UTC+06:00</option>
+                <option value="UTC+07:00">UTC+07:00</option>
+                <option value="UTC+08:00">UTC+08:00</option>
+                <option value="UTC+09:00">UTC+09:00</option>
+                <option value="UTC+10:00">UTC+10:00</option>
+                <option value="UTC+11:00">UTC+11:00</option>
+                <option value="UTC+12:00">UTC+12:00</option>
+                <option value="UTC+13:00">UTC+13:00</option>
+                <option value="UTC+14:00">UTC+14:00</option>
+            </select>
+        </div>
+        <div class="settings-content-container" id="apperance-container">
             <span>Theme</span>
             <div class="settings-option-container">
                 <section class="dark theme-selector-option">
