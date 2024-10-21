@@ -30,12 +30,12 @@ function settings_init(){
         if(!$(event.target).hasClass('setting-tab-active')){
             $('.settings-tab-link.setting-tab-active').removeClass('setting-tab-active');
             $(event.target).addClass('setting-tab-active')
-            $('.settings-content-container.active').removeClass('active')
+            $('.settings-content-container.active-settings-content').removeClass('active-settings-content')
             if($(event.target).attr('id')==="general-option"){
-                $('#general-container').addClass('active')
+                $('#general-container').addClass('active-settings-content')
             }
             else if($(event.target).attr('id')==="apperance-option"){
-                $('#apperance-container').addClass('active')
+                $('#apperance-container').addClass('active-settings-content')
             }
         }
     })

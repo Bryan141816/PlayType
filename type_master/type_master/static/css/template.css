@@ -76,10 +76,16 @@ main{
 #profile-button{
     background-color: transparent;
     font-size: 30px;
+    height: 50px;
+    width: 50px;
     margin-left: auto;
     border-radius: 100%;
     border: none;
     & i{
+        color: var(--medium-color-value);
+        transition: color 0.1s ease-in;
+    }
+    & :hover{
         color: var(--high-color-value);
     }
 }
@@ -89,11 +95,12 @@ main{
     height: fit-content;
     border: none;
     color: var(--medium-color-value);
+    transition: color 0.1s ease-in;
     & i{
         margin-top: 35%;
     }
 }
-#settings-button:hover{
+#settings-button:hover, #settings-button:focus{
     color: var(--high-color-value);
 }
 #logo{

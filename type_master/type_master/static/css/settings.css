@@ -29,7 +29,7 @@ h1{
 #settings-tab{
     display: flex;
     flex-direction: column;
-    width: fit-content;
+    width: max-content;
     color: white;
     font-size: 30px;
     padding: 20px;
@@ -43,6 +43,7 @@ h1{
             width: 100%;
             padding: 5px;
             padding-left: 15px;
+            padding-right: 15px;
             gap: 10px;
             border-radius: 10px;
         }
@@ -73,7 +74,7 @@ h1{
     gap: 15px;
     flex-direction: column;
 }
-.settings-content-container.active{
+.settings-content-container.active-settings-content{
     display: flex !important;
 }
 #close-button-settings-modal{

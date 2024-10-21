@@ -1,4 +1,4 @@
-#difficulty-container {
+#easy-challenge-container {
     display: flex;
     width: 100%;
     height: 100%;
@@ -13,38 +13,54 @@
     height: 100%;
     width: 30%;
     border-radius: 20px;
-    padding: 10px;
+    padding: 20px;
     transform: scale(1);
     transition: transform 0.2s ease;
     background-color: var(--opaque-background-color);
     position: relative;
 }
 
-/* .option-card:nth-child(1){
-    background-color: #65BB58;
-}
-.option-card:nth-child(2){
-    background-color: #F8A01A;
-}
-.option-card:nth-child(3){
-    background-color: #E74D4D;
-} */
-
 .card-content {
     display: flex;
     flex-direction: column;
-    align-items: center;
     height: 100%;
     width: 100%;
     border-radius: 15px;
     overflow-y: hidden;
     & h3{
         color: var(--high-color-value);
+        display: flex;
+        justify-content: center;
+        align-items: center;
         font-size: 60px;
         margin: 10px;
+        height: 70px;
+        width: 70px;
+        border-radius: 100%;
+        text-align: center;
+    }
+    .easy-text{
+        background-size: 5px 5px;
+        background-image: -webkit-linear-gradient(45deg, #65BB58 25%, transparent 25%, transparent 50%, #65BB58 50%, #65BB58 75%, transparent 75%, transparent);
+        border: 1px solid #65BB58;
+        /* background-image: -moz-linear-gradient(-45deg, #65BB58 25%, transparent 25%, transparent 50%, #65BB58 50%, #65BB58 75%, transparent 75%, transparent);
+        background-image: -ms-linear-gradient(-45deg, #65BB58 25%, transparent 25%, transparent 50%, #65BB58 50%, #65BB58 75%, transparent 75%, transparent);
+        background-image: -o-linear-gradient(-45deg, #65BB58 25%, transparent 25%, transparent 50%, #65BB58 50%, #65BB58 75%, transparent 75%, transparent);
+        background-image: linear-gradient(-45deg, #65BB58 25%, transparent 25%, transparent 50%, #65BB58 50%, #65BB58 75%, transparent 75%, transparent); */
     }
 }
-#easy-text{
+.stars{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 2%;
+    & i{
+        font-size: clamp(16px, 3vw, 50px);
+        color: var(--gray-container-value);
+    }
+}
+/* .easy-text{
     color: #65BB58;
 }
 #medium-text{
@@ -52,7 +68,7 @@
 }
 #hard-text{
     color: #E74D4D;
-}
+} */
 
 .description-card {
     margin-top: auto;
@@ -70,35 +86,10 @@
     z-index: 100;
     transform: scale(1.1);
 }
-.short-description{
+.description-sentence{
     display: inline;
     color: var(--high-color-value);
-    font-size: 30px;
+    font-size: clamp(16px, 2vw, 30px);
     text-align: justify;
     margin: 0;
-}
-.full-description{
-    display: none;
-    color: var(--high-color-value);
-    font-size: 30px;
-    text-align: justify;
-    margin: 0;
-}
-
-
-.option-card:hover .description-card{
-    height: 55%; 
-}
-.option-card:hover .short-description{
-    display: none; 
-}
-.option-card:hover .full-description{
-    display: inline; 
-}
-.stripes {
-    height: 250px;
-    width: 375px;
-    -webkit-background-size: 50px 50px;
-    -moz-background-size: 50px 50px;
-    background-size: 50px 50px;
 }
