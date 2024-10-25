@@ -21,14 +21,26 @@ class TypingTest {
         this.init();
     }
     init() {
+        this.test_finished = false;
         this.textInput.on('input', this.handleInput.bind(this));
         this.textInput.on('keydown', this.handleKeydown.bind(this));
         $(document).keypress(this.handleKeyPress.bind(this));
         this.paragraphElement.click(() => this.textInput.focus());
-        this.textInput.on('focus', () => this.paragraphElement.removeClass('text_input_unfocused'));
-        this.textInput.on('blur', () => this.paragraphElement.addClass('text_input_unfocused'));
+        this.textInput.on('focus', () => this.textInputFocus('focus'));
+        this.textInput.on('blur', () => this.textInputFocus('blue'));
         this.retryButton.click(this.resetTest.bind(this));
     }
+    textInputFocus(type){
+        if(!this.test_finished){
+            if(type == 'focus'){
+                this.paragraphElement.removeClass('text_input_unfocused')
+            }
+            else{
+                this.paragraphElement.addClass('text_input_unfocused')
+            }
+        }
+    }
+
 
     setupInitialWord() {
         $('.word_container').first().addClass('active');
@@ -47,10 +59,18 @@ class TypingTest {
                 $('.word_container.active .letter:last').remove();
             }
             if (!this.started) {
-                if(this.testType == 'words' || this.testType == 'custom'){
+                if(this.testType == 'time'){
+                    $('#counter').text(this.timer.formatMinutesAndSeconds(this.timer.set_time));
+                }
+                else if(this.testType == 'words' || this.testType == 'custom'){
                     $('#counter').text(`0/${this.amount}`);
                 }
                 $('#counter').removeClass('hidden');
+                if(this.testType == 'challenge'){
+                    $('#counter').text(`0/${this.amount}`);
+                    $('#challenge-counter').removeClass('hidden');
+                    $('#challenge-counter').text(this.timer.formatMinutesAndSeconds(this.timer.set_time));
+                }
                 this.timer.start();
             }
             this.started = true;
@@ -103,7 +123,6 @@ class TypingTest {
                 } else {
                     letterElement.addClass('incorrect');
                     this.incorrectCounter++;
-                    console.log('incor')
                 }
             } else if (index + 1 > this.previousInputLength) {
                 let insertOverflowText = $(`<span class="letter incorrect_extra">${currentInput[currentInput.length - 1]}</span>`);
@@ -113,7 +132,12 @@ class TypingTest {
         });
         if((this.currentIndex == $('.word_container').length - 1) && (this.activeText.length == this.activeWordsType.find('.letter.correct').length)){
             this.timer.stop()
-            this.testDone()
+            if(this.testType == 'challenge'){
+                this.testDone('typetest')
+            }
+            else{
+                this.testDone()
+            }
         }   
     }
 
@@ -139,16 +163,25 @@ class TypingTest {
     }
 
     moveToNextWord() {
+        let activeContainer = document.querySelector('.active');
+        if(!activeContainer){
+            return
+        }
 
         this.previousInputLength = 0;
         this.currentIndex++;
-        if(this.testType == 'words' || this.testType == 'custom'){
+        if(this.testType == 'words' || this.testType == 'custom' || this.testType == 'challenge'){
             $('#counter').text(`${this.currentIndex}/${this.amount}`)
         }
         if(this.currentIndex > $('.word_container').length - 1 && $('.word_container').length > 0){
             this.testStopped = false;
             this.timer.stop()
-            this.testDone()
+            if(this.testType == 'challenge'){
+                this.testDone('typetest')
+            }
+            else{
+                this.testDone()
+            }
         }
         $('.word_container').removeClass('active');
         $('.word_container').eq(this.currentIndex).addClass('active');
@@ -281,7 +314,7 @@ class TypingTest {
     }
 
     resetValues() {
-        console.log('reset')
+        this.test_finished = false;
         this.currentIndex = 0;
         this.spaceCounter = 0;
         this.started = false;
@@ -292,9 +325,18 @@ class TypingTest {
         this.timer.reset();
         this.resetTestBinding()
         $('#counter').addClass('hidden')
+        $('#challenge-counter').addClass('hidden')
         this.textInput.val('').focus();
         $("#paragraph").scrollTop(0);
         $('#pointer').addClass('flash-animation');
+    }
+
+    updateDocumentSelector(textInput,paragraphElement,retryButton){
+        this.textInput = $(textInput);
+        this.paragraphElement = $(paragraphElement);
+        this.retryButton = $(retryButton);
+        this.init()
+        this.resetValues()
     }
 
     updateWordAmount(newAmount){
@@ -307,5 +349,11 @@ class TypingTest {
     }
     updateTestType(newTestType){
         this.testType = newTestType;
+    }
+    updateTestDone(newTestDone){
+        this.testDone = newTestDone
+    }
+    changeTestFinishedStat(stat){
+        this.test_finished = stat;
     }
 }

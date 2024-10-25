@@ -1,0 +1,23 @@
+[
+    {
+        "difficulty": "easy",
+        "level_number": 1,
+        "description": "Complete 70 words in <br>1 minute with an accuracy of over 70%.",
+        "time": 60,
+        "word_amount": 20
+    },
+    {
+        "difficulty": "easy",
+        "level_number": 2,
+        "description": "Complete 100 words in <br>1 minute with an accuracy of over 70%.",
+        "time": 60,
+        "word_amount": 35
+    },
+    {
+        "difficulty": "easy",
+        "level_number": 3,
+        "description": "Complete 130 words in <br>1 minute with an accuracy of over 70%.",
+        "time": 60,
+        "word_amount": 50
+    }
+]

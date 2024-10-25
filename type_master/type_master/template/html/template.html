@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% block head %}{% endblock %}
     <link rel="stylesheet" href="{% static 'css/template.css' %}">
+    <link rel="stylesheet" href="{% static 'css/challenges.css' %}">
     <link rel="stylesheet" href="{% static 'css/colors.css' %}">
     <link rel="stylesheet" href="{% static 'css/profile.css' %}">
     <link rel="stylesheet" href="{% static 'css/settings.css' %}">
@@ -81,7 +82,6 @@
                 email: "{{ user.email|escapejs }}",
             };
             $('#profile-button').on('click', () => {
-                console.log(typeof(user.isAuthenticated))
                 if (user.isAuthenticated == 'true') {
                     $.get("{% url 'show-profile'%}", function(data) {
                         $('#side-panel-container').append(data);

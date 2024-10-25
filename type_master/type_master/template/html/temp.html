@@ -12,17 +12,11 @@
             <div id="challenge-counter" class="hidden"></div>
         </div>
         <div class="paragraph" id="paragraph">
-            <div class="pointer-area-field">
-                <div id="pointer" class="flash-animation"></div>
-            </div>
-            <div id="paragraph-container">
-                {% for word in random_word %}
-                <div class="word_container">
-                    {% for letter in word|letter_token %}
-                    <span class="letter">{{letter}}</span>
-                    {% endfor %}
+            <div class="wpm_container">
+                <div id="result-container">
+                    <span class="failed-challenge">Challenge Completed</span>
+                    <p>You ran out of time to finish the challenge.</p>
                 </div>
-                {% endfor %}
             </div>
         </div>
         <input type="text" id="text_input">
@@ -48,12 +42,8 @@
             <button class="text-mode"><i class="fas fa-pen"></i>custom</button>
         </div>
     </nav>
-    <script>
-        const challenges_url = `{% url 'challenges' %}`
-        const challenge_json_url = "{% static 'json/challenges.json' %}"
-    </script>
-    <script src="{% static 'js/timer.js' %}"></script>
-    <script src="{% static 'js/typetest.js' %}"></script>
-    <script src="{% static 'js/index.js' %}"></script>
     <script src="{% static 'js/challenge_result.js' %}"></script>
+    <script>
+        challenge_result_init()
+    </script>
 {% endblock %}

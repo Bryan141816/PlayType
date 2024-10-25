@@ -13,6 +13,9 @@ urlpatterns = [
 
     path('challenges', views.challenges, name="challenges"),
     
+    path('temp', views.temp, name="temp"),
+    
+    
     path('settings', views.settings, name="settings"),
     
     path('login/', views.login_view, name='login'),
@@ -20,5 +23,7 @@ urlpatterns = [
 
     path('refresh_words/', views.get_words, name='refresh_words'),
     path('social-auth/', include('social_django.urls', namespace='social_')),
+
+    
 
 ]

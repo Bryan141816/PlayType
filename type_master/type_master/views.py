@@ -153,6 +153,9 @@ def ask_username(request, backend=None):
 def challenges(request):
     return render(request, 'html/challenges-template.html')
 
+def temp(request):
+    return render(request, 'html/temp.html')
+
 def settings(request):
     return render(request, 'html/settings.html')
 
