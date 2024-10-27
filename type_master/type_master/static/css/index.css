@@ -299,12 +299,22 @@
     display: flex;
     background-color: var(--opaque-background-color);
     height: 2.5rem;
-    width: auto;
-    align-items: center;
-    border-radius: 10px;
     margin-top: 4rem;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: width 0.3s ease;
+    position: relative;
+}
+#options-container{
+    display: flex;
+    height: 100%;
+    width: fit-content;
+    align-items: center;
     padding: 10px;
     gap: 10px;
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 .text-button-container{
     display: flex;

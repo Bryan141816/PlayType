@@ -132,12 +132,8 @@ class TypingTest {
         });
         if((this.currentIndex == $('.word_container').length - 1) && (this.activeText.length == this.activeWordsType.find('.letter.correct').length)){
             this.timer.stop()
-            if(this.testType == 'challenge'){
-                this.testDone('typetest')
-            }
-            else{
-                this.testDone()
-            }
+            this.testDone(this.testType, 'TypingTest')
+            
         }   
     }
 
@@ -176,12 +172,7 @@ class TypingTest {
         if(this.currentIndex > $('.word_container').length - 1 && $('.word_container').length > 0){
             this.testStopped = false;
             this.timer.stop()
-            if(this.testType == 'challenge'){
-                this.testDone('typetest')
-            }
-            else{
-                this.testDone()
-            }
+            this.testDone(this.testType, 'TypingTest')
         }
         $('.word_container').removeClass('active');
         $('.word_container').eq(this.currentIndex).addClass('active');
@@ -351,9 +342,6 @@ class TypingTest {
     }
     updateTestType(newTestType){
         this.testType = newTestType;
-    }
-    updateTestDone(newTestDone){
-        this.testDone = newTestDone
     }
     changeTestFinishedStat(stat){
         this.test_finished = stat;

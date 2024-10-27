@@ -4,57 +4,40 @@ $(document).ready(function() {
     let prev_test_type = null;
     let challenges = null;
     let currentChallenge = null;
-
     setMode();
+    optionBoxResizeTransition()
 
     function setMode() {
-        if ($('.text-mode.option-active').text() == 'time') {
-            timer = new CountdownTimer(parseInt($('.text-button.option-active').text()), '#counter', testDone);
-            if(!typingTest){
-                typingTest = new TypingTest('#text_input', '#paragraph', '#retry_button', timer, testDone, resetTest, 50, 'time');
-            }
-            else{
-                typingTest.updateTimer(timer)
-            }
-
-            function resetTest() {
-                $('#counter').text(parseInt($('.text-button.option-active').text())).removeClass('hidden');
-            }
-        } else if ($('.text-mode.option-active').text() == 'words') {
-            timer = new CountupTimer();
-            if(!typingTest){
-                typingTest = new TypingTest('#text_input', '#paragraph', '#retry_button', timer, testDone, resetTest, 50, 'words');
-            }
-            else{
-                typingTest.updateTimer(timer)
-            }
-
-            function resetTest() {
-                $('#counter').text('0').removeClass('hidden');
+        const activeMode = $('.text-mode.option-active').text();
+        const activeTime = parseInt($('.text-button.option-active').text());
+    
+        function resetTest(initialValue = '0') {
+            $('#counter').text(initialValue).addClass('hidden');
+        }
+    
+        function initializeTypingTest(timer, doneCallback, mode) {
+            if (!typingTest) {
+                typingTest = new TypingTest('#text_input', '#paragraph', '#retry_button', timer, doneCallback, resetTest, 50, mode);
+            } else {
+                typingTest.updateTimer(timer);
             }
         }
-        else if ($('.text-mode.option-active').text() == 'challenge') {
-
-            if(!typingTest){
-                typingTest = new TypingTest('#text_input', '#paragraph', '#retry_button', timer, testDone, resetTest, 50, 'challenge');
-            }
-            function resetTest() {
-                $('#counter').text('0').removeClass('hidden');
-            }
-        }
-        else if ($('.text-mode.option-active').text() == 'custom') {
+    
+        if (activeMode === 'time') {
+            timer = new CountdownTimer(activeTime, '#counter', testDone, activeMode);
+            initializeTypingTest(timer, testDone, 'time');
+            resetTest(activeTime);
+        } else if (activeMode === 'words' || activeMode === 'custom') {
             timer = new CountupTimer();
-            if(!typingTest){
-                typingTest = new TypingTest('#text_input', '#paragraph', '#retry_button', timer, testDone, resetTest, 50, 'custom');
-            }
-            else{
-                typingTest.updateTimer(timer)
-            }
-            function resetTest() {
-                $('#counter').text('0').removeClass('hidden');
-            }
+            initializeTypingTest(timer, testDone, activeMode, activeMode);
+            resetTest();
+        } else if (activeMode === 'challenge') {
+            timer = new CountdownTimer(activeTime, '#counter', testDone, activeMode);
+            initializeTypingTest(timer, testDone, 'challenge');
+            resetTest();
         }
     }
+    
 
     $('button.text-button').on('click', (event) => {
 
@@ -100,67 +83,118 @@ $(document).ready(function() {
             if(timer){
                 timer.stop()
             }
-            switch($(event.target).text()){
+            const selected_mode = $(event.target).text();
+            switch(selected_mode){
                 case 'time':
                     if(prev_test_type == 'custom'){
-                        $('#type-selector')
-                        .html(` <button class="text-button option-active">15</button>
-                                <button class="text-button">30</button>
-                                <button class="text-button">60</button>
-                                <button class="text-button">120</button>`)
+                        reInsertTimeWordSelector()
+                        optionBoxResizeTransition()
                     }
-                    else if(prev_test_type == 'challenges'){
+
+                    else if(prev_test_type == 'challenge'){
+                        reInsertTimeWordSelector()
+                        $('#option-separator')
+                            .css({
+                                'display': 'flex',
+                            });
+                        optionBoxResizeTransition()
                         displayTypeTest()
                         typingTest.updateDocumentSelector('#text_input', '#paragraph', '#retry_button')
                     }
-                    prev_test_type = 'time';
-                    $('.edit-custom-sentence-active').removeClass('edit-custom-sentence-active')
-                    typingTest.updateWordAmount(50)
-                    typingTest.updateTestType('time')
-                    timer.reset()
+
+                    modeValueChanger(selected_mode)
                     break;
                 case 'words':
+                    
                     if(prev_test_type == 'custom'){
-                        $('#type-selector')
-                        .html(` <button class="text-button option-active">15</button>
-                                <button class="text-button">30</button>
-                                <button class="text-button">60</button>
-                                <button class="text-button">120</button>`)
+                        reInsertTimeWordSelector()
+                        optionBoxResizeTransition()
                     }
-                    else if(prev_test_type == 'challenges'){
+                    else if(prev_test_type == 'challenge'){
+                        reInsertTimeWordSelector()
+                        $('#option-separator')
+                            .css({
+                                'display': 'flex',
+                            });
+                        optionBoxResizeTransition()
                         displayTypeTest()
                         typingTest.updateDocumentSelector('#text_input', '#paragraph', '#retry_button')
-
                     }
-                    prev_test_type = 'words';
-                    $('.edit-custom-sentence-active').removeClass('edit-custom-sentence-active')
-                    typingTest.updateWordAmount(15)
-                    typingTest.updateTestType('words')
-                    timer.reset()
+
+                    modeValueChanger(selected_mode)
                     break;
                 case 'challenge':
-                    prev_test_type = 'challenges';
-                    timer.reset()
+                    $('#type-selector').html('')
+                    $('#option-separator')
+                        .css({
+                            'display': 'none',
+                        });
+                    optionBoxResizeTransition()
                     getChallanges()
-                    typingTest.updateTestType('challenge')
+                    modeValueChanger(selected_mode)
                     break;
                 case 'custom':
-                    if(prev_test_type == 'challenges'){
+
+                    if(prev_test_type == 'challenge'){
+                        $('#option-separator')
+                            .css({
+                                'display': 'flex',
+                            });
+                        optionBoxResizeTransition()
                         displayTypeTest()
                         typingTest.updateDocumentSelector('#text_input', '#paragraph', '#retry_button')
                     }
+
                     $('#type-selector')
-                    .html(`<button id="edit-custom-sentence"><i class="fas fa-pen"></i>change</button>`)
-                    $('#edit-custom-sentence').on('click',edit_sentence);
-                    prev_test_type = 'custom';
-                    $('#edit-custom-sentence').addClass('edit-custom-sentence-active')
-                    typingTest.updateTestType('custom')
-                    timer.reset()
+                        .html(`<button id="edit-custom-sentence"><i class="fas fa-pen"></i>change</button>`)
+                        $('#edit-custom-sentence').on('click',edit_sentence);
+                    optionBoxResizeTransition()
+                    modeValueChanger(selected_mode)
                     break;
             }
             setMode()
         }
+
+        function reInsertTimeWordSelector(){
+            $('#type-selector')
+            .html(` <button class="text-button option-active">15</button>
+                    <button class="text-button">30</button>
+                    <button class="text-button">60</button>
+                    <button class="text-button">120</button>`)
+        }
+        function modeValueChanger(type){ 
+             
+            prev_test_type = type;
+
+            if(!(type==='custom'||type==='challenge')){
+                if(type === 'words'){
+                    const word_amount = parseInt($('.text-button.option-active').text())
+                    typingTest.updateWordAmount(word_amount);
+                }
+                else{
+                    typingTest.updateWordAmount(50)
+                }
+            }
+            timer.updateTestType(type)
+            typingTest.updateTestType(type)
+            timer.reset()
+        }
+        function edit_sentence(){
+            $('#custom-sentence-modal-container').addClass('custom-sentence-modal-container-active');
+            setTimeout(function() {
+                clickOutsideEnabled = true;
+            }, 0);
+        }
     });
+    function optionBoxResizeTransition(){
+        const optionBox = document.getElementById("option-selector");
+        const container = document.getElementById("options-container");
+        const containerRect = container.getBoundingClientRect();
+        const width = containerRect.width;
+        const height = containerRect.height;
+        optionBox.style.width = `${width}px`;
+    }
+
     function displayTypeTest(){
         $('#typingtest-container').html(
             `<div id="counter-container">
@@ -178,8 +212,7 @@ $(document).ready(function() {
             <button id="retry_button">
                 <i class="fas fa-redo"></i>
             </button>`
-        )
-        
+        )      
     }
 
     function getChallanges(){
@@ -197,91 +230,90 @@ $(document).ready(function() {
             .catch(error => {
                 console.error('There was a problem with the fetch operation:', error);
             });
-        $('#typingtest-container').html(
-            `<div id="challenges-level-container">
-                
-                <button id="challenge-level-changer-left"><i class="fas fa-caret-left"></i></button>
-                <div id="easy-challenge-container" class="difficulty-container difficulty-active"></div>
-                <div id="medium-challenge-container" class="difficulty-container"></div>
-                <div id="hard-challenge-container" class="difficulty-container"></div>
-                <button id="challenge-level-changer-right" class="challenge-level-changer-active"><i class="fas fa-caret-right"></i></button>
-            </div>`
-        )
-
-    }
-    function populateChallenge(){
-        challenges.forEach((level, index)=>{
-            const card_template = 
-                    `<div class="option-card" id="card-${index+1}">
-                        <input type="hidden" class="index" value="${index}">
-                        <div class="card-content">
-                            <h3 class="${level.difficulty}-text">${index+1}</h3>
-                            <span class="stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </span>
-                            <div class="description-card">
-                                <p class="description-sentence">${level.description}</p>
-                            </div>
-                        </div>
+            function populateChallenge(){
+                const typingTestContainer = $('#typingtest-container');
+                typingTestContainer.html(
+                    `<div id="challenges-level-container">  
+                        <button id="challenge-level-changer-left"><i class="fas fa-caret-left"></i></button>
+                        <div id="easy-challenge-container" class="difficulty-container difficulty-active"></div>
+                        <div id="medium-challenge-container" class="difficulty-container"></div>
+                        <div id="hard-challenge-container" class="difficulty-container"></div>
+                        <button id="challenge-level-changer-right" class="challenge-level-changer-active"><i class="fas fa-caret-right"></i></button>
                     </div>`
-            $(`#${level.difficulty}-challenge-container`).append(card_template);
-        });
-        addChallengesListener()
-
+                );
+                challenges.forEach((level, index)=>{
+                    const card_template = 
+                            `<div class="option-card" id="card-${index+1}">
+                                <input type="hidden" class="index" value="${index}">
+                                <div class="card-content">
+                                    <h3 class="${level.difficulty}-text">${index+1}</h3>
+                                    <span class="stars">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </span>
+                                    <div class="description-card">
+                                        <p class="description-sentence">${level.description}</p>
+                                    </div>
+                                </div>
+                            </div>`
+                    $(`#${level.difficulty}-challenge-container`).append(card_template);
+                });
+                addChallengesListener()
+        
+            }
+            function addChallengesListener(){
+                challengeLevelChangerHandle()
+                $('.option-card').on('click', (event) => {
+                    const target = $(event.currentTarget);
+                    const challenge_selected = challenges[parseInt((target.find('.index')).val())]
+                    currentChallenge = challenge_selected;
+                    displayTypeTest()
+                    typingTest.updateDocumentSelector('#text_input', '#paragraph', '#retry_button')
+                    typingTest.updateWordAmount(challenge_selected.word_amount)
+                    timer = new CountdownTimer(challenge_selected.time, '#challenge-counter', testDone, "challenge");
+                    typingTest.updateTimer(timer)
+                });
+            }
+        
+            function challengeLevelChangerHandle(){
+                let challenge_level_index = 0;
+                $('#challenge-level-changer-left').on('click',()=>{
+                    if(challenge_level_index>0){
+                        challenge_level_index--;
+                        $('.difficulty-container.difficulty-active').removeClass('difficulty-active')
+                        const new_active_difficulty = $('.difficulty-container').eq(challenge_level_index);
+                        new_active_difficulty.addClass('difficulty-active')
+                    }
+                    if(challenge_level_index == 1){
+                        $('#challenge-level-changer-right').addClass('challenge-level-changer-active')
+                    }
+                    else if(challenge_level_index == 0){
+                        $('#challenge-level-changer-left').removeClass('challenge-level-changer-active')
+                    }
+                })
+                $('#challenge-level-changer-right').on('click',()=>{
+                    if(challenge_level_index<3){
+                        challenge_level_index++;
+                        $('.difficulty-container.difficulty-active').removeClass('difficulty-active')
+                        const new_active_difficulty = $('.difficulty-container').eq(challenge_level_index);
+                        new_active_difficulty.addClass('difficulty-active')
+                    }
+                    if(challenge_level_index == 1){
+                        $('#challenge-level-changer-left').addClass('challenge-level-changer-active')
+                    }
+                    else if(challenge_level_index == 2){
+                        $('#challenge-level-changer-right').removeClass('challenge-level-changer-active')
+                    }
+                })
+            }
+            
     }
 
-    function addChallengesListener(){
-        challengeLevelChangerHandle()
-        $('.option-card').on('click', (event) => {
-            const target = $(event.currentTarget);
-            const challenge_selected = challenges[parseInt((target.find('.index')).val())]
-            currentChallenge = challenge_selected;
-            displayTypeTest()
-            typingTest.updateDocumentSelector('#text_input', '#paragraph', '#retry_button')
-            typingTest.updateWordAmount(challenge_selected.word_amount)
-            typingTest.updateTestDone(testDone_challenge)
-            timer = new CountdownTimer(challenge_selected.time, '#challenge-counter', testDone_challenge);
-            typingTest.updateTimer(timer)
-        });
-    }
-
-    function challengeLevelChangerHandle(){
-        let challenge_level_index = 0;
-        $('#challenge-level-changer-left').on('click',()=>{
-            if(challenge_level_index>0){
-                challenge_level_index--;
-                $('.difficulty-container.difficulty-active').removeClass('difficulty-active')
-                const new_active_difficulty = $('.difficulty-container').eq(challenge_level_index);
-                new_active_difficulty.addClass('difficulty-active')
-            }
-            if(challenge_level_index == 1){
-                $('#challenge-level-changer-right').addClass('challenge-level-changer-active')
-            }
-            else if(challenge_level_index == 0){
-                $('#challenge-level-changer-left').removeClass('challenge-level-changer-active')
-            }
-        })
-        $('#challenge-level-changer-right').on('click',()=>{
-            if(challenge_level_index<3){
-                challenge_level_index++;
-                $('.difficulty-container.difficulty-active').removeClass('difficulty-active')
-                const new_active_difficulty = $('.difficulty-container').eq(challenge_level_index);
-                new_active_difficulty.addClass('difficulty-active')
-            }
-            if(challenge_level_index == 1){
-                $('#challenge-level-changer-left').addClass('challenge-level-changer-active')
-            }
-            else if(challenge_level_index == 2){
-                $('#challenge-level-changer-right').removeClass('challenge-level-changer-active')
-            }
-        })
-    }
-    
 
 
-    function testDone() {
+    function testDone(type, origin=null) {
+        console.log(type, origin)
         typingTest.test_finished = true;
         const resultData = typingTest.requestResultData();
         resultData.totalCharacters += resultData.previousInputLength;
@@ -304,135 +336,103 @@ $(document).ready(function() {
             accuracy = '0'
             stat = 'invalid'
         }
-        
-        let resultDisplay = $(`
-                <div class="wpm_container">
-                <div>
-                <div class="blocker" id="blocker1"></div>
-                <h2>${wpm}</h2>
-                <h3>wpm</h3>
-                </div>
-                <div>
-                <div class="blocker" id="blocker2"></div>
-                <h2>${accuracy}%</h2>
-                <h3>acc</h3>
-                </div>
-                <div>
-                <div class="blocker" id="blocker3"></div>
-                <h2>${stat}</h2>
-                <h3>cor/mis/ex</h3>
-                </div>
-                </div>
-        `);
+        let resultDisplay = null;
+        if(!(type === 'challenge')){
 
-        $('#paragraph').html(resultDisplay);
-        $('#counter').addClass('hidden');
-    }
-    function testDone_challenge(origin) {
-        typingTest.changeTestFinishedStat(true)
-        const resultData = typingTest.requestResultData();
-        resultData.totalCharacters += resultData.previousInputLength;
-        const correctCount = $('.letter.correct').length;
-        
-        const minute = (timer instanceof CountdownTimer)
-        ? (timer.original_time - timer.getRemainingTime()) / 60
-        : (timer instanceof CountupTimer)
-        ? (timer.getRemainingTime()) / 60 
-        : null;
-        
-        let wpm = ((correctCount + resultData.spaceCounter) / 5) / minute;
-        let accuracy = ((resultData.totalCharacters + resultData.spaceCounter - (resultData.incorrectCounter + resultData.extraLetterCounter)) / (resultData.totalCharacters + resultData.spaceCounter)) * 100;
-        wpm = Math.ceil(wpm);
-        accuracy = Math.ceil(accuracy);
-        let stat = `${correctCount}/${resultData.incorrectCounter}/${resultData.extraLetterCounter}`
-        
-        if(origin == 'typetest'){  
-            if(accuracy<=0){
-                wpm = '0'
-                accuracy = '0'
-                stat = 'invalid'
-            }
-            let resultDisplay = $(`
-                <div class="wpm_container">
-                    <div id="result-container">
-                        <span>Challenge Completed</span>
-                        <div id="challenge-stat-result"><button id="result-button-challenge" class="challenge-button challenge-button-active">Result</button><button id="stat-button-challenge" class="challenge-button">Stat</button></div>
-                        <div class="star-result">
-                            <i class="fas fa-star result-star-1"></i>
-                            <p class="result-star-1">Complete the challenge with an accuracy of 40%</p>
-                            <i class="fas fa-star result-star-2"></i>
-                            <p class="result-star-2">Complete the challenge with an accuracy of 55%</p>
-                            <i class="fas fa-star result-star-3"></i>
-                            <p class="result-star-3">Complete the challenge with an accuracy of 70%</p>
-                        </div>
-                        <div class="stat-result challenge_result_screen_not_active">
-                            <ul>
-                                <li><span>level:</span>${currentChallenge.level_number}</li>
-                                <li><span>difficulty:</span>${currentChallenge.difficulty}</li>
-                                <li><span>time:</span>${timer.formatMinutesAndSeconds(currentChallenge.time)}</li>
-                            </ul>
-                            <ul>
-                                <li><span>wpm:</span> ${wpm}</li>
-                                <li><span>accuracy:</span> ${accuracy}</li>
-                                <li><span>cor/mis/ex:</span> ${stat}</li>
-                            </ul>
-                        </div>
+            resultDisplay = $(`
+                    <div class="wpm_container">
+                    <div>
+                    <div class="blocker" id="blocker1"></div>
+                    <h2>${wpm}</h2>
+                    <h3>wpm</h3>
                     </div>
-                </div>
-                `);
-                
-            $('#paragraph').html(resultDisplay);
-            let star_array = null;
-            if(accuracy >= 40 && accuracy < 55){
-                star_array = [$('.result-star-1')]
-            }
-            else if(accuracy >= 55 && accuracy < 70){
-                star_array = [$('.result-star-1'),$('.result-star-2')]
-            }
-            else if(accuracy >= 70 && accuracy <= 100){
-                star_array = [$('.result-star-1'),$('.result-star-2'),$('.result-star-3')]
-            }
-            star_array.forEach((element, index) => {
-                setTimeout(() => {
-                    element.each((index, el)=>{
-                        $(el).addClass('result-star-achieved')
-                    })
-                }, ((index+1) * 200));
-            });
-
-
-            
-            // const blockers = $('.blocker');
-            
-            // blockers.each((index, blocker) => {
-            //     setTimeout(() => {
-            //         $(blocker).addClass('blocker-hide');
-            //     }, ((index+1) * 100));
-            // });
-            challenge_result_init()
+                    <div>
+                    <div class="blocker" id="blocker2"></div>
+                    <h2>${accuracy}%</h2>
+                    <h3>acc</h3>
+                    </div>
+                    <div>
+                    <div class="blocker" id="blocker3"></div>
+                    <h2>${stat}</h2>
+                    <h3>cor/mis/ex</h3>
+                    </div>
+                    </div>
+            `);
         }
         else{
-            let resultDisplay = $(`
-                <div class="wpm_container">
-                    <div id="result-container">
-                        <span class="failed-challenge">Challenge Failed</span>
-                        <p>You ran out of time to finish the challenge.</p>
+            if(origin === 'TypingTest' && accuracy >=40){  
+                resultDisplay = $(`
+                    <div class="wpm_container">
+                        <div id="result-container">
+                            <span>Challenge Completed</span>
+                            <div id="challenge-stat-result"><button id="result-button-challenge" class="challenge-button challenge-button-active">Result</button><button id="stat-button-challenge" class="challenge-button">Stat</button></div>
+                            <div class="star-result">
+                                <i class="fas fa-star result-star-1"></i>
+                                <p class="result-star-1">Complete the challenge with an accuracy of 40%</p>
+                                <i class="fas fa-star result-star-2"></i>
+                                <p class="result-star-2">Complete the challenge with an accuracy of 55%</p>
+                                <i class="fas fa-star result-star-3"></i>
+                                <p class="result-star-3">Complete the challenge with an accuracy of 70%</p>
+                            </div>
+                            <div class="stat-result challenge_result_screen_not_active">
+                                <ul>
+                                    <li><span>level:</span>${currentChallenge.level_number}</li>
+                                    <li><span>difficulty:</span>${currentChallenge.difficulty}</li>
+                                    <li><span>time:</span>${timer.formatMinutesAndSeconds(currentChallenge.time)}</li>
+                                </ul>
+                                <ul>
+                                    <li><span>wpm:</span> ${wpm}</li>
+                                    <li><span>accuracy:</span> ${accuracy}</li>
+                                    <li><span>cor/mis/ex:</span> ${stat}</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                `);
-                
-            $('#paragraph').html(resultDisplay);
+                    `);
+            }
+            else{
+                let reasonForFailure = "You ran out of time to finish the challenge.";
+                if(accuracy<40){
+                    reasonForFailure = "Your accuracy doesn't meet the challenge requirements."
+                }
+                resultDisplay = $(`
+                                <div class="wpm_container">
+                                    <div id="result-container">
+                                        <span class="failed-challenge">Challenge Failed</span>
+                                        <p>${reasonForFailure}</p>
+                                    </div>
+                                </div>
+                                `);
+            }
         }
-            
+        $('#paragraph').html(resultDisplay);
+        if(type === "challenge"){
+            if(accuracy>=40){
+                let star_array = null;
+                if(accuracy >= 40 && accuracy < 55){
+                    star_array = [$('.result-star-1')]
+                }
+                else if(accuracy >= 55 && accuracy < 70){
+                    star_array = [$('.result-star-1'),$('.result-star-2')]
+                }
+                else if(accuracy >= 70 && accuracy <= 100){
+                    star_array = [$('.result-star-1'),$('.result-star-2'),$('.result-star-3')]
+                }
+                star_array.forEach((element, index) => {
+                    setTimeout(() => {
+                        element.each((index, el)=>{
+                            $(el).addClass('result-star-achieved')
+                        })
+                    }, ((index+1) * 200));
+                });
+            }
+            challenge_result_init()
+        }
         $('#counter').addClass('hidden');
         $('#challenge-counter').addClass('hidden')
     }
-    function edit_sentence(){
-        $('#custom-sentence-modal-container').addClass('custom-sentence-modal-container-active');
-        setTimeout(function() {
-            clickOutsideEnabled = true;
-        }, 0);
-    }
+
+
     $('#close-button-sentence-modal').on('click', ()=>{
         $('#custom-sentence-modal-container').removeClass('custom-sentence-modal-container-active')
         clickOutsideEnabled = false;

@@ -1,5 +1,6 @@
 class CountdownTimer {
-    constructor(set_time, timer_label, on_done) {
+    constructor(set_time, timer_label, on_done, test_type) {
+        this.test_type = test_type;
         this.original_time = set_time;
         this.set_time = set_time;
         this.timer_label = $(timer_label);
@@ -15,7 +16,7 @@ class CountdownTimer {
 
             if (this.set_time <= 0) {
                 clearInterval(this.countdown);
-                this.on_done();
+                this.on_done(this.test_type);
             }
         }, 1000);
     }
@@ -50,19 +51,26 @@ class CountdownTimer {
         this.original_time = newTime
         this.timer_label.text(newTime);
     }
+    updateTestType(new_test_type){
+        this.test_type = new_test_type;
+        console.log(this.test_type)
+    }
     getRemainingTime(){
         return this.set_time;
     }
 }
 
 class CountupTimer {
+    constructor(test_type){
+        this.test_type = test_type;
+    }
     set_time = 0;
     start() {
         this.countup = setInterval(() => { 
             this.set_time++;
             if (this.set_time <= 0) {
                 clearInterval(this.countup);
-                this.on_done();
+                this.on_done(this.test_type);
             }
         }, 1000);
     }
@@ -72,6 +80,9 @@ class CountupTimer {
     reset() {
         this.stop()
         this.set_time = 0; 
+    }
+    updateTestType(new_test_type){
+        this.test_type = new_test_type;
     }
     getRemainingTime(){
         return this.set_time;
