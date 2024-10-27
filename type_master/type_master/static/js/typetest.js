@@ -223,6 +223,8 @@ class TypingTest {
     }
 
     movePointerTo(x,y){
+        x = Math.floor(x)
+        y = Math.floor(y)
         $('#pointer').stop(true, true).css(
             'top', y + 'px',
             'left', x + 'px'

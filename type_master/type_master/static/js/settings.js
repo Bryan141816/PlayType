@@ -12,6 +12,7 @@ function settings_init(){
             $(event.target).addClass('active-theme');
             let selectedTheme = $(event.target).text().toLowerCase().trim();
             lazychameleon.setTheme(selectedTheme);
+            lazychameleon.sendChangeThemeEvent(selectedTheme)
         }
     });
 

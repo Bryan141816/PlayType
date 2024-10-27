@@ -2,22 +2,64 @@
     {
         "difficulty": "easy",
         "level_number": 1,
-        "description": "Complete 70 words in <br>1 minute with an accuracy of over 70%.",
+        "description": "Complete 20 words in a minute.",
         "time": 60,
         "word_amount": 20
     },
     {
         "difficulty": "easy",
         "level_number": 2,
-        "description": "Complete 100 words in <br>1 minute with an accuracy of over 70%.",
+        "description": "Complete 35 words in a minute.",
         "time": 60,
         "word_amount": 35
     },
     {
         "difficulty": "easy",
         "level_number": 3,
-        "description": "Complete 130 words in <br>1 minute with an accuracy of over 70%.",
+        "description": "Complete 50 words in a minute.",
         "time": 60,
         "word_amount": 50
+    },
+    {
+        "difficulty": "medium",
+        "level_number": 4,
+        "description": "Complete 70 words in a minute.",
+        "time": 60,
+        "word_amount": 70
+    },
+    {
+        "difficulty": "medium",
+        "level_number": 5,
+        "description": "Complete 75 words in a minute.",
+        "time": 60,
+        "word_amount": 75
+    },
+    {
+        "difficulty": "medium",
+        "level_number": 6,
+        "description": "Complete 100 words in a minute.",
+        "time": 60,
+        "word_amount": 100
+    },
+    {
+        "difficulty": "hard",
+        "level_number": 7,
+        "description": "Complete 115 words in a minute.",
+        "time": 60,
+        "word_amount": 115
+    },
+    {
+        "difficulty": "hard",
+        "level_number": 8,
+        "description": "Complete 130 words in a minute.",
+        "time": 60,
+        "word_amount": 130
+    },
+    {
+        "difficulty": "hard",
+        "level_number": 8,
+        "description": "Complete 150 words in a minute.",
+        "time": 60,
+        "word_amount": 150
     }
 ]

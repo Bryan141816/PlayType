@@ -1,7 +1,7 @@
 {% extends 'html/template.html' %}
 {% load static %}
 {% block head %}
-    <title>Document</title>
+    <title>PlayType| A interactive typing test website.</title>
     <link rel="stylesheet" href="{% static 'css/index.css' %}">
 {% endblock %}
 
@@ -26,7 +26,7 @@
             </div>
         </div>
         <input type="text" id="text_input">
-        <button id="retry_button">
+        <button id="retry_button" aria-label="Reset Test" title="Reset Test">
             <i class="fas fa-redo"></i>
         </button>
     </div>

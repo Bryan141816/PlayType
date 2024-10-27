@@ -183,12 +183,6 @@ $(document).ready(function() {
     }
 
     function getChallanges(){
-
-        $.get(challenges_url)
-            .done((response)=>{
-                $('#typingtest-container').html(response)
-                addChallengesListener()
-            })
         fetch(challenge_json_url)
             .then(response => {
                 if (!response.ok) {
@@ -198,16 +192,51 @@ $(document).ready(function() {
             })
             .then(data => {
                 challenges = JSON.parse(data);
+                populateChallenge()
             })
             .catch(error => {
                 console.error('There was a problem with the fetch operation:', error);
             });
+        $('#typingtest-container').html(
+            `<div id="challenges-level-container">
+                
+                <button id="challenge-level-changer-left"><i class="fas fa-caret-left"></i></button>
+                <div id="easy-challenge-container" class="difficulty-container difficulty-active"></div>
+                <div id="medium-challenge-container" class="difficulty-container"></div>
+                <div id="hard-challenge-container" class="difficulty-container"></div>
+                <button id="challenge-level-changer-right" class="challenge-level-changer-active"><i class="fas fa-caret-right"></i></button>
+            </div>`
+        )
+
+    }
+    function populateChallenge(){
+        challenges.forEach((level, index)=>{
+            const card_template = 
+                    `<div class="option-card" id="card-${index+1}">
+                        <input type="hidden" class="index" value="${index}">
+                        <div class="card-content">
+                            <h3 class="${level.difficulty}-text">${index+1}</h3>
+                            <span class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </span>
+                            <div class="description-card">
+                                <p class="description-sentence">${level.description}</p>
+                            </div>
+                        </div>
+                    </div>`
+            $(`#${level.difficulty}-challenge-container`).append(card_template);
+        });
+        addChallengesListener()
 
     }
 
     function addChallengesListener(){
+        challengeLevelChangerHandle()
         $('.option-card').on('click', (event) => {
-            const challenge_selected = challenges[$(event.target).index()]
+            const target = $(event.currentTarget);
+            const challenge_selected = challenges[parseInt((target.find('.index')).val())]
             currentChallenge = challenge_selected;
             displayTypeTest()
             typingTest.updateDocumentSelector('#text_input', '#paragraph', '#retry_button')
@@ -216,6 +245,38 @@ $(document).ready(function() {
             timer = new CountdownTimer(challenge_selected.time, '#challenge-counter', testDone_challenge);
             typingTest.updateTimer(timer)
         });
+    }
+
+    function challengeLevelChangerHandle(){
+        let challenge_level_index = 0;
+        $('#challenge-level-changer-left').on('click',()=>{
+            if(challenge_level_index>0){
+                challenge_level_index--;
+                $('.difficulty-container.difficulty-active').removeClass('difficulty-active')
+                const new_active_difficulty = $('.difficulty-container').eq(challenge_level_index);
+                new_active_difficulty.addClass('difficulty-active')
+            }
+            if(challenge_level_index == 1){
+                $('#challenge-level-changer-right').addClass('challenge-level-changer-active')
+            }
+            else if(challenge_level_index == 0){
+                $('#challenge-level-changer-left').removeClass('challenge-level-changer-active')
+            }
+        })
+        $('#challenge-level-changer-right').on('click',()=>{
+            if(challenge_level_index<3){
+                challenge_level_index++;
+                $('.difficulty-container.difficulty-active').removeClass('difficulty-active')
+                const new_active_difficulty = $('.difficulty-container').eq(challenge_level_index);
+                new_active_difficulty.addClass('difficulty-active')
+            }
+            if(challenge_level_index == 1){
+                $('#challenge-level-changer-left').addClass('challenge-level-changer-active')
+            }
+            else if(challenge_level_index == 2){
+                $('#challenge-level-changer-right').removeClass('challenge-level-changer-active')
+            }
+        })
     }
     
 
@@ -247,17 +308,17 @@ $(document).ready(function() {
         let resultDisplay = $(`
                 <div class="wpm_container">
                 <div>
-                <div class="blocker"></div>
+                <div class="blocker" id="blocker1"></div>
                 <h2>${wpm}</h2>
                 <h3>wpm</h3>
                 </div>
                 <div>
-                <div class="blocker"></div>
+                <div class="blocker" id="blocker2"></div>
                 <h2>${accuracy}%</h2>
                 <h3>acc</h3>
                 </div>
                 <div>
-                <div class="blocker"></div>
+                <div class="blocker" id="blocker3"></div>
                 <h2>${stat}</h2>
                 <h3>cor/mis/ex</h3>
                 </div>
@@ -265,15 +326,6 @@ $(document).ready(function() {
         `);
 
         $('#paragraph').html(resultDisplay);
-
-        const blockers = $('.blocker');
-
-        blockers.each((index, blocker) => {
-            setTimeout(() => {
-                $(blocker).addClass('blocker-hide');
-            }, ((index+1) * 100));
-        });
-
         $('#counter').addClass('hidden');
     }
     function testDone_challenge(origin) {
