@@ -102,19 +102,61 @@
     width: 100%;
     background-color: transparent;
     border: none;
-    color: var(--high-color-value);
+    color: var(--medium-color-value);
     font-size: 40px;
     font-weight: 200;
+    transition: color 0.1s ease;
+}
+#log-out:hover{
+    color: var(--high-color-value);
 }
 #close-button{
     pointer-events: all;
     background-color: transparent;
     border: none;
-    color: var(--high-color-value);
+    color: var(--medium-color-value);
     font-size: 30px;
     font-weight: 200;
     position: absolute;
     z-index: 998;
     top: 2rem;
     right: 2rem;
+    transition: color 0.1s ease;
+}
+#close-button{
+    color: var(--high-color-value);
+}
+#profile-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    grid-template-rows: repeat(2, 1fr);    
+    gap: 30px;                               
+    width: 100%;
+    height: 30%;                        
+    position: relative;
+    margin-top: 40px;                 
+}
+
+#profile-options button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    width: 100%;
+    height: 100%;
+    border: none;                           
+    background-color: var(--opaque-background-color);
+    color: var(--medium-color-value);
+    font-size: clamp(8px, 20px, 100px);                                 
+    cursor: pointer;
+    gap: 10px; 
+    transition: border 0.1s ease-in , color 0.1s ease-in;
+    & i{
+        font-size: clamp(8px, 50px, 100px);  ;
+    }
+}
+#profile-options button:hover{
+    border: 1px solid #0057d6;
+    color: var(--high-color-value);
 }

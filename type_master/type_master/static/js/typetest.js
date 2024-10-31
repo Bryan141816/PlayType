@@ -295,9 +295,11 @@ class TypingTest {
         if(param){
             param();
         }
+        this.updateWordAmount($('.word_container').length)
     }
 
-    resetTest() {
+    resetTest(origin) {
+        console.log(origin)
         if(this.testType != 'custom'){
             this.getText(this.resetValues.bind(this), this.amount);
         }
@@ -334,11 +336,9 @@ class TypingTest {
 
     updateWordAmount(newAmount){
         this.amount = newAmount;
-        this.resetTest()
     }
     updateTimer(newTimer){
         this.timer = newTimer
-        this.resetTest()
     }
     updateTestType(newTestType){
         this.testType = newTestType;

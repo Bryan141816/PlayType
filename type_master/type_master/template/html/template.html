@@ -49,59 +49,26 @@
     <main>
         {% block content %}{% endblock %}
     </main>
+    <script src="{% static 'js/user_settings_update.js' %}"></script>
     <script src="{% static 'js/lazychameleon.js' %}"></script>
     <script src="{% static 'js/settings.js' %}"></script>
+    <script src="{% static 'js/profile.js' %}"></script>
+    {{ user_settings|json_script:"user_settings"}}
     <script>
-            let clickOutsideEnabled = false;
+            const userSettings = JSON.parse(document.getElementById('user_settings').textContent);
             const themesjson = "{% static 'json/themes.json' %}"
-            const lazychameleon = new LazyChameleon('playtype', themesjson);
-            settings_init()
-            $('#settings-button').click(function(){
-                $('#settings-modal-container').addClass('settings-modal-container-active')
-                setTimeout(function() {
-                    clickOutsideEnabled = true;
-                }, 0);
-            });
-    
-            $('#theme-change').click(function() {
-                if ($(this).hasClass('dark')) {
-                    $(this).removeClass('dark');
-                    $(this).addClass('light');
-                    lazychameleon.setTheme('light')
-                } else if ($(this).hasClass('light')) {
-                    $(this).removeClass('light');
-                    $(this).addClass('dark');
-                    lazychameleon.setTheme('dark')
-                }
-            });
-    
+            const loginUrl =  "{% url 'login'%}"
+            const showProfileUrl =  "{% url 'show-profile'%}"
+            const lazychameleon = new LazyChameleon('playtype', themesjson, userSettings.theme);
+            let clickOutsideEnabled = false;
+
             const user = {
-                isAuthenticated: "{{ user.is_authenticated|lower }}",
+                isAuthenticated: ("{{ user.is_authenticated|lower }}"  === "true"),
                 username: "{{ user.username|escapejs }}",
-    
                 email: "{{ user.email|escapejs }}",
             };
-            $('#profile-button').on('click', () => {
-                if (user.isAuthenticated == 'true') {
-                    $.get("{% url 'show-profile'%}", function(data) {
-                        $('#side-panel-container').append(data);
-                        $('#side-panel').addClass('active-side-panel')
-                        $('#side-panel-container').addClass('side-panel-container-active')
-                        $('#close-button').on('click',()=>{
-                            $("#side-panel-container").removeClass('side-panel-container-active')
-                            $('#side-panel').removeClass('active-side-panel')
-                            $('#side-panel').addClass('slide-out')
-                            setTimeout(function(){
-                                $('#side-panel').remove()
-                            },500)
-                            
-                        })
-                    });
-    
-                } else {
-                    window.location.href = "{% url 'login'%}"
-                }
-            });
+
+
             $(document).on('click', function(event) {
                 if ($('#side-panel').hasClass('active-side-panel')) {
                     if (!$('#side-panel').is(event.target) && $('#side-panel').has(event.target).length === 0) {

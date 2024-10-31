@@ -1,8 +1,9 @@
 class LazyChameleon {
 
-    constructor(name, json) {
+    constructor(name, json, default_theme) {
         this.#name = name;
         this.#json = json;
+        this.default_theme = default_theme;
         this.#init();
     }
 
@@ -22,10 +23,18 @@ class LazyChameleon {
         if (json) {
             this.#themes = json;
             if (this.#storedTheme) {
-                this.setTheme(this.#storedTheme);
+                let themeValue = this.#storedTheme;
+                if(this.default_theme){
+                    themeValue = this.default_theme;
+                }
+                this.setTheme(themeValue);
             } else {
-                localStorage.setItem(`${this.#name}-theme`, json[0].name);
-                this.setTheme(json[0].name);
+                let themeValue = json[0].name;
+                if(this.default_theme){
+                    themeValue = this.default_theme;
+                }
+                localStorage.setItem(`${this.#name}-theme`, themeValue);
+                this.setTheme(themeValue);
             }
         }
     }
@@ -66,7 +75,6 @@ class LazyChameleon {
     }
 
     sendChangeThemeEvent(change) {
-        console.log('sent');
         this.#broadcastchannel.postMessage(change);
     }
 }

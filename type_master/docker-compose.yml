@@ -9,6 +9,9 @@ services:
       - .:/usr/src/app
     environment:
       - DEBUG=1
+      - DATABASE_URL=mysql://bryan:${MYSQL_PASSWORD}@db/playtypedb  # Use environment variable
+    depends_on:
+      - db
     develop:
       watch:
         - action: sync
@@ -18,3 +21,18 @@ services:
             - __pycache__/
         - action: rebuild
           path: requirements.txt
+
+  db:
+    image: mysql:8.0  # Use the MySQL 5.7 image
+    container_name: mysql_container
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}  # Reference the environment variable
+      MYSQL_USER: ${MYSQL_USER}  # Reference the environment variable
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}  # Reference the environment variable
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}  # Reference the environment variable
+    volumes:
+      - db_data:/var/lib/mysql  # Persist database data
+
+volumes:
+  db_data:  # Define a named volume for MySQL

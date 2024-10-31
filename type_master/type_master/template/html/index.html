@@ -35,18 +35,18 @@
     <nav id="option-selector">
         <div id="options-container">
             <div class="text-button-container" id="type-selector">
-                <button class="text-button option-active">15</button>
-                <button class="text-button">30</button>
-                <button class="text-button">60</button>
-                <button class="text-button">120</button>
+                <button class="text-button option-active" id="text-button-15">15</button>
+                <button class="text-button" id="text-button-30">30</button>
+                <button class="text-button" id="text-button-60">60</button>
+                <button class="text-button" id="text-button-120">120</button>
             </div>
             <div class="option-separator" id="option-separator"></div>
             <div class="text-button-container">
-                <button class="text-mode option-active"><i class="fas fa-stopwatch"></i>time</button>
-                <button class="text-mode"><i class="fas fa-bold"></i>words</button>
-                <button class="text-mode"><i class="fas fa-trophy"></i>challenge</button>
-                <button class="text-mode"><i class="fas fa-gamepad"></i>games</button>
-                <button class="text-mode"><i class="fas fa-pen"></i>custom</button>
+                <button id="text-mode-time" class="text-mode option-active"><i class="fas fa-stopwatch"></i>time</button>
+                <button id="text-mode-words" class="text-mode"><i class="fas fa-bold"></i>words</button>
+                <button id="text-mode-challenge" class="text-mode"><i class="fas fa-trophy"></i>challenge</button>
+                <button id="text-mode-games" class="text-mode"><i class="fas fa-gamepad"></i>games</button>
+                <button id="text-mode-custom" class="text-mode"><i class="fas fa-pen"></i>custom</button>
             </div>
         </div>
     </nav>
@@ -56,6 +56,7 @@
     </script>
     <script src="{% static 'js/timer.js' %}"></script>
     <script src="{% static 'js/typetest.js' %}"></script>
+    <script src="{% static 'js/UserSettings.js' %}"></script>
     <script src="{% static 'js/index.js' %}"></script>
     <script src="{% static 'js/challenge_result.js' %}"></script>
 {% endblock %}

@@ -4,12 +4,22 @@ $(document).ready(function() {
     let prev_test_type = null;
     let challenges = null;
     let currentChallenge = null;
-    setMode();
+    let localUserSettings = null;
+
+    loadAndSetUserSettingsDefaultByLocalAndOnlineDB()
     optionBoxResizeTransition()
+    addTextButtonClickListener()
 
     function setMode() {
         const activeMode = $('.text-mode.option-active').text();
         const activeTime = parseInt($('.text-button.option-active').text());
+        let word_amount = 50;
+        if(localUserSettings && activeMode === 'words'){
+            word_amount = localUserSettings.word_amount_selected;
+        }
+        else if(localUserSettings && activeMode === 'time'){
+            word_amount = calculateWordAmountByTime(localUserSettings.time_selected);
+        }
     
         function resetTest(initialValue = '0') {
             $('#counter').text(initialValue).addClass('hidden');
@@ -17,9 +27,13 @@ $(document).ready(function() {
     
         function initializeTypingTest(timer, doneCallback, mode) {
             if (!typingTest) {
-                typingTest = new TypingTest('#text_input', '#paragraph', '#retry_button', timer, doneCallback, resetTest, 50, mode);
+                typingTest = new TypingTest('#text_input', '#paragraph', '#retry_button', timer, doneCallback, resetTest,word_amount, mode);
+                if(mode === 'custom'){
+                    typingTest.useCustomSentence();
+                }
             } else {
                 typingTest.updateTimer(timer);
+                typingTest.resetTest('setmode')
             }
         }
     
@@ -37,53 +51,126 @@ $(document).ready(function() {
             resetTest();
         }
     }
+    function checkOrCreateLocalUserSettings(userSettingsData, callback) {
+        openDatabaseAndHandleUserSettings(userSettingsData)
+            .then(result => {
+                if (result) {
+                    callback(result); // Pass result to the callback
+                } else {
+                    console.error('Result is undefined or null');
+                }
+            })
+            .catch(error => {
+                console.error('Error occurred: ' + error);
+            });
+    }
     
-
-    $('button.text-button').on('click', (event) => {
-
-        if (!$(event.target).hasClass('option-active')) {
-            $('.text-button.option-active').removeClass('option-active');
-            $(event.target).addClass('option-active');
-
-            if ($('.text-mode.option-active').text() == 'time') {
-                const targetTime = parseInt($(event.target).text());
-                switch (targetTime) {
-                    case 15:
-                        typingTest.updateWordAmount(50);
-                        break;
-                    case 30:
-                        typingTest.updateWordAmount(70);
-                        break;
-                    case 60:
-                        typingTest.updateWordAmount(100);
-                        break;
-                    case 120:
-                        typingTest.updateWordAmount(200);
-                        break;
-                }
-                timer.update(targetTime);
-                typingTest.resetTest();
-            }
-            else if($('.text-mode.option-active').text() == 'words'){
-                const targetAmount = parseInt($(event.target).text());
-                if(targetAmount<=120){
-                    typingTest.updateWordAmount(targetAmount)
-                }
-                typingTest.resetTest();
-            }
+    function loadAndSetUserSettingsDefaultByLocalAndOnlineDB() {
+        if (user.isAuthenticated) {
+            checkOrCreateLocalUserSettings(userSettings, setUserSettings);
+        } else {
+            const userSettings = { user: 'local' }; 
+            checkOrCreateLocalUserSettings(userSettings, setUserSettings);
         }
-    });
+    }
+    
+    function setUserSettings(data) {
+        localUserSettings = data;
+        $('.text-mode.option-active').removeClass('option-active');
+        $('.text-button.option-active').removeClass('option-active');
+        $(`#text-mode-${localUserSettings.mode_used}`).addClass('option-active');
+        
+        if (localUserSettings.mode_used === 'time') {
+            $(`#text-button-${localUserSettings.time_selected}`).addClass('option-active');
+        } else if (localUserSettings.mode_used === 'words') {
+            $(`#text-button-${localUserSettings.word_amount_selected}`).addClass('option-active');
+        }
+        $('#sentence-text').val(data.custome_sentence);
+        settings_init()
+        profile_init()
+        setMode();
+    }
+    function calculateWordAmountByTime(time){
+        let word_amount = 0;
+        switch (time) {
+            case 15:
+                word_amount = 50;
+                break;
+            case 30:
+                word_amount = 70;
+                break;
+            case 60:
+                word_amount = 100;
+                break;
+            case 120:
+                word_amount = 200;
+                break;
+        }
+        return word_amount;
+    }
+    
+    function addTextButtonClickListener(){
+        $('button.text-button').on('click', (event) => {
+    
+            if (!$(event.target).hasClass('option-active')) {
+                $('.text-button.option-active').removeClass('option-active');
+                $(event.target).addClass('option-active');
+    
+                if ($('.text-mode.option-active').text() == 'time') {
+                    const targetTime = parseInt($(event.target).text());
+                    const word_amount = calculateWordAmountByTime(targetTime)
+                    typingTest.updateWordAmount(word_amount);
+                    timer.update(targetTime);
+                    typingTest.resetTest('time selector');
+                    if(user.isAuthenticated){
+                        updateUserSettings(null,null, targetTime);
+                        updateLocalUserSettings(localUserSettings.user,null,null, targetTime);
+                    }else{
+                        updateLocalUserSettings(localUserSettings.user,null,null, targetTime);
+                    }
+                }
+                else if($('.text-mode.option-active').text() == 'words'){
+                    const targetAmount = parseInt($(event.target).text());
+                    if(targetAmount<=120){
+                        typingTest.updateWordAmount(targetAmount)
+                        typingTest.resetTest('words amount selector')
+                    }
+                    if(user.isAuthenticated){
+                        updateUserSettings(null,null, null, targetAmount);
+                        updateLocalUserSettings(localUserSettings.user,null,null, null, targetAmount);
+                    }
+                    else{
+                        updateLocalUserSettings(localUserSettings.user,null,null, null, targetAmount);
+                    }
+                }
+            }
+        });
+    }
+    function setTextButtonActive(data){
+        const selected_mode = $('.text-mode.option-active').text();
+        if(selected_mode === 'time'){
+            $(`#text-button-${data.time_selected}`).addClass('option-active')
+            typingTest.updateWordAmount(calculateWordAmountByTime(data.time_selected));
+            timer.update(data.time_selected);
+        }
+        else if(selected_mode === 'words'){
+            $(`#text-button-${data.word_amount_selected}`).addClass('option-active')
+            typingTest.updateWordAmount(data.word_amount_selected);
+        }
+        typingTest.resetTest(`${selected_mode} button active`)
+    }
 
     $('button.text-mode').on('click', (event) => {
         if (!$(event.target).hasClass('option-active')) {
             $('.text-mode.option-active').removeClass('option-active');
             $('.text-button.option-active').removeClass('option-active');
-            $('.text-button').first().addClass('option-active');
+
             $(event.target).addClass('option-active');
             if(timer){
                 timer.stop()
             }
             const selected_mode = $(event.target).text();
+            getLocalUserSettings(localUserSettings.user, setTextButtonActive)
             switch(selected_mode){
                 case 'time':
                     if(prev_test_type == 'custom'){
@@ -152,15 +239,23 @@ $(document).ready(function() {
                     modeValueChanger(selected_mode)
                     break;
             }
+            if(user.isAuthenticated){
+                updateUserSettings(null,selected_mode);
+            }
+            else{
+                updateLocalUserSettings(localUserSettings.user, null,selected_mode)
+            }
             setMode()
         }
 
         function reInsertTimeWordSelector(){
             $('#type-selector')
-            .html(` <button class="text-button option-active">15</button>
-                    <button class="text-button">30</button>
-                    <button class="text-button">60</button>
-                    <button class="text-button">120</button>`)
+            .html(` <button class="text-button" id="text-button-15">15</button>
+                    <button class="text-button" id="text-button-30">30</button>
+                    <button class="text-button" id="text-button-60">60</button>
+                    <button class="text-button" id="text-button-120">120</button>`
+                )
+            addTextButtonClickListener()
         }
         function modeValueChanger(type){ 
              
@@ -169,7 +264,9 @@ $(document).ready(function() {
             if(!(type==='custom'||type==='challenge')){
                 if(type === 'words'){
                     const word_amount = parseInt($('.text-button.option-active').text())
-                    typingTest.updateWordAmount(word_amount);
+                    if(word_amount){
+                        typingTest.updateWordAmount(word_amount);
+                    }
                 }
                 else{
                     typingTest.updateWordAmount(50)
@@ -177,6 +274,7 @@ $(document).ready(function() {
             }
             timer.updateTestType(type)
             typingTest.updateTestType(type)
+            typingTest.resetTest(type)
             timer.reset()
         }
         function edit_sentence(){
@@ -273,6 +371,7 @@ $(document).ready(function() {
                     typingTest.updateWordAmount(challenge_selected.word_amount)
                     timer = new CountdownTimer(challenge_selected.time, '#challenge-counter', testDone, "challenge");
                     typingTest.updateTimer(timer)
+                    typingTest.resetTest('option card')
                 });
             }
         
@@ -313,7 +412,6 @@ $(document).ready(function() {
 
 
     function testDone(type, origin=null) {
-        console.log(type, origin)
         typingTest.test_finished = true;
         const resultData = typingTest.requestResultData();
         resultData.totalCharacters += resultData.previousInputLength;
@@ -358,6 +456,32 @@ $(document).ready(function() {
                     </div>
                     </div>
             `);
+            const activeMode = $('.text-mode.option-active').text();
+            const activeType = parseInt($('.text-button.option-active').text());
+
+            const formData = {
+              wpm: wpm,
+              accuracy: accuracy,
+              cormisex: stat,
+              mode: activeMode,
+              type: activeType,
+            };
+            $.ajax({
+                url: '/user/test/history', // The URL where Django expects the request
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded', // Data type
+                data: formData,
+                beforeSend: function(xhr, settings) {
+                    // Include CSRF token if needed
+                    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                },
+                success: function (response) {
+                  console.log(response)
+                },
+                error: function (xhr, status, error) {
+                  console.log(error)
+                }
+              });
         }
         else{
             if(origin === 'TypingTest' && accuracy >=40){  
@@ -439,6 +563,14 @@ $(document).ready(function() {
     });
     $('#enter-sentence').on('click',()=>{
         typingTest.resetTest();
+        let sentence = $('#sentence-text').val().trim();
+        if(user.isAuthenticated){
+            updateUserSettings(null,null, null, null, null, sentence);
+            updateLocalUserSettings(localUserSettings.user,null,null, null, null, null, sentence);
+        }
+        else{
+            updateLocalUserSettings(localUserSettings.user,null,null, null, null, null, sentence);
+        }
         $('#custom-sentence-modal-container').removeClass('custom-sentence-modal-container-active')
         clickOutsideEnabled = false;
     })

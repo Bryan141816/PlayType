@@ -53,7 +53,6 @@ class CountdownTimer {
     }
     updateTestType(new_test_type){
         this.test_type = new_test_type;
-        console.log(this.test_type)
     }
     getRemainingTime(){
         return this.set_time;

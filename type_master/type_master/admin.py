@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Word, UserSettings
+from .models import Word, UserSettings, TestHistory
 
 @admin.register(Word)
 class WordAdmin(admin.ModelAdmin):
@@ -11,5 +11,27 @@ class WordAdmin(admin.ModelAdmin):
     search_fields = ('word', 'lang')
 @admin.register(UserSettings)
 class UserSettingsAdmin(admin.ModelAdmin):
-    list_display = ('social_auth','theme')
-    
+    list_display = (
+        'user',
+        'theme',
+        'mode_used',
+        'time_selected',
+        'word_amount_selected',
+        'challenge_achieved',
+        'custome_sentence',
+        'last_updated'
+    )
+
+@admin.register(TestHistory)
+class TestHistoryAdmin(admin.ModelAdmin):
+    list_display = (
+            "id",
+            "user",
+            "wpm",
+            "accuracy",
+            "cormisex",
+            "mode",
+            "type",
+            "bpr",
+            "test_taken"
+    )

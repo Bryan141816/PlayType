@@ -1,10 +1,11 @@
 function settings_init(){
+    clickOutsideEnabled = false;
     $('#close-button-settings-modal').click(function(){
         $('#settings-modal-container').removeClass('settings-modal-container-active')
         clickOutsideEnabled = false;
     });
     let currentTheme = lazychameleon.getStoredTheme(); 
-    $(`.${currentTheme}`).first().addClass('active-theme')
+    $(`#${currentTheme}`).addClass('active-theme')
 
     $('section.theme-selector-option').on('click',(event)=>{
         if (!$(event.target).hasClass('active-theme')) {
@@ -13,6 +14,7 @@ function settings_init(){
             let selectedTheme = $(event.target).text().toLowerCase().trim();
             lazychameleon.setTheme(selectedTheme);
             lazychameleon.sendChangeThemeEvent(selectedTheme)
+            updateUserSettings(selectedTheme);
         }
     });
 
@@ -40,5 +42,24 @@ function settings_init(){
             }
         }
     })
+
+    $('#settings-button').click(function(){
+        $('#settings-modal-container').addClass('settings-modal-container-active')
+        setTimeout(function() {
+            clickOutsideEnabled = true;
+        }, 0);
+    });
+
+    $('#theme-change').click(function() {
+        if ($(this).hasClass('dark')) {
+            $(this).removeClass('dark');
+            $(this).addClass('light');
+            lazychameleon.setTheme('light')
+        } else if ($(this).hasClass('light')) {
+            $(this).removeClass('light');
+            $(this).addClass('dark');
+            lazychameleon.setTheme('dark')
+        }
+    });
 
 }
