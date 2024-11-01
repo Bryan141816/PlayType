@@ -18,6 +18,8 @@ urlpatterns = [
     path('user/settings/update/', views.updateUserSettings, name='update-user-settings'),
 
     path('user/test/history', views.addTestHistory, name='add-test-history'),
+
+    path('user/stat/', views.userStat, name='userstat'),
     
     path('settings', views.settings, name="settings"),
     

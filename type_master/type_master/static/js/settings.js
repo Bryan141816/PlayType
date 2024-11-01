@@ -45,6 +45,7 @@ function settings_init(){
 
     $('#settings-button').click(function(){
         $('#settings-modal-container').addClass('settings-modal-container-active')
+        console.log('hello')
         setTimeout(function() {
             clickOutsideEnabled = true;
         }, 0);

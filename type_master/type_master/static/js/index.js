@@ -477,6 +477,10 @@ $(document).ready(function() {
                 },
                 success: function (response) {
                   console.log(response)
+                  if(response.bpr){
+                    let icon = '<i class="fas fa-crown"></i>'
+                    showNotification(icon, 'Notification' ,response.message)
+                  }
                 },
                 error: function (xhr, status, error) {
                   console.log(error)

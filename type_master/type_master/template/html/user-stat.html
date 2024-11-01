@@ -1,0 +1,90 @@
+{% extends 'html/template.html' %}
+{% load static %}
+{% block head %}
+    <title>PlayType| A interactive typing test website.</title>
+    <link rel="stylesheet" href="{% static 'css/user-stat.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div id="user-stat-container">
+        <div id="profile-info">
+            {% if profile_image %}
+                <img src="{{ profile_image }}" id="profile-picture">
+            {% else %}
+                <img src="{% static 'images/default-profile.jpg' %}" id="profile-picture">
+            {% endif %}
+            <div id="name_datecreated">
+                <span id="user-name">{{name}}</span>
+                <span id="date_joined">Joined {{date_joined}}</span>
+            </div>
+            <div class="stat-lvl-amount-container">
+                <span class="normal-text name">LVL 36</span>
+                <div id="stat-lvl-bar-bg">
+                    <div id="stat-lvl-amount"></div>
+                </div>
+            </div>
+        </div>
+        <div id="average-stat">
+            <div class="stat-container">
+                <span id="stat-value">{{test_count}}</span>
+                <span id="stat-name">test completed</span>
+            </div>
+
+            <div class="stat-container">
+                <span id="stat-value">{{avg_wpm}}</span>
+                <span id="stat-name">average wpm</span>
+            </div>
+            <div class="stat-container">
+                <span id="stat-value">{{avg_accuracy}}%</span>
+                <span id="stat-name">average accuracy</span>
+            </div>
+        </div>
+        <div id="misc">
+            <div class="stat-container">
+                <span id="stat-value">{{total_day_active}}</span>
+                <span id="stat-name">total day active</span>
+            </div>
+            <div class="stat-container">
+                <span id="stat-value">10/30</span>
+                <span id="stat-name">achievement</span>
+            </div>
+            <div class="stat-container">
+                <span id="stat-value">{{bpr}}</span>
+                <span id="stat-name">personal best</span>
+            </div>
+        </div>
+
+        <div id="test-history">
+            <div id="history-table-container">
+                <div></div>
+                <div class="table-head">wpm</div>
+                <div class="table-head">accuracy</div>
+                <div class="table-head">cor/mis/ex</div>
+                <div class="table-head">mode</div>
+                <div class="table-head">date</div>
+                {% for item in  history %}
+                    <div class="table-content-icon-{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
+                        {% if item.bpr %}
+                            <i class="fas fa-crown"></i>
+                        {% else %}
+                            <div class="empty-pb"></div>
+                        {% endif %}
+                    </div>
+                    <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.wpm}}</div>
+                    <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.accuracy}}%</div>
+                    <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.cormisex}}</div>
+                    <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.mode}} {{item.type}}</div>
+                    <div class="table-content-end {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.test_taken}}</div>
+                {% empty %}
+                    <div class="full-width">no test taken yet.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function(){
+            settings_init()
+            profile_init()
+        })
+    </script>
+{% endblock %}

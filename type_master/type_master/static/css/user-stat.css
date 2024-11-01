@@ -1,0 +1,194 @@
+main{
+    display: flex;
+    flex-direction: column;
+    height: fit-content !important;
+    width: 100%;
+    justify-content: flex-start !important;
+    overflow: auto;
+}
+#user-stat-container{
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    width: fit-content;
+    justify-content: center;
+    gap: 20px;
+    row-gap: 40px;
+    margin-top: 1%;
+}
+#profile-info{
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    grid-template-rows: auto auto;
+    width: max-content;
+    height: fit-content;
+    background-color: var(--opaque-background-color);
+    padding: 30px;
+    border-radius: 20px;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    & img{
+        aspect-ratio: 1/1;
+        border-radius: 50%;
+        margin: 0;
+    }
+    #name_datecreated{
+        width: fit-content;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        justify-content: center;
+    }
+    #user-name{
+        font-size: 200%;
+        color: var(--high-color-value);
+        white-space: nowrap;
+        margin: 0;
+    }
+    #date_joined{
+        font-size: 120%;
+        color: var(--medium-color-value);
+        white-space: nowrap;
+        margin: 0;
+    }
+}
+#stat-lvl-bar{
+    display: flex;
+    height: 20px;
+    width: 100%;
+    padding: 0;
+    flex-direction: column;
+    position: relative;
+}
+.stat-lvl-amount-container{
+    display: flex;
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    gap: 10px;
+    align-items: center;
+    grid-column: span 2;
+}
+#stat-lvl-bar-bg{
+    background-color: #222222;
+    width: 100%;
+    height: 60%;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+#stat-lvl-amount{
+    position: relative;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 70%;
+    background-color: #0057d6;
+}
+#average-stat{
+    display: flex;
+    height: 100%;
+    width: max-content;
+    background-color: var(--opaque-background-color);
+    border-radius: 20px;
+    align-items: center;
+    padding: 20px;
+    justify-content: space-around;
+    gap: 20px;
+}
+.stat-container{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+
+}
+#stat-value{
+    font-size: 500%;
+    color: var(--high-color-value);
+}
+#stat-name{
+    font-size: 200%;
+    color: var(--medium-color-value);
+}
+#misc{
+    display: flex;
+    background-color: var(--opaque-background-color);
+    height: fit-content;
+    width: 100%;
+    grid-column: span 2;
+    border-radius: 20px;
+    align-items: center;
+    padding: 20px;
+    justify-content: space-around;
+    gap: 20px;
+}
+#test-history {
+    grid-column: span 2;
+    display: flex;
+    width: 100%;
+    height: fit-content;
+    border-radius: 20px;
+    justify-content: center;
+    align-items: center;
+}
+#history-table-container{
+    display: grid;
+    grid-template-columns: repeat(6, auto);
+    width: 100%;
+    row-gap: 5px;
+}
+.table-head{
+    font-size: 200%;
+    color: var(--medium-color-value);
+}
+.table-content{
+    font-size: 230%;
+    color: var(--high-color-value);
+    padding: 10px;
+}
+.table-content-end{
+    font-size: 230%;
+    color: var(--high-color-value);
+    padding: 10px;
+    border-radius: 0 10px 10px 0;
+}
+.odd{
+    width: 100%;
+    height: 100%;
+    background-color: var(--opaque-background-color);
+}
+.table-content-icon-even, .table-content-icon-odd{
+    display: flex;
+    padding: 0;
+    font-size: 100%;
+    color: var(--high-color-value);
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    border-radius: 10px 0 0 10px;
+}
+.table-content-icon-odd{
+    background-color: var(--opaque-background-color);
+}
+
+
+main::-webkit-scrollbar,#settings-content::-webkit-scrollbar {
+    background-color: transparent;
+    width: 15px;
+}
+main::-webkit-scrollbar-track,#settings-content::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+main::-webkit-scrollbar-thumb, #settings-content::-webkit-scrollbar-thumb {
+    border-radius: 20px;
+    border: 4px solid transparent;
+    background-color: transparent; 
+    background-clip: content-box;
+}
+
+main:hover::-webkit-scrollbar-thumb, main:hover::-webkit-scrollbar-thumb  {
+    background-color: var(--scrollbar-background-color);
+}

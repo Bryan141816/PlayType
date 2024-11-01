@@ -5,8 +5,10 @@ from django.contrib.auth import logout
 from social_django.models import UserSocialAuth
 import random
 from django.shortcuts import get_object_or_404
-from django.db.models import Max
+from django.db.models import Max, Count, Avg
+from django.db.models.functions import TruncDate
 from django.http import JsonResponse, HttpResponseBadRequest
+from datetime import datetime
 
 
 
@@ -27,7 +29,7 @@ def getUser(user):
                 profile_image = None
                 login_origin = 'Local Authentication'  # Default to local auth
                 user_settings = get_object_or_404(UserSettings, user__user=user)
-                
+                date_joined = user.date_joined.strftime("%b %d %Y")
                 # Loop through social auth providers to check which one the user logged in with
                 for social_auth in social_auths:
                     provider = social_auth.provider
@@ -41,15 +43,13 @@ def getUser(user):
                         full_name = social_auth.extra_data.get('name') or social_auth.extra_data.get('login')
                         profile_image = social_auth.extra_data.get('picture')  # GitHub profile picture
                         login_origin = 'GitHub'
-                    
-                    # Handle other providers similarly if needed
-
                 context = {
                     'user': user,
                     'name': full_name,
                     'login_origin': login_origin,
                     'profile_image': profile_image,
-                    'user_settings': user_settings.to_dict()
+                    'user_settings': user_settings.to_dict(),
+                    'date_joined': date_joined
                 }
             else:
                 # No social auth records found, fallback to username
@@ -183,17 +183,44 @@ def addTestHistory(request):
             type=data.get('type', ''),
             bpr=bpr
         )
-        return JsonResponse({
-            'success': True,
-            'message': 'Test history added successfully!',
-            'test_history_id': test_history.id
-        })
+        if(bpr):
+            return JsonResponse({
+                'success': True,
+                'message': 'You got a new personal best.',
+                'bpr': bpr,
+                'test_history_id': test_history.id
+            })
+        else:
+            return JsonResponse({
+                'success': True,
+                'message': 'Test history added successfully!',
+                'data': bpr,
+                'test_history_id': test_history.id
+            })
+            
     except Exception as e:
         return JsonResponse({'success': False, 'message': str(e)})
 
 
 def temp(request):
     return render(request, 'html/temp.html')
+
+def userStat(request):
+    user = request.user
+    context = getUser(user)
+    test_count = TestHistory.objects.count()
+    avg_wpm = TestHistory.objects.all().aggregate(Avg('wpm'))
+    avg_accuracy = TestHistory.objects.all().aggregate(Avg('accuracy'))
+    total_day_active = TestHistory.objects.annotate(date=TruncDate('test_taken')).values('date').annotate(count=Count('id')).order_by('date')
+    bpr = TestHistory.objects.filter(bpr=True).order_by('-test_taken').first()
+    history = TestHistory.objects.all().order_by('-test_taken')
+    context["test_count"] = test_count
+    context["avg_wpm"] = f"{avg_wpm["wpm__avg"]:.2f}" if avg_wpm["wpm__avg"] % 1 else f"{int(avg_wpm["wpm__avg"])}"
+    context["avg_accuracy"] = f"{avg_accuracy["accuracy__avg"]:.2f}" if avg_accuracy["accuracy__avg"] % 1 else f"{int(avg_accuracy["accuracy__avg"])}"
+    context["total_day_active"] = len(total_day_active)
+    context["bpr"] = bpr.wpm
+    context["history"] = history
+    return render(request, 'html/user-stat.html', context)
 
 
 

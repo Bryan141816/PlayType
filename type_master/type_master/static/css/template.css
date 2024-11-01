@@ -55,6 +55,55 @@ body {
     height: 100%;
     position: relative;
 }
+#notification-container{
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100%);
+    height: 100px;
+    width: max-content;
+    background-color: var(--opaque-background-color);
+    border-radius: 20px;
+    transition: transform 0.5s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+    display: flex;
+    padding: 10px;
+    gap: 10px;
+}
+.notification-container-active{
+    transform: translateX(-50%) translateY(40%) !important;
+}
+#notification-icon{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    aspect-ratio: 1/1;
+}
+#notification-icon i{
+    font-size: 300%;
+    color: var(--high-color-value)
+}
+#notification-icon img{
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+}
+#message-notification-container{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+    padding: 10px;
+
+    #notification-type{
+        font-size: 200%;
+        color: #0057d6;
+    }
+    #notification-message{
+        font-size: 150%;
+        color: var(--high-color-value);
+    }
+}
 main{
     display: flex;
     flex-direction: column;
@@ -89,7 +138,7 @@ main{
         color: var(--high-color-value);
     }
 }
-#settings-button{
+.tap-bar-button{
     background-color: transparent;
     font-size: 20px;
     height: fit-content;
@@ -100,7 +149,13 @@ main{
         margin-top: 35%;
     }
 }
-#settings-button:hover, #settings-button:focus{
+#keyboard-form{
+    background-color: transparent;
+    display: flex;
+    height: fit-content;
+    width: fit-content;
+}
+.tap-bar-button:hover, .tap-bar-button:focus{
     color: var(--high-color-value);
 }
 #logo{

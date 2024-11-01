@@ -19,6 +19,15 @@
     <link rel="icon" type="image/x-icon" href="{% static 'images/logo.svg' %}">
 </head>
 <body>
+    <div id="notification-container">
+        <div id="notification-icon">
+            <i class="fas fa-crown"></i>
+        </div>
+        <div id="message-notification-container">
+            <span id="notification-type"></span>
+            <span id="notification-message"></span>
+        </div>
+    </div>
     <div id="settings-modal-container">
         {% include 'html/settings.html' %}
     </div>
@@ -30,7 +39,12 @@
         <div id="logo">
             <img src="{% static 'images/logo.svg' %}" alt="logo" style=" height:30px;">
             <span>PlayType</span>
-            <button id="settings-button">
+            <form action="{% url 'index' %}" id="keyboard-form">
+                <button class="tap-bar-button" id="goto-index">
+                    <i class="fas fa-keyboard"></i>
+                </button>
+            </form>
+            <button id="settings-button" class="tap-bar-button">
                 <i class="fas fa-cog"></i>
             </button>
         </div>
@@ -49,6 +63,7 @@
     <main>
         {% block content %}{% endblock %}
     </main>
+    <script src="{% static 'js/template.js' %}"></script>
     <script src="{% static 'js/user_settings_update.js' %}"></script>
     <script src="{% static 'js/lazychameleon.js' %}"></script>
     <script src="{% static 'js/settings.js' %}"></script>

@@ -20,7 +20,9 @@
         <span id="lvl-value-meter" class="small-text">1000/1500</span>
     </div>
     <div id="profile-options">
-        <button><i class="fas fa-chart-pie"></i>stats</button>
+        <form action="{% url 'userstat' %}">
+            <button><i class="fas fa-chart-pie"></i>stats</button>
+        </form>
         <button><i class="fas fa-exclamation-triangle"></i>temp 2</button>
         <button><i class="fas fa-exclamation-triangle"></i>temp 3</button>
         <button><i class="fas fa-exclamation-triangle"></i>temp 4</button>
