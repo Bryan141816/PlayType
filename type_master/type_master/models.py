@@ -12,6 +12,7 @@ class Word(models.Model):
 class UserSettings(models.Model):
     user = models.OneToOneField(UserSocialAuth, on_delete=models.CASCADE, primary_key=True)
     theme = models.CharField(max_length=10, default="dark")
+    font_family = models.CharField(max_length=100, default="VT323")
     font_size = models.CharField(max_length=6, default="40px")
     ultra_wide_config = models.CharField(max_length=10, default='center')
     mode_used = models.CharField(max_length=10, default="time", null=False)
@@ -25,6 +26,7 @@ class UserSettings(models.Model):
         return {
             'user': self.user.user.username,
             'theme': self.theme,
+            "font_family": self.font_family,
             'font_size': self.font_size,
             'ultra_wide_config': self.ultra_wide_config,
             'mode_used': self.mode_used,

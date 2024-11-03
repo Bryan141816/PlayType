@@ -13,6 +13,7 @@ function openDatabaseAndHandleUserSettings(userSettings) {
             objectStore.createIndex('last_updated', 'last_updated', { unique: false });
             objectStore.createIndex('ultra_wide_config', 'ultra_wide_config', { unique: false });
             objectStore.createIndex('font_size', 'font_size', { unique: false });
+            objectStore.createIndex('font_family', 'font_family', { unique: false });
         };
 
         request.onerror = function(event) {
@@ -49,7 +50,8 @@ function openDatabaseAndHandleUserSettings(userSettings) {
                             custome_sentence: userSettings.custome_sentence,
                             last_updated: now,
                             ultra_wide_config: userSettings.ultra_wide_config,
-                            font_size: userSettings.font_size
+                            font_size: userSettings.font_size,
+                            font_family: userSettings.font_family,
                         };
 
                         const updateRequest = updateObjectStore.put(updatedSettings);
@@ -77,7 +79,8 @@ function openDatabaseAndHandleUserSettings(userSettings) {
                         custome_sentence: "The quick brown fox jumps over the lazy dog.",
                         last_updated: now,
                         ultra_wide_config: 'center',
-                        font_size: '40px'
+                        font_size: '40px',
+                        font_family: 'VT323'
                     };
 
                     const finalSettings = {
@@ -91,6 +94,7 @@ function openDatabaseAndHandleUserSettings(userSettings) {
                         last_updated: now,
                         ultra_wide_config: userSettings.ultra_wide_config || defaultValues.ultra_wide_config,
                         font_size: userSettings.font_size || defaultValues.font_size,
+                        font_family: userSettings.font_family || defaultValues.font_family,
                     };
 
                     const writeTransaction = db.transaction(['UserSettings'], 'readwrite');
@@ -129,7 +133,7 @@ function getLocalUserSettings(user, callback){
         }
     }
 }
-function updateLocalUserSettings(user, theme=null, mode_used=null, time_selected=null, word_amount_selected=null, challenge_achieved=null, custome_sentence=null, ultra_wide_config=null, font_size=null){
+function updateLocalUserSettings(user, theme=null, mode_used=null, time_selected=null, word_amount_selected=null, challenge_achieved=null, custome_sentence=null, ultra_wide_config=null, font_size=null, font_family = null){
     const now = new Date().toISOString();
     const request = indexedDB.open('UserSettingsDB', 1);
     request.onsuccess = function(event) {
@@ -164,6 +168,9 @@ function updateLocalUserSettings(user, theme=null, mode_used=null, time_selected
             if(font_size !== undefined && font_size !== null){
                 data.font_size = font_size
             }
+            if(font_family !== undefined && font_family !== null){
+                data.font_family = font_family
+            }
             data.last_updated = now
         
             const updateRequest = updateObjectStore.put(data);
@@ -194,7 +201,7 @@ function getCookie(name) {
     return cookieValue;
 }
 
-function updateUserSettings(theme=null, mode_used=null, time_selected=null, word_amount_selected=null, challenge_achieved=null, custome_sentence=null, ultra_wide_config=null, font_size = null) {
+function updateUserSettings(theme=null, mode_used=null, time_selected=null, word_amount_selected=null, challenge_achieved=null, custome_sentence=null, ultra_wide_config=null, font_size = null, font_family = null) {
     // Prepare data object with optional parameters
     const data = {};
     if (theme !== undefined && theme !== null) {
@@ -220,6 +227,9 @@ function updateUserSettings(theme=null, mode_used=null, time_selected=null, word
     }
     if(font_size !== undefined && font_size !==null){
         data.font_size = font_size
+    }
+    if(font_family !== undefined && font_family !==null){
+        data.font_family = font_family
     }
     
     $.ajax({

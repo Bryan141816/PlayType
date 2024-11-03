@@ -11,7 +11,9 @@ function settings_init(data){
     function setUserSettingsInSettingsModal(){
         $(`#${currentTheme}`).addClass('active-settings-option')
         $(`#font-size-selector option[value="${data.font_size}"]`).prop('selected', true);
+        $(`#font-family option[value="${data.font_family}"]`).prop('selected', true);
         $('html').css('--test-font-size', data.font_size);
+        $('html').css('--font-family', data.font_family);
         aspectRatio = window.innerWidth / window.innerHeight;
         if(aspectRatio > 2.1){
             $('.not-active').removeClass('not-active')
@@ -60,6 +62,19 @@ function settings_init(data){
             }
         }
     })
+    $('#font-family').on('change', function() {
+        const fontfamily = $(this).val();
+        $('html').css('--font-family', fontfamily);
+        updateLocalUserSettings(data.user,null, null, null, null, null, null, null,null, fontfamily);
+        if(user.isAuthenticated){
+            updateUserSettings(null, null, null, null, null, null, null, null, fontfamily);
+        }
+
+        setTimeout(()=>{
+            optionBoxResizeTransition()
+        },100)
+
+    });
     $('#font-size-selector').on('change', function() {
         const fontSizeSelected = $(this).val();
         $('html').css('--test-font-size', fontSizeSelected);
@@ -68,17 +83,6 @@ function settings_init(data){
             updateUserSettings(null, null, null, null, null, null, null, fontSizeSelected);
         }
     });
-    
-    $('section.theme-selector-option').hover(
-        function() {
-            let selectedTheme = $(event.target).text().toLowerCase().trim();
-            lazychameleon.setTheme(selectedTheme);
-        },
-        function() {
-            let currentTheme = $('section.theme-selector-option.active-settings-option').text().toLowerCase().trim();
-            lazychameleon.setTheme(currentTheme);
-        }
-    )
     $('.settings-tab-link').on('click',(event)=>{
         event.preventDefault()
         if(!$(event.target).hasClass('setting-tab-active')){

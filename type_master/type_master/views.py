@@ -140,6 +140,7 @@ def updateUserSettings(request):
     custome_sentence = request.POST.get('custome_sentence')
     ultra_wide_config = request.POST.get('ultra_wide_config')
     font_size = request.POST.get('font_size')
+    font_family = request.POST.get('font_family')
 
 
     if challenge_achieved is not None:
@@ -166,8 +167,8 @@ def updateUserSettings(request):
         user_settings.ultra_wide_config = ultra_wide_config
     if font_size is not None:
         user_settings.font_size = font_size
-    
-    print(font_size)
+    if font_family is not None:
+        user_settings.font_family = font_family
 
     # Save the updated user settings
     user_settings.save()
