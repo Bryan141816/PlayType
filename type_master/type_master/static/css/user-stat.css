@@ -19,7 +19,7 @@ main{
     display: grid;
     grid-template-columns: repeat(2, auto);
     grid-template-rows: auto auto;
-    width: max-content;
+    width: 100%;
     height: fit-content;
     background-color: var(--opaque-background-color);
     padding: 30px;
@@ -108,7 +108,7 @@ main{
     color: var(--high-color-value);
 }
 #stat-name{
-    font-size: 200%;
+    font-size: 150%;
     color: var(--medium-color-value);
 }
 #misc{
@@ -121,7 +121,7 @@ main{
     align-items: center;
     padding: 20px;
     justify-content: space-around;
-    gap: 20px;
+    gap: 60px;
 }
 #test-history {
     grid-column: span 2;
@@ -141,6 +141,42 @@ main{
 .table-head{
     font-size: 200%;
     color: var(--medium-color-value);
+    padding-left: 10px;
+    padding-right: 10px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+#table-info{
+    font-size: 60%;
+    margin-left: auto;
+    transition: color 0.2s ease-in;
+    position: relative;
+    display: flex;
+    width: fit-content;
+}
+#table-info-text{
+    position: absolute;
+    background-color: var(--opaque-background-color);
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100%);
+    border-radius: 10px;
+    font-size: 150%;
+    padding: 10px;
+    width: max-content;
+    opacity: 0;
+    transition: opacity 0.1s ease-in;
+}
+#table-info-text span{
+    text-decoration: underline;
+}
+#table-info:hover{
+    color: var(--high-color-value);
+}
+#table-info:hover > #table-info-text{
+    opacity: 1;
 }
 .table-content{
     font-size: 230%;
@@ -172,6 +208,13 @@ main{
 }
 .table-content-icon-odd{
     background-color: var(--opaque-background-color);
+}
+.full-width{
+    grid-column: span 6;
+    font-size: 230%;
+    color: var(--high-color-value);
+    width: 100%;
+    text-align: center;
 }
 
 

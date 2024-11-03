@@ -255,7 +255,7 @@ class TypingTest {
     }
     
     getText(param=null,amount=100) {
-        $.get('/refresh_words/', { amount: amount }, (response) =>{
+        $.get('/refresh_words/', { amount: amount}, (response) =>{
             this.paragraphElement.html(response);
             this.setupInitialWord();
             if(param){
@@ -299,7 +299,6 @@ class TypingTest {
     }
 
     resetTest(origin) {
-        console.log(origin)
         if(this.testType != 'custom'){
             this.getText(this.resetValues.bind(this), this.amount);
         }

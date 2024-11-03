@@ -136,6 +136,19 @@
         color: var(--gray-container-value);
     }
 }
+.stars-active{
+    animation: fadein 0.2s ease forwards;
+    animation-delay: 0.7s;
+}
+@keyframes fadein {
+    from{
+        color: var(--gray-container-value);
+    }
+    to{
+        color: var(--high-color-value);
+    }
+}
+
 
 .description-card {
     pointer-events: none;

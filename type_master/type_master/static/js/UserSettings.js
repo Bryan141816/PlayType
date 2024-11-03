@@ -1,14 +1,9 @@
 function openDatabaseAndHandleUserSettings(userSettings) {
     return new Promise((resolve, reject) => {
         const request = indexedDB.open('UserSettingsDB', 1);
-
-        // Handle database creation or upgrade
         request.onupgradeneeded = function(event) {
             const db = event.target.result;
-            // Create an object store with 'user' as the keyPath
             const objectStore = db.createObjectStore('UserSettings', { keyPath: 'user' });
-
-            // Define indexes (optional)
             objectStore.createIndex('theme', 'theme', { unique: false });
             objectStore.createIndex('mode_used', 'mode_used', { unique: false });
             objectStore.createIndex('time_selected', 'time_selected', { unique: false });
@@ -16,6 +11,8 @@ function openDatabaseAndHandleUserSettings(userSettings) {
             objectStore.createIndex('challenge_achieved', 'challenge_achieved', { unique: false });
             objectStore.createIndex('custome_sentence', 'custome_sentence', { unique: false });
             objectStore.createIndex('last_updated', 'last_updated', { unique: false });
+            objectStore.createIndex('ultra_wide_config', 'ultra_wide_config', { unique: false });
+            objectStore.createIndex('font_size', 'font_size', { unique: false });
         };
 
         request.onerror = function(event) {
@@ -40,8 +37,8 @@ function openDatabaseAndHandleUserSettings(userSettings) {
                         // Update existing settings
                         const updateTransaction = db.transaction(['UserSettings'], 'readwrite');
                         const updateObjectStore = updateTransaction.objectStore('UserSettings');
-
-                        // Merge new settings with existing ones
+                        console.log(userSettings)
+                        
                         const updatedSettings = {
                             user: userSettings.user,
                             theme: userSettings.theme,
@@ -51,12 +48,13 @@ function openDatabaseAndHandleUserSettings(userSettings) {
                             challenge_achieved: userSettings.challenge_achieved,
                             custome_sentence: userSettings.custome_sentence,
                             last_updated: now,
+                            ultra_wide_config: userSettings.ultra_wide_config,
+                            font_size: userSettings.font_size
                         };
 
                         const updateRequest = updateObjectStore.put(updatedSettings);
 
                         updateRequest.onsuccess = function() {
-                            console.log('User settings updated:', updatedSettings);
                             resolve(updatedSettings);
                         };
 
@@ -75,9 +73,11 @@ function openDatabaseAndHandleUserSettings(userSettings) {
                         mode_used: 'time',
                         time_selected: 15,
                         word_amount_selected: 15,
-                        challenge_achieved: [],
+                        challenge_achieved: [0,0,0,0,0,0,0,0,0],
                         custome_sentence: "The quick brown fox jumps over the lazy dog.",
-                        last_updated: now
+                        last_updated: now,
+                        ultra_wide_config: 'center',
+                        font_size: '40px'
                     };
 
                     const finalSettings = {
@@ -89,6 +89,8 @@ function openDatabaseAndHandleUserSettings(userSettings) {
                         challenge_achieved: userSettings.challenge_achieved || defaultValues.challenge_achieved,
                         custome_sentence: userSettings.custome_sentence || defaultValues.custome_sentence,
                         last_updated: now,
+                        ultra_wide_config: userSettings.ultra_wide_config || defaultValues.ultra_wide_config,
+                        font_size: userSettings.font_size || defaultValues.font_size,
                     };
 
                     const writeTransaction = db.transaction(['UserSettings'], 'readwrite');
@@ -96,7 +98,6 @@ function openDatabaseAndHandleUserSettings(userSettings) {
                     const addRequest = writeObjectStore.add(finalSettings);
 
                     addRequest.onsuccess = function() {
-                        console.log('User settings created:', finalSettings);
                         resolve(finalSettings);
                     };
 
@@ -115,7 +116,6 @@ function openDatabaseAndHandleUserSettings(userSettings) {
     });
 }
 function getLocalUserSettings(user, callback){
-    console.log('called')
     const request = indexedDB.open('UserSettingsDB', 1);
     request.onsuccess = function(event){
         const db = event.target.result;
@@ -129,7 +129,7 @@ function getLocalUserSettings(user, callback){
         }
     }
 }
-function updateLocalUserSettings(user, theme, mode_used, time_selected, word_amount_selected, challenge_achieved, custome_sentence){
+function updateLocalUserSettings(user, theme=null, mode_used=null, time_selected=null, word_amount_selected=null, challenge_achieved=null, custome_sentence=null, ultra_wide_config=null, font_size=null){
     const now = new Date().toISOString();
     const request = indexedDB.open('UserSettingsDB', 1);
     request.onsuccess = function(event) {
@@ -153,10 +153,16 @@ function updateLocalUserSettings(user, theme, mode_used, time_selected, word_amo
                 data.word_amount_selected = word_amount_selected; // Ensure this is a valid integer
             }
             if (challenge_achieved !== undefined && challenge_achieved !== null) {
-                data.challenge_achieved = JSON.stringify(challenge_achieved);
+                data.challenge_achieved = challenge_achieved;
             }
             if (custome_sentence !== undefined && custome_sentence !== null) {
                 data.custome_sentence = custome_sentence;
+            }
+            if(ultra_wide_config !== undefined && ultra_wide_config !== null){
+                data.ultra_wide_config = ultra_wide_config
+            }
+            if(font_size !== undefined && font_size !== null){
+                data.font_size = font_size
             }
             data.last_updated = now
         
@@ -188,7 +194,7 @@ function getCookie(name) {
     return cookieValue;
 }
 
-function updateUserSettings(theme, mode_used, time_selected, word_amount_selected, challenge_achieved, custome_sentence) {
+function updateUserSettings(theme=null, mode_used=null, time_selected=null, word_amount_selected=null, challenge_achieved=null, custome_sentence=null, ultra_wide_config=null, font_size = null) {
     // Prepare data object with optional parameters
     const data = {};
     if (theme !== undefined && theme !== null) {
@@ -209,6 +215,12 @@ function updateUserSettings(theme, mode_used, time_selected, word_amount_selecte
     if (custome_sentence !== undefined && custome_sentence !== null) {
         data.custome_sentence = custome_sentence;
     }
+    if(ultra_wide_config !== undefined && ultra_wide_config !==null){
+        data.ultra_wide_config = ultra_wide_config
+    }
+    if(font_size !== undefined && font_size !==null){
+        data.font_size = font_size
+    }
     
     $.ajax({
         url: '/user/settings/update/', // The URL for the request
@@ -220,11 +232,8 @@ function updateUserSettings(theme, mode_used, time_selected, word_amount_selecte
             xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
         },
         success: function(response) {
-            console.log('Success:', response);
-            // Handle successful response here
         },
         error: function(xhr, status, error) {
-            console.error('Error:', error);
         }
     });
 }

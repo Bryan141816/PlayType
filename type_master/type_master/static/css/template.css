@@ -6,7 +6,10 @@
 }
 html{
     height: 100dvh;
-    width: 100%;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 .profile_image{
     border-radius: 100%;
@@ -53,7 +56,10 @@ body {
     align-items: center;
     margin: 0;
     height: 100%;
+    width: 100%;
     position: relative;
+    flex-shrink: 0;
+    flex-grow: 1;
 }
 #notification-container{
     position: absolute;
@@ -112,6 +118,7 @@ main{
     justify-content: center;
     align-items: center;
     overflow: auto;
+    max-width: var(--display-width);
 }
 #upper-tab{
     display: flex;
@@ -121,6 +128,7 @@ main{
     justify-content: center;
     padding-left: 10%;
     padding-right: 10%;
+    max-width: var(--display-width);
 }
 #profile-button{
     background-color: transparent;
@@ -146,7 +154,7 @@ main{
     color: var(--medium-color-value);
     transition: color 0.1s ease-in;
     & i{
-        margin-top: 35%;
+        margin-top: 50%;
     }
 }
 #keyboard-form{
@@ -165,11 +173,42 @@ main{
     gap: 10px;
     align-items: center;
     font-size: 40px;
-    & span{
-        height: fit-content;
-        margin: 0;
-        padding: 0;
-    }
+    height: fit-content;
+}
+#playtype{
+    display: flex;
+    width: fit-content;
+    height: fit-content;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+#logo-button{
+    display: flex;
+    height: fit-content;
+    width: fit-content;
+    background-color: transparent;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border: none;
+}
+#playtype img{
+    pointer-events: none;
+}
+#playtpe-name{
+    pointer-events: none;
+}
+#playtype-name{
+    height: fit-content;
+    margin: 0;
+    padding: 0;
+    font-size: 40px;
+    color: var(--medium-color-value);
+    transition: color 0.2s ease-in;
+}
+#logo-button:hover > #playtype-name{
+    color: var(--high-color-value);
 }
 #profile{
     display: flex;

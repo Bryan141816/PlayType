@@ -14,6 +14,8 @@ class UserSettingsAdmin(admin.ModelAdmin):
     list_display = (
         'user',
         'theme',
+        'font_size',
+        'ultra_wide_config',
         'mode_used',
         'time_selected',
         'word_amount_selected',

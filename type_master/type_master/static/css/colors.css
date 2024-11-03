@@ -1,9 +1,12 @@
 :root{
     --background-color: #323437;
-    --opaque-background-color: rgba(16, 16, 16, 0.26);
+    --opaque-background-color: #292B2D;
     --medium-color-value: #999999;
     --high-color-value: #fff;
     --log-in-color-value: #b9b9b9;
     --gray-container-value : rgba(70, 70, 70, 0.5);
     --scrollbar-background-color: rgba(255, 255, 255, 0.7);
+    --display-width: 2200px;
+    
+    --test-font-size: 40px;
 }

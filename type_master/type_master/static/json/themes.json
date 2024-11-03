@@ -16,7 +16,7 @@
             },
             {
                 "name": "--opaque-background-color",
-                "value": "rgba(16, 16, 16, 0.26)"
+                "value": "#292B2D"
             },
             {
                 "name": "--log-in-color-value",
@@ -45,7 +45,7 @@
             },
             {
                 "name": "--opaque-background-color",
-                "value": "rgba(183, 183, 183, 0.26)"
+                "value": "#E9E9EB"
             },
             {
                 "name": "--log-in-color-value",

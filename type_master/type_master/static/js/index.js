@@ -5,9 +5,14 @@ $(document).ready(function() {
     let challenges = null;
     let currentChallenge = null;
     let localUserSettings = null;
+    let star_array = [];
 
     loadAndSetUserSettingsDefaultByLocalAndOnlineDB()
-    optionBoxResizeTransition()
+    document.onreadystatechange = () => {
+      if (document.readyState === "complete") {
+        optionBoxResizeTransition()
+      }
+    };
     addTextButtonClickListener()
 
     function setMode() {
@@ -33,7 +38,6 @@ $(document).ready(function() {
                 }
             } else {
                 typingTest.updateTimer(timer);
-                typingTest.resetTest('setmode')
             }
         }
     
@@ -86,7 +90,7 @@ $(document).ready(function() {
             $(`#text-button-${localUserSettings.word_amount_selected}`).addClass('option-active');
         }
         $('#sentence-text').val(data.custome_sentence);
-        settings_init()
+        settings_init(data)
         profile_init()
         setMode();
     }
@@ -170,7 +174,7 @@ $(document).ready(function() {
                 timer.stop()
             }
             const selected_mode = $(event.target).text();
-            getLocalUserSettings(localUserSettings.user, setTextButtonActive)
+
             switch(selected_mode){
                 case 'time':
                     if(prev_test_type == 'custom'){
@@ -245,6 +249,7 @@ $(document).ready(function() {
             else{
                 updateLocalUserSettings(localUserSettings.user, null,selected_mode)
             }
+            getLocalUserSettings(localUserSettings.user, setTextButtonActive)
             setMode()
         }
 
@@ -260,21 +265,8 @@ $(document).ready(function() {
         function modeValueChanger(type){ 
              
             prev_test_type = type;
-
-            if(!(type==='custom'||type==='challenge')){
-                if(type === 'words'){
-                    const word_amount = parseInt($('.text-button.option-active').text())
-                    if(word_amount){
-                        typingTest.updateWordAmount(word_amount);
-                    }
-                }
-                else{
-                    typingTest.updateWordAmount(50)
-                }
-            }
             timer.updateTestType(type)
             typingTest.updateTestType(type)
-            typingTest.resetTest(type)
             timer.reset()
         }
         function edit_sentence(){
@@ -285,12 +277,14 @@ $(document).ready(function() {
         }
     });
     function optionBoxResizeTransition(){
-        const optionBox = document.getElementById("option-selector");
-        const container = document.getElementById("options-container");
-        const containerRect = container.getBoundingClientRect();
-        const width = containerRect.width;
-        const height = containerRect.height;
-        optionBox.style.width = `${width}px`;
+        setTimeout(()=>{
+            const optionBox = document.getElementById("option-selector");
+            const container = document.getElementById("options-container");
+            const containerRect = container.getBoundingClientRect();
+            const width = containerRect.width;
+            const height = containerRect.height;
+            optionBox.style.width = `${width}px`;
+        },0)
     }
 
     function displayTypeTest(){
@@ -311,8 +305,7 @@ $(document).ready(function() {
                 <i class="fas fa-redo"></i>
             </button>`
         )      
-    }
-
+    }   
     function getChallanges(){
         fetch(challenge_json_url)
             .then(response => {
@@ -329,6 +322,7 @@ $(document).ready(function() {
                 console.error('There was a problem with the fetch operation:', error);
             });
             function populateChallenge(){
+                getLocalUserSettings(localUserSettings.user, setChallengeStars)
                 const typingTestContainer = $('#typingtest-container');
                 typingTestContainer.html(
                     `<div id="challenges-level-container">  
@@ -346,9 +340,9 @@ $(document).ready(function() {
                                 <div class="card-content">
                                     <h3 class="${level.difficulty}-text">${index+1}</h3>
                                     <span class="stars">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star challenge-star"></i>
+                                        <i class="fas fa-star challenge-star"></i>
+                                        <i class="fas fa-star challenge-star"></i>
                                     </span>
                                     <div class="description-card">
                                         <p class="description-sentence">${level.description}</p>
@@ -359,6 +353,18 @@ $(document).ready(function() {
                 });
                 addChallengesListener()
         
+            }
+            function setChallengeStars(data){
+                const history = [...data.challenge_achieved]
+                $('.challenge-star.stars-active').removeClass('stars-active')
+                history.forEach((item, index)=>{
+                    const currentCard = $('.option-card').eq(index)
+                    for(let i = 0; i<item; i++){
+                        setTimeout(()=>{
+                            currentCard.find('.challenge-star').eq(i).addClass('stars-active')
+                        },(i+1)*100)
+                    }
+                })
             }
             function addChallengesListener(){
                 challengeLevelChangerHandle()
@@ -383,6 +389,7 @@ $(document).ready(function() {
                         $('.difficulty-container.difficulty-active').removeClass('difficulty-active')
                         const new_active_difficulty = $('.difficulty-container').eq(challenge_level_index);
                         new_active_difficulty.addClass('difficulty-active')
+                        
                     }
                     if(challenge_level_index == 1){
                         $('#challenge-level-changer-right').addClass('challenge-level-changer-active')
@@ -390,6 +397,7 @@ $(document).ready(function() {
                     else if(challenge_level_index == 0){
                         $('#challenge-level-changer-left').removeClass('challenge-level-changer-active')
                     }
+                    getLocalUserSettings(localUserSettings.user, setChallengeStars)
                 })
                 $('#challenge-level-changer-right').on('click',()=>{
                     if(challenge_level_index<3){
@@ -404,6 +412,7 @@ $(document).ready(function() {
                     else if(challenge_level_index == 2){
                         $('#challenge-level-changer-right').removeClass('challenge-level-changer-active')
                     }
+                    getLocalUserSettings(localUserSettings.user, setChallengeStars)
                 })
             }
             
@@ -476,7 +485,6 @@ $(document).ready(function() {
                     xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
                 },
                 success: function (response) {
-                  console.log(response)
                   if(response.bpr){
                     let icon = '<i class="fas fa-crown"></i>'
                     showNotification(icon, 'Notification' ,response.message)
@@ -488,7 +496,8 @@ $(document).ready(function() {
               });
         }
         else{
-            if(origin === 'TypingTest' && accuracy >=40){  
+            if(origin === 'TypingTest' && accuracy >=40){ 
+                getLocalUserSettings(localUserSettings.user, addChallengeHistory)
                 resultDisplay = $(`
                     <div class="wpm_container">
                         <div id="result-container">
@@ -517,6 +526,7 @@ $(document).ready(function() {
                         </div>
                     </div>
                     `);
+                 
             }
             else{
                 let reasonForFailure = "You ran out of time to finish the challenge.";
@@ -536,7 +546,6 @@ $(document).ready(function() {
         $('#paragraph').html(resultDisplay);
         if(type === "challenge"){
             if(accuracy>=40){
-                let star_array = null;
                 if(accuracy >= 40 && accuracy < 55){
                     star_array = [$('.result-star-1')]
                 }
@@ -555,9 +564,24 @@ $(document).ready(function() {
                 });
             }
             challenge_result_init()
+
         }
         $('#counter').addClass('hidden');
         $('#challenge-counter').addClass('hidden')
+    }
+    function addChallengeHistory(data){
+        let challengeHistory =  [...data.challenge_achieved];
+        const challengeIndex = (currentChallenge.level_number)-1
+        if(star_array.length > challengeHistory[challengeIndex]){
+            challengeHistory[challengeIndex] = star_array.length 
+        }
+        if(user.isAuthenticated){
+            updateUserSettings(null,null, null, null, challengeHistory)
+            updateLocalUserSettings(localUserSettings.user,null,null, null, null, challengeHistory);
+        }
+        else{
+            updateLocalUserSettings(localUserSettings.user,null,null, null, null, challengeHistory);
+        }
     }
 
 

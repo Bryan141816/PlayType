@@ -1,30 +1,81 @@
-function settings_init(){
+function settings_init(data){
     clickOutsideEnabled = false;
     $('#close-button-settings-modal').click(function(){
         $('#settings-modal-container').removeClass('settings-modal-container-active')
         clickOutsideEnabled = false;
     });
     let currentTheme = lazychameleon.getStoredTheme(); 
-    $(`#${currentTheme}`).addClass('active-theme')
+    let aspectRatio = null;
+
+    setUserSettingsInSettingsModal()
+    function setUserSettingsInSettingsModal(){
+        $(`#${currentTheme}`).addClass('active-settings-option')
+        $(`#font-size-selector option[value="${data.font_size}"]`).prop('selected', true);
+        $('html').css('--test-font-size', data.font_size);
+        aspectRatio = window.innerWidth / window.innerHeight;
+        if(aspectRatio > 2.1){
+            $('.not-active').removeClass('not-active')
+            $(`#ultra-wide-${data.ultra_wide_config}`).addClass('active-settings-option')
+            if(data.ultra_wide_config === 'center'){
+                $('html').css('--display-width', '2200px');
+            }
+            else if(data.ultra_wide_config === 'stretch'){
+                $('html').css('--display-width', '100%');
+            }
+        }
+    }
+
 
     $('section.theme-selector-option').on('click',(event)=>{
-        if (!$(event.target).hasClass('active-theme')) {
-            $('.theme-selector-option.active-theme').removeClass('active-theme');
-            $(event.target).addClass('active-theme');
+        if (!$(event.target).hasClass('active-settings-option')) {
+            $('.theme-selector-option.active-settings-option').removeClass('active-settings-option');
+            $(event.target).addClass('active-settings-option');
             let selectedTheme = $(event.target).text().toLowerCase().trim();
             lazychameleon.setTheme(selectedTheme);
             lazychameleon.sendChangeThemeEvent(selectedTheme)
-            updateUserSettings(selectedTheme);
+            if(user.user.isAuthenticated){
+                updateUserSettings(selectedTheme);
+            }
         }
     });
-
+    $('section.display-mode-selector').on('click', (event)=>{
+        if(aspectRatio >2.1){
+            if(!$(event.target).hasClass('active-settings-option')){
+                $('section.display-mode-selector.active-settings-option').removeClass('active-settings-option')
+                $(event.target).addClass('active-settings-option')
+                if($(event.target).attr("id") === "ultra-wide-center"){
+                    $('html').css('--display-width', '2200px');
+                    updateLocalUserSettings(data.user, null, null, null, null, null, null, 'center')
+                    if(user.isAuthenticated){
+                        updateUserSettings(null, null, null, null, null, null, 'center');
+                    }
+                }
+                else if($(event.target).attr("id") === "ultra-wide-stretch"){
+                    $('html').css('--display-width', '100%');
+                    updateLocalUserSettings(data.user, null, null, null, null, null, null, 'stretch')
+                    if(user.isAuthenticated){
+                        updateUserSettings(null, null, null, null, null, null, 'stretch');
+                    }
+                }
+            }
+        }
+    })
+    $('#font-size-selector').on('change', function() {
+        const fontSizeSelected = $(this).val();
+        $('html').css('--test-font-size', fontSizeSelected);
+        updateLocalUserSettings(data.user,null, null, null, null, null, null, null, fontSizeSelected);
+        if(user.isAuthenticated){
+            updateUserSettings(null, null, null, null, null, null, null, fontSizeSelected);
+        }
+    });
+    
     $('section.theme-selector-option').hover(
         function() {
             let selectedTheme = $(event.target).text().toLowerCase().trim();
             lazychameleon.setTheme(selectedTheme);
         },
         function() {
-            let currentTheme = $('section.theme-selector-option.active-theme').text().toLowerCase().trim();
+            let currentTheme = $('section.theme-selector-option.active-settings-option').text().toLowerCase().trim();
             lazychameleon.setTheme(currentTheme);
         }
     )
@@ -45,7 +96,6 @@ function settings_init(){
 
     $('#settings-button').click(function(){
         $('#settings-modal-container').addClass('settings-modal-container-active')
-        console.log('hello')
         setTimeout(function() {
             clickOutsideEnabled = true;
         }, 0);
@@ -62,5 +112,26 @@ function settings_init(){
             lazychameleon.setTheme('dark')
         }
     });
+
+    window.addEventListener('resize', function() {
+        aspectRatio = window.innerWidth / window.innerHeight;
+        if(aspectRatio > 2.1){
+            $('.not-active').removeClass('not-active')
+            getLocalUserSettings(data.user, setUltraWideConfig)
+        }
+        else{
+            $('.ultra-wide-mode').addClass("not-active")
+            $('section.display-mode-selector.active-settings-option').removeClass('active-settings-option')
+        }
+    });
+    function setUltraWideConfig(data){
+        $(`#ultra-wide-${data.ultra_wide_config}`).addClass('active-settings-option')
+        if(data.ultra_wide_config === 'center'){
+            $('html').css('--display-width', '2200px');
+        }
+        else if(data.ultra_wide_config === 'stretch'){
+            $('html').css('--display-width', '100%');
+        }
+    }
 
 }

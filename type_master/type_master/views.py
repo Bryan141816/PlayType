@@ -9,7 +9,7 @@ from django.db.models import Max, Count, Avg
 from django.db.models.functions import TruncDate
 from django.http import JsonResponse, HttpResponseBadRequest
 from datetime import datetime
-
+import json
 
 
 
@@ -138,6 +138,15 @@ def updateUserSettings(request):
     word_amount_selected = request.POST.get('word_amount_selected')
     challenge_achieved = request.POST.get('challenge_achieved')
     custome_sentence = request.POST.get('custome_sentence')
+    ultra_wide_config = request.POST.get('ultra_wide_config')
+    font_size = request.POST.get('font_size')
+
+
+    if challenge_achieved is not None:
+       try:
+           challenge_achieved = json.loads(challenge_achieved)
+       except json.JSONDecodeError:
+           return JsonResponse({'error': 'Invalid format for challenge_achieved.'}, status=400)
     
 
     # Update fields only if the new value is not None
@@ -153,6 +162,12 @@ def updateUserSettings(request):
         user_settings.challenge_achieved = challenge_achieved
     if custome_sentence is not None:
         user_settings.custome_sentence = custome_sentence
+    if ultra_wide_config is not None:
+        user_settings.ultra_wide_config = ultra_wide_config
+    if font_size is not None:
+        user_settings.font_size = font_size
+    
+    print(font_size)
 
     # Save the updated user settings
     user_settings.save()
@@ -169,7 +184,7 @@ def addTestHistory(request):
     data = request.POST
         
     try:
-        max_value = TestHistory.objects.aggregate(Max('wpm'))
+        max_value = TestHistory.objects.filter(user=user).aggregate(Max('wpm'))
         bpr = False
         wpm = float(data.get('wpm', 0))
         if(max_value['wpm__max'] is None or wpm > max_value['wpm__max']):
@@ -207,19 +222,52 @@ def temp(request):
 
 def userStat(request):
     user = request.user
+    if( not user.is_authenticated):
+        return redirect('login')
+       
     context = getUser(user)
-    test_count = TestHistory.objects.count()
-    avg_wpm = TestHistory.objects.all().aggregate(Avg('wpm'))
-    avg_accuracy = TestHistory.objects.all().aggregate(Avg('accuracy'))
-    total_day_active = TestHistory.objects.annotate(date=TruncDate('test_taken')).values('date').annotate(count=Count('id')).order_by('date')
-    bpr = TestHistory.objects.filter(bpr=True).order_by('-test_taken').first()
-    history = TestHistory.objects.all().order_by('-test_taken')
-    context["test_count"] = test_count
-    context["avg_wpm"] = f"{avg_wpm["wpm__avg"]:.2f}" if avg_wpm["wpm__avg"] % 1 else f"{int(avg_wpm["wpm__avg"])}"
-    context["avg_accuracy"] = f"{avg_accuracy["accuracy__avg"]:.2f}" if avg_accuracy["accuracy__avg"] % 1 else f"{int(avg_accuracy["accuracy__avg"])}"
-    context["total_day_active"] = len(total_day_active)
-    context["bpr"] = bpr.wpm
-    context["history"] = history
+    user = get_object_or_404(UserSocialAuth, user=user)
+    test_count = TestHistory.objects.filter(user=user).count()
+    user_settings = UserSettings.objects.filter(user = user).first() 
+    if(test_count != 0):
+        avg_wpm = TestHistory.objects.filter(user=user).aggregate(Avg('wpm'))
+        avg_accuracy = TestHistory.objects.filter(user=user).aggregate(Avg('accuracy'))
+        total_day_active = (
+            TestHistory.objects
+            .filter(user=user)
+            .annotate(date=TruncDate('test_taken'))  # Truncate to date level
+            .values('date')  # Group by date
+            .annotate(count=Count('id'))  # Count entries per date
+            .order_by('date')  # Sort by date
+        )
+        print(total_day_active)
+        bpr = TestHistory.objects.filter(user=user,bpr=True).order_by('-test_taken').first()
+        history = TestHistory.objects.filter(user=user).order_by('-test_taken')
+        context["test_count"] = test_count
+        context["avg_wpm"] = f"{avg_wpm["wpm__avg"]:.2f}" if avg_wpm["wpm__avg"] % 1 else f"{int(avg_wpm["wpm__avg"])}"
+        context["avg_accuracy"] = f"{avg_accuracy["accuracy__avg"]:.2f}" if avg_accuracy["accuracy__avg"] % 1 else f"{int(avg_accuracy["accuracy__avg"])}"
+        context["total_day_active"] = len(total_day_active)
+        context["bpr"] = bpr.wpm
+        context["history"] = history
+    else:
+        context["test_count"] = 0
+        context["avg_wpm"] = 0
+        context["avg_accuracy"] = 0
+        context["total_day_active"] = 0
+        context["bpr"] = 0
+        context["history"] = None
+    
+    challenge_achieved_count = 0
+    if user_settings:
+        challenge_achieved = user_settings.challenge_achieved  # Access the challenge_achieved field
+        challenge_achieved_count = 0
+
+        for x in challenge_achieved:
+            if x == 3:
+                challenge_achieved_count += 1
+            else:
+                break
+        context["challenge_achieved"] = f'{challenge_achieved_count}/{len(challenge_achieved)}'
     return render(request, 'html/user-stat.html', context)
 
 

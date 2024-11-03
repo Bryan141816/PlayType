@@ -8,7 +8,7 @@
     </header>
     <div id="settings-tab">
         <div class="setting-tab-active settings-tab-link" id="general-option"> <i class="fas fa-cog" style="pointer-events: none;"></i>General</div>
-        <div class="settings-tab-link" id="apperance-option"> <i class="fas fa-keyboard" style="pointer-events: none;"></i>Apperance</div>
+        <div class="settings-tab-link" id="apperance-option"> <i class="fas fa-brush" style="pointer-events: none;"></i>Personalization</div>
     </div>
     <div id="settings-content">
         <div class="settings-content-container active-settings-content" id="general-container">
@@ -47,10 +47,43 @@
             <span>Theme</span>
             <div class="settings-option-container">
                 <section class="dark theme-selector-option" id="dark">
+                    <i class="fas fa-check checkmark"></i>
                     Dark
                 </section>
                 <section class="light theme-selector-option" id="light">
+                    <i class="fas fa-check checkmark"></i>
                     Light
+                </section>
+            </div>
+            <span>Typing Test Font Size</span>
+            <select id="font-size-selector" name="font-size-selector">
+                <option value="20px" style="font-size: 20px;">20px</option>
+                <option value="30px" style="font-size: 30px;">30px</option>
+                <option value="40px" style="font-size: 40px;">40px</option>
+                <option value="50px" style="font-size: 50px;">50px</option>
+                <option value="60px" style="font-size: 60px;">60px</option>
+                <option value="70px" style="font-size: 70px;">70px</option>
+                <option value="80px" style="font-size: 80px;">80px</option>
+            </select>
+            <span class="not-active ultra-wide-mode">
+                Ultra Wide Display Configuration
+                <div id="ultra-wide-info">
+                    <i class="fas fa-info-circle"></i>
+                    <div id="ultra-wide-info-text">You're not using an<br>ultrawide display.</div>
+                </div>
+            </span>
+            <div class="settings-option-container">
+                <section class="ultra-wide-center display-mode-selector not-active ultra-wide-mode" id="ultra-wide-center">
+                    <div id="content-ultra-wide-center">
+                        <i class="fas fa-check checkmark"></i>
+                        Center
+                    </div>
+                </section>
+                <section class="ultra-wide-stretch display-mode-selector not-active ultra-wide-mode" id="ultra-wide-stretch">
+                    <div id="content-ultra-wide-stretch">
+                        <i class="fas fa-check checkmark"></i>
+                        Strech
+                    </div>
                 </section>
             </div>
         </div>
