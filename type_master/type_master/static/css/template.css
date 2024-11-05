@@ -1,9 +1,8 @@
 * {
     font-family: var(--font-family), monospace;
-    font-style: normal;
     box-sizing: border-box;
-    font-weight: 400;
-    font-display: optional
+    vertical-align: middle;
+    font-weight: normal;
 }
 html{
     height: 100dvh;
@@ -88,6 +87,7 @@ body {
 }
 #notification-icon i{
     font-size: 300%;
+    line-height: 300%;
     color: var(--high-color-value)
 }
 #notification-icon img{
@@ -104,10 +104,12 @@ body {
 
     #notification-type{
         font-size: 200%;
+        line-height: 200%;
         color: #0057d6;
     }
     #notification-message{
         font-size: 150%;
+        line-height: 150%;
         color: var(--high-color-value);
     }
 }
@@ -134,6 +136,7 @@ main{
 #profile-button{
     background-color: transparent;
     font-size: 30px;
+    line-height: 30px;
     height: 50px;
     width: 50px;
     margin-left: auto;
@@ -150,6 +153,7 @@ main{
 .tap-bar-button{
     background-color: transparent;
     font-size: 20px;
+    line-height: 20px;
     height: fit-content;
     border: none;
     color: var(--medium-color-value);
@@ -174,6 +178,7 @@ main{
     gap: 10px;
     align-items: center;
     font-size: 40px;
+    line-height: 40px;
     height: fit-content;
 }
 #playtype{
@@ -205,6 +210,7 @@ main{
     margin: 0;
     padding: 0;
     font-size: 40px;
+    line-height: 40px;
     color: var(--medium-color-value);
     transition: color 0.2s ease-in;
 }

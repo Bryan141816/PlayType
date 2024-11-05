@@ -31,6 +31,7 @@ h1{
     border: none;
     color: var(--high-color-value);
     font-size: 30px;
+    line-height: 30px;
     font-weight: 200;
     z-index: 998;
     top: 2rem;
@@ -52,6 +53,7 @@ h1{
     padding: 10px;
     color: var(--high-color-value);
     font-size: 25px;
+    line-height: 25px;
 }
 #enter-sentence{
     width: calc(100%-20px);
@@ -61,6 +63,7 @@ h1{
     background-color: var(--gray-container-value);
     color: var(--high-color-value);
     font-size: 25px;
+    line-height: 25px;
     margin-bottom: 20px;
     margin-left: 20px;
     margin-right: 20px;

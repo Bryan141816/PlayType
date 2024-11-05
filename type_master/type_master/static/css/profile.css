@@ -63,15 +63,18 @@
 .medium-text{
     color: var(--high-color-value);
     font-size: 30px;
+    line-height: 30px;
 }
 .normal-text{
     color: var(--high-color-value);
     font-size: 20px;
+    line-height: 20px;
     white-space: nowrap;
 }
 .small-text{
     color: var(--high-color-value);
     font-size: 16px;
+    line-height: 16px;
     white-space: nowrap;
 }
 #lvl-bar-bg{
@@ -105,6 +108,7 @@
     border: none;
     color: var(--medium-color-value);
     font-size: 40px;
+    line-height: 40px;
     font-weight: 200;
     transition: color 0.1s ease;
 }
@@ -117,6 +121,7 @@
     border: none;
     color: var(--medium-color-value);
     font-size: 30px;
+    line-height: 30px;
     font-weight: 200;
     position: absolute;
     z-index: 998;
@@ -150,11 +155,13 @@
     background-color: var(--opaque-background-color);
     color: var(--medium-color-value);
     font-size: clamp(8px, 20px, 100px);                                 
+    line-height: clamp(8px, 20px, 100px);                                 
     cursor: pointer;
     gap: 10px; 
     transition: border 0.1s ease-in , color 0.1s ease-in;
     & i{
-        font-size: 180%;  ;
+        font-size: 180%;
+        line-height: 180%;
     }
 }
 #profile-options button:hover{

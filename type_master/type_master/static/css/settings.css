@@ -33,6 +33,7 @@ h1{
     width: max-content;
     color: white;
     font-size: 30px;
+    line-height: 30px;
     padding: 20px;
     overflow: auto;
     gap: 15px;
@@ -53,6 +54,7 @@ h1{
         }
     & i{
         font-size: 20px;
+        line-height: 20px;
     }
 }
 #settings-content{
@@ -61,11 +63,13 @@ h1{
     width: auto;
     color: var(--high-color-value);
     font-size: 30px;
+    line-height: 30px;
     padding: 20px;
     gap: 15px;
     overflow: auto;
     & span{
         font-size: 30px;
+        line-height: 30px;
         display: flex;
         gap: 10px;
         align-items: center;
@@ -87,6 +91,7 @@ h1{
     border: none;
     color: var(--high-color-value);
     font-size: 30px;
+    line-height: 30px;
     font-weight: 200;
     z-index: 998;
     top: 2rem;
@@ -103,10 +108,12 @@ h1{
     padding-left: 10px;
     padding-right: 10px;
     font-size: 1.5rem;
+    line-height: 1.5rem;
 }
 #timezone option{
     background-color: var(--opaque-background-color);
     font-size: 1.3rem;
+    line-height: 1.3rem;
 }
 
 .settings-option-container{
@@ -121,6 +128,7 @@ h1{
 
     & section{
         font-size: 16px;
+        line-height: 16px;
         display: flex;
         padding: 5px;
         align-items: end;
@@ -166,6 +174,7 @@ h1{
     padding-left: 10px;
     padding-right: 10px;
     font-size: 1.5rem;
+    line-height: 1.5rem;
 }
 #font-size-selector option, #font-family option{
     background-color: var(--opaque-background-color);
@@ -197,6 +206,7 @@ h1{
 }
 #ultra-wide-info{
     font-size: 60%;
+    line-height: 60%;
     position: relative;
     display: none;
     align-items: center;
@@ -212,6 +222,7 @@ h1{
     transform: translateX(-100%) translateY(-100%);
     border-radius: 10px;
     font-size: 150%;
+    line-height: 150%;
     padding: 10px;
     width: max-content;
     opacity: 0;

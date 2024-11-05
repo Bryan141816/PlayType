@@ -23,6 +23,7 @@
     background-color: transparent;
     border: none;
     font-size: 60px;
+    line-height: 60px;
     color: var(--medium-color-value);
     transition: color 0.1s ease-in;
     & :hover{
@@ -89,6 +90,7 @@
         justify-content: center;
         align-items: center;
         font-size: 60px;
+        line-height: 60px;
         margin: 10px;
         height: 70px;
         width: 70px;
@@ -133,6 +135,7 @@
     & i{
         pointer-events: none;
         font-size: clamp(16px, 3vw, 50px);
+        line-height: clamp(16px, 3vw, 50px);
         color: var(--gray-container-value);
     }
 }
@@ -167,6 +170,7 @@
     display: inline;
     color: var(--high-color-value);
     font-size: clamp(16px, 2vw, 30px);
+    line-height: clamp(16px, 2vw, 30px);
     text-align: justify;
     margin: 0;
 }
