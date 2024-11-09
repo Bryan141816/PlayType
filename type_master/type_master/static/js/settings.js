@@ -35,7 +35,7 @@ function settings_init(data){
             let selectedTheme = $(event.target).text().toLowerCase().trim();
             lazychameleon.setTheme(selectedTheme);
             lazychameleon.sendChangeThemeEvent(selectedTheme)
-            if(user.user.isAuthenticated){
+            if(user.isAuthenticated){
                 updateUserSettings(selectedTheme);
             }
         }
@@ -65,6 +65,12 @@ function settings_init(data){
     $('#font-family').on('change', function() {
         const fontfamily = $(this).val();
         $('html').css('--font-family', fontfamily);
+        $('*').addClass('font-change');
+        setTimeout(()=>{
+            $('*').removeClass('font-change');
+        },500)
+        console.log($('#apperance-option').outerHeight())
+
         updateLocalUserSettings(data.user,null, null, null, null, null, null, null,null, fontfamily);
         if(user.isAuthenticated){
             updateUserSettings(null, null, null, null, null, null, null, null, fontfamily);

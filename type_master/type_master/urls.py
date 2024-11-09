@@ -20,6 +20,8 @@ urlpatterns = [
     path('user/test/history', views.addTestHistory, name='add-test-history'),
 
     path('user/stat/', views.userStat, name='userstat'),
+    path('user/leaderboards/', views.leaderboard, name='leaderboards'),
+    path('user/leaderboards/getData/', views.getTypeLeaderboarrd, name="getTypeLeaderboard"),
     
     path('settings', views.settings, name="settings"),
     

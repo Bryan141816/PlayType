@@ -1,0 +1,23 @@
+{% load static %}
+
+
+<div></div>
+<div class="table-head">name</div>
+<div class="table-head">wpm</div>
+<div class="table-head">accuracy</div>
+<div class="table-head">date</div>
+{% for item in  test_history %}
+    <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} table-starting-content">
+        {% if forloop.counter == 1%}
+            <i class="fas fa-medal"></i>
+        {% else %}
+            {{forloop.counter}}
+        {% endif %}
+    </div>
+    <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}"><img src="{{item.user__extra_data__picture}}" alt="">{{item.user__extra_data__name}}</div>
+    <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.wpm}}</div>
+    <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.accuracy}}%</div>
+    <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} table-ending-content">{{item.test_taken__date}}</div>
+{% empty %}
+    <div class="full-width">no data available in table</div>
+{% endfor %}

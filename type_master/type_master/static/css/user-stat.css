@@ -28,9 +28,10 @@ main{
     justify-content: center;
     align-items: center;
     & img{
-        aspect-ratio: 1/1;
         border-radius: 50%;
         margin: 0;
+        width: 100px;
+        height: 100px;
     }
     #name_datecreated{
         width: fit-content;

@@ -1,14 +1,16 @@
 from django.shortcuts import render, redirect
+from django.template.loader import render_to_string
 from django.template.defaulttags import register
 from .models import Word, UserSettings, TestHistory
 from django.contrib.auth import logout
 from social_django.models import UserSocialAuth
 import random
 from django.shortcuts import get_object_or_404
-from django.db.models import Max, Count, Avg
+from django.db.models import Max, Count, Avg, OuterRef, Subquery, F
 from django.db.models.functions import TruncDate
 from django.http import JsonResponse, HttpResponseBadRequest
 from datetime import datetime
+from django.utils import timezone
 import json
 
 
@@ -200,10 +202,12 @@ def addTestHistory(request):
             bpr=bpr
         )
         if(bpr):
+            confitte_html = render_to_string('html/confitte.html')
             return JsonResponse({
                 'success': True,
                 'message': 'You got a new personal best.',
                 'bpr': bpr,
+                'confitte': confitte_html,
                 'test_history_id': test_history.id
             })
         else:
@@ -219,7 +223,7 @@ def addTestHistory(request):
 
 
 def temp(request):
-    return render(request, 'html/temp.html')
+    return render(request, 'html/confitte.html')
 
 def userStat(request):
     user = request.user
@@ -270,6 +274,59 @@ def userStat(request):
                 break
         context["challenge_achieved"] = f'{challenge_achieved_count}/{len(challenge_achieved)}'
     return render(request, 'html/user-stat.html', context)
+
+def leaderboard(request):
+    user = request.user
+    today = timezone.now().date()
+    context = getUser(user)
+    user = get_object_or_404(UserSocialAuth, user=user)
+    max_wpm = TestHistory.objects.values('user', 'mode', 'type').annotate(max_wpm=Max('wpm'))
+
+    # Query for 'time' mode with the maximum WPM for each user
+    test_history_time_default = TestHistory.objects.filter(
+        user=F('user'),
+        mode="time",
+        type="15",
+        wpm=Subquery(max_wpm.filter(user=OuterRef('user'), mode="time").values('max_wpm')[:1]),
+        test_taken__date=today
+    ).values('wpm', 'accuracy', 'test_taken__date', 'user__extra_data__picture', 'user__extra_data__name')
+    test_history_word_default = TestHistory.objects.filter(
+        user=F('user'),
+        mode="words",
+        type="15",
+        wpm=Subquery(max_wpm.filter(user=OuterRef('user'), mode="words").values('max_wpm')[:1]),
+        test_taken__date=today
+    ).values('wpm', 'accuracy', 'test_taken__date', 'user__extra_data__picture', 'user__extra_data__name')
+
+    context["test_history_time_default"] = test_history_time_default
+    context["test_history_word_default"] = test_history_word_default
+    return render(request, 'html/leaderboard.html', context)
+
+def getTypeLeaderboarrd(request):
+
+    if not request.method == 'GET':
+        return HttpResponseBadRequest('Invalid request method. Please use GET')
+    
+    mode = request.GET.get('mode')
+    type = request.GET.get('type')
+
+
+    
+    today = timezone.now().date()
+    max_wpm = TestHistory.objects.values('user', 'mode', 'type').annotate(max_wpm=Max('wpm'))
+
+    test_history = TestHistory.objects.filter(
+        user=F('user'),
+        mode=mode,
+        type=type,
+        wpm__lte=Subquery(max_wpm.filter(user=OuterRef('user'), mode=mode, type=type).values('max_wpm')[:1]),
+        test_taken__date=today
+    ).values('wpm', 'accuracy', 'test_taken__date', 'user__extra_data__picture', 'user__extra_data__name')
+    context = {
+        "test_history": test_history
+    }
+
+    return render(request, 'html/leaderboard-table.html', context)
 
 
 

@@ -20,6 +20,7 @@ class TypingTest {
         this.testType = testType;
         this.init();
     }
+
     init() {
         this.test_finished = false;
         this.textInput.on('input', this.handleInput.bind(this));
@@ -30,6 +31,7 @@ class TypingTest {
         this.textInput.on('blur', () => this.textInputFocus('blue'));
         this.retryButton.click(this.resetTest.bind(this));
     }
+    
     textInputFocus(type){
         if(!this.test_finished){
             if(type == 'focus'){
@@ -86,6 +88,7 @@ class TypingTest {
             let x = 0;
             let y = 0;
             if(currentInput.length!=0 && currentInput.length != activeContainer.children.length){
+
                 let activeLetter = activeContainer.children[currentInput.length]
                 const relativePosition =this.getRelativePosition(activeContainer,activeLetter);
                 x = relativePosition.childrenPos.x - relativePosition.containerPos.x;
@@ -228,10 +231,11 @@ class TypingTest {
 
     getRelativePosition(activeELement, childrenElement = null) {
         if(activeELement != null){
-            const element = activeELement;
-            const container = document.querySelector('.paragraph');
-            const elementRect = element.getBoundingClientRect();
-            const containerRect = container.getBoundingClientRect();
+            const element       =   activeELement;
+            const container     =   document.querySelector('.paragraph');
+            const elementRect   =   element.getBoundingClientRect();
+            const containerRect =   container.getBoundingClientRect();
+            
             if(childrenElement!=null){
                 const childrenRect = childrenElement.getBoundingClientRect();
                 return {elementPos: elementRect,childrenPos: childrenRect ,containerPos: containerRect}
@@ -243,13 +247,13 @@ class TypingTest {
     }
     requestResultData(){
         const data = {
-            totalCharacter: this.totalCharacters,
-            previousInputLength: this.previousInputLength,
-            correctCount: $('.letter.correct').length,
-            spaceCounter: this.spaceCounter,
-            totalCharacters: this.totalCharacters,
-            incorrectCounter: this.incorrectCounter,
-            extraLetterCounter: this.extraLetterCounter
+            totalCharacter:         this.totalCharacters,
+            previousInputLength:    this.previousInputLength,
+            spaceCounter:           this.spaceCounter,
+            totalCharacters:        this.totalCharacters,
+            incorrectCounter:       this.incorrectCounter,
+            extraLetterCounter:     this.extraLetterCounter,
+            correctCount:           $('.letter.correct').length
         }
         return data;
     }
@@ -264,9 +268,9 @@ class TypingTest {
         });
     }
     useCustomSentence(param=null){
-        let sentence = $('#sentence-text').val().trim();
-        const words = sentence.split(" ");
-        const letters = words.map(word => word.split(""));
+        let sentence    =   $('#sentence-text').val().trim();
+        const words     =   sentence.split(" ");
+        const letters   =   words.map(word => word.split(""));
 
 
         const pointer = $(`<div class="pointer-area-field">

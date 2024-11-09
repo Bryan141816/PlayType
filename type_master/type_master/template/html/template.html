@@ -42,7 +42,9 @@
     <div id="custom-sentence-modal-container">
         {% include 'html/custom-sentence.html' %}
     </div>
-    <div id="side-panel-container"></div>
+    <div id="side-panel-container">
+        {% include 'html/profile.html' %}
+    </div>
     <div id="upper-tab">
         <div id="logo">
             <form action="{% url 'index' %}" id="playtype">
@@ -85,7 +87,6 @@
             const userSettings = JSON.parse(document.getElementById('user_settings').textContent);
             const themesjson = "{% static 'json/themes.json' %}"
             const loginUrl =  "{% url 'login'%}"
-            const showProfileUrl =  "{% url 'show-profile'%}"
             const lazychameleon = new LazyChameleon('playtype', themesjson, userSettings.theme);
             let clickOutsideEnabled = false;
 
@@ -96,14 +97,14 @@
             };
 
             $(document).on('click', function(event) {
-                if ($('#side-panel').hasClass('active-side-panel')) {
-                    if (!$('#side-panel').is(event.target) && $('#side-panel').has(event.target).length === 0) {
-                        $("#side-panel-container").removeClass('side-panel-container-active')
-                        $('#side-panel').removeClass('active-side-panel')
-                        $('#side-panel').addClass('slide-out')
-                        setTimeout(function(){
-                            $('#side-panel').remove()
-                        },500)   
+
+                if (clickOutsideEnabled && $('#side-panel').hasClass('active-side-panel')) {
+                    if (!$(event.target).closest('#side-panel-container').length) {
+                        $('#side-panel').removeClass('active-side-panel');
+                        setTimeout(()=>{
+                            $('#side-panel-container').removeClass('side-panel-container-active');
+                        },500)
+                        clickOutsideEnabled = false; // Reset the flag
                     }
                 }
                 if (clickOutsideEnabled && $('#settings-modal-container').hasClass('settings-modal-container-active')) {

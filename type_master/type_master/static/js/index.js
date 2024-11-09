@@ -8,14 +8,14 @@ $(document).ready(function() {
     let star_array = [];
 
     loadAndSetUserSettingsDefaultByLocalAndOnlineDB()
+    addTextButtonClickListener()
     document.onreadystatechange = () => {
       if (document.readyState === "complete") {
         setTimeout(()=>{
             optionBoxResizeTransition()
-        },100)
+        },0)
       }
     };
-    addTextButtonClickListener()
 
     function setMode() {
         const activeMode = $('.text-mode.option-active').text();
@@ -480,6 +480,10 @@ $(document).ready(function() {
                   if(response.bpr){
                     let icon = '<i class="fas fa-crown"></i>'
                     showNotification(icon, 'Notification' ,response.message)
+                    $('body').append(response.confitte);
+                    setTimeout(()=>{
+                        $('.confetti-wrapper').remove()
+                    },5000)
                   }
                 },
                 error: function (xhr, status, error) {

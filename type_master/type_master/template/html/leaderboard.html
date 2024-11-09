@@ -1,0 +1,149 @@
+{% extends 'html/template.html' %}
+{% load static %}
+{% block head %}
+    <title>PlayType| A interactive typing test website.</title>
+    <link rel="stylesheet" href="{% static 'css/leaderboards.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="type-selector-container">
+        <span>leaderboards</span>
+        <input type="date" id="leaderboardsdateInput" value="" max="" />
+    </div>
+    <div class="split-screen">
+        <div class="half-table-container">
+            <div class="type-selector-container">
+                <span>time</span>
+                <select id="time-type-query-selector">
+                    <option value="15">15</option>
+                    <option value="30">30</option>
+                    <option value="60">60</option>
+                    <option value="120">120</option>
+                </select>
+            </div>
+            <div id="time-leaderboard-table-contaier" class="table-container">
+                <div></div>
+                <div class="table-head">name</div>
+                <div class="table-head">wpm</div>
+                <div class="table-head">accuracy</div>
+                <div class="table-head">date</div>
+                {% for item in  test_history_time_default %}
+                    <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} table-starting-content">
+                        {% if forloop.counter == 1%}
+                            <i class="fas fa-medal"></i>
+                        {% else %}
+                            {{forloop.counter}}
+                        {% endif %}
+                    </div>
+                    <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}"><img src="{{item.user__extra_data__picture}}" alt="">{{item.user__extra_data__name}}</div>
+                    <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.wpm}}</div>
+                    <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.accuracy}}%</div>
+                    <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} table-ending-content">{{item.test_taken__date}}</div>
+                {% empty %}
+                    <div class="full-width">no data available in table</div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="half-table-container">
+            <div class="type-selector-container">
+                <span>words</span>
+                <select id="word-type-query-selector">
+                    <option value="15">15</option>
+                    <option value="30">30</option>
+                    <option value="60">60</option>
+                    <option value="120">120</option>
+                </select>
+            </div>
+
+            <div id="word-leaderboard-table-contaier" class="table-container">
+                <div></div>
+                <div class="table-head">name</div>
+                <div class="table-head">wpm</div>
+                <div class="table-head">accuracy</div>
+                <div class="table-head">date</div>
+                {% for item in  test_history_word_default %}
+                                <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} table-starting-content">
+                        {% if forloop.counter == 1%}
+                            <i class="fas fa-medal"></i>
+                        {% else %}
+                            {{forloop.counter}}
+                        {% endif %}
+                    </div>
+                <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}"><img src="{{item.user__extra_data__picture}}" alt="">{{item.user__extra_data__name}}</div>
+                <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.wpm}}</div>
+                <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.accuracy}}%</div>
+                <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} table-ending-content">{{item.test_taken__date}}</div>
+                {% empty %}
+                    <div class="full-width">no data available in table</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function(){
+            settings_init(userSettings)
+            profile_init()
+        })
+        const today = new Date().toISOString().split('T')[0];
+        $('#leaderboardsdateInput').attr('max', today);
+        $('#leaderboardsdateInput').val(today);
+        
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Check if this cookie string begins with the desired name
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        $('#time-type-query-selector').on('change', function() {
+            data = {
+                mode: "time",
+                type: $(this).val()
+            }
+            $.ajax({
+                url: '/user/leaderboards/getData/', // The URL for the request
+                type: 'GET', 
+                contentType: 'application/x-www-form-urlencoded', // Data type
+                data: data, // Use the prepared data object
+                beforeSend: function(xhr, settings) {
+                    // Include CSRF token if needed
+                    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                },
+                success: function(response) {
+                    $("#time-leaderboard-table-contaier").html(response)
+                },
+                error: function(xhr, status, error) {
+                }
+            });
+        });
+        $('#word-type-query-selector').on('change', function() {
+            data = {
+                mode: "words",
+                type: $(this).val()
+            }
+            $.ajax({
+                url: '/user/leaderboards/getData/', // The URL for the request
+                type: 'GET', 
+                contentType: 'application/x-www-form-urlencoded', // Data type
+                data: data, // Use the prepared data object
+                beforeSend: function(xhr, settings) {
+                    // Include CSRF token if needed
+                    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                },
+                success: function(response) {
+                    $("#word-leaderboard-table-contaier").html(response)
+                },
+                error: function(xhr, status, error) {
+                }
+            });
+        });
+    </script>
+{% endblock %}

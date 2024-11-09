@@ -12,31 +12,13 @@
     padding-top: 4rem;
     align-items: center;
     gap: 15px;
-    transform: translateX(500px);
+    transform: translateX(100%);
     z-index: 999;
     pointer-events: all;
+    transition: transform 0.5s ease;
 }
-.active-side-panel{
-    animation: slideIn 0.5s ease forwards; 
-}
-@keyframes slideIn {
-    from {
-        transform: translateX(100%); /* Start off-screen to the left */
-    }
-    to {
-        transform: translateX(0); /* Move to its original position */
-    }
-}
-.slide-out {
-    animation: slideOut 0.5s ease forwards; 
-}
-@keyframes slideOut {
-    from {
-        transform: translateX(0); /* Start at original position */
-    }
-    to {
-        transform: translateX(100%) /* Move off-screen to the left */
-    }
+#side-panel.active-side-panel{
+    transform: translateX(0%);
 }
 #profile-image{
     width: 200px;
