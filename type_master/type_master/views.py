@@ -462,7 +462,7 @@ def getTypeLeaderboarrd(request):
                     'user__extra_data__name': record['user__extra_data__name'],
                     'user__user__username': record['user__user__username']
                 })
-        seen_users_word.add(user_id)
+            seen_users_word.add(user_id)
         test_history_time = render_to_string('html/leaderboard-table.html', context={"test_history": unique_user_records_time})
         test_history_word = render_to_string('html/leaderboard-table.html', context={"test_history": unique_user_records_word})
         return JsonResponse({

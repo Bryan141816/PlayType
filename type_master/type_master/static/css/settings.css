@@ -3,7 +3,7 @@
     grid-template-rows: auto 1fr;
     grid-template-columns: auto 1fr;
     height: 500px;
-    width: 45%;
+    width: 60%;
     max-width: 1000px;
     border-radius: 2%;
     overflow: auto;
