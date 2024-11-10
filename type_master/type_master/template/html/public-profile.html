@@ -57,38 +57,6 @@
                 <span id="stat-name">personal best</span>
             </div>
         </div>
-
-        <div id="test-history">
-            <div id="history-table-container">
-                <div></div>
-                <div class="table-head">wpm</div>
-                <div class="table-head">accuracy</div>
-                <div class="table-head">cor/mis/ex</div>
-                <div class="table-head">mode</div>
-                <div class="table-head">date
-                    <div id="table-info">
-                        <i class="fas fa-info-circle"></i>
-                        <div id="table-info-text">Only <span>time</span>, <span>word</span>, <span>custom</span> mode</span><br>is recorded in the history table.</div>
-                    </div>
-                </div>
-                {% for item in  history %}
-                    <div class="table-content-icon-{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
-                        {% if item.bpr %}
-                            <i class="fas fa-crown"></i>
-                        {% else %}
-                            <div class="empty-pb"></div>
-                        {% endif %}
-                    </div>
-                    <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.wpm}}</div>
-                    <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.accuracy}}%</div>
-                    <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.cormisex}}</div>
-                    <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.mode}} {{item.type}}</div>
-                    <div class="table-content-end {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.test_taken}}</div>
-                {% empty %}
-                    <div class="full-width">no data available in table</div>
-                {% endfor %}
-            </div>
-        </div>
     </div>
     <script>
         $(document).ready(function(){

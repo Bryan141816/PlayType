@@ -26,12 +26,20 @@
         <form action="{% url 'leaderboards' %}">
             <button><i class="fas fa-trophy"></i>leadership</button>
         </form>
-        <button><i class="fas fa-exclamation-triangle"></i>temp 3</button>
-        <button><i class="fas fa-exclamation-triangle"></i>temp 4</button>
-        <button><i class="fas fa-exclamation-triangle"></i>temp 5</button>
-        <button><i class="fas fa-exclamation-triangle"></i>temp 6</button>
+        <form id="public_profile">
+            <button><i class="fas fa-user"></i>public profile</button>
+        </form>
     </div>
     <form action="{% url 'logout'%}" id="log-out-form">
         <button type="submit" id="log-out"><i class="fas fa-sign-out-alt"></i></button>
-    </form>      
+    </form>
+    <script>
+        $('#public_profile').on('submit', function(event) {
+            event.preventDefault();
+            const publicProfileUrl = `/profile/${user.username}/`;
+
+            // Redirect to the generated URL
+            window.location.replace(publicProfileUrl);
+        });
+    </script>      
 </div>

@@ -14,7 +14,10 @@
             {{forloop.counter}}
         {% endif %}
     </div>
-    <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}"><img src="{{item.user__extra_data__picture}}" alt="">{{item.user__extra_data__name}}</div>
+    <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
+        <img src="{{item.user__extra_data__picture}}" alt="">
+        <a href="/profile/{{item.user__user__username}}">{{item.user__extra_data__name}}</a>
+    </div>
     <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.wpm}}</div>
     <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.accuracy}}%</div>
     <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} table-ending-content">{{item.test_taken__date}}</div>

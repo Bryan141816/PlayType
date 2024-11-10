@@ -12,6 +12,7 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from datetime import datetime
 from django.utils import timezone
 import json
+from django.contrib.auth.models import User
 
 
 
@@ -225,8 +226,10 @@ def addTestHistory(request):
 def temp(request):
     return render(request, 'html/confitte.html')
 
+
 def userStat(request):
     user = request.user
+    print(user)
     if( not user.is_authenticated):
         return redirect('login')
        
@@ -245,7 +248,6 @@ def userStat(request):
             .annotate(count=Count('id'))  # Count entries per date
             .order_by('date')  # Sort by date
         )
-        print(total_day_active)
         bpr = TestHistory.objects.filter(user=user,bpr=True).order_by('-test_taken').first()
         history = TestHistory.objects.filter(user=user).order_by('-test_taken')
         context["test_count"] = test_count
@@ -275,6 +277,8 @@ def userStat(request):
         context["challenge_achieved"] = f'{challenge_achieved_count}/{len(challenge_achieved)}'
     return render(request, 'html/user-stat.html', context)
 
+
+
 def leaderboard(request):
     user = request.user
     today = timezone.now().date()
@@ -284,22 +288,68 @@ def leaderboard(request):
 
     # Query for 'time' mode with the maximum WPM for each user
     test_history_time_default = TestHistory.objects.filter(
-        user=F('user'),
-        mode="time",
-        type="15",
-        wpm=Subquery(max_wpm.filter(user=OuterRef('user'), mode="time").values('max_wpm')[:1]),
-        test_taken__date=today
-    ).values('wpm', 'accuracy', 'test_taken__date', 'user__extra_data__picture', 'user__extra_data__name')
+            user=F('user'),
+            mode='time',
+            type="15",
+            wpm__lte=Subquery(max_wpm.filter(user=OuterRef('user'), mode="time", type="15").values('max_wpm')[:1]),
+            test_taken__date=today
+        ).values('id','user','wpm', 'accuracy', 'test_taken__date', 'user__extra_data__picture', 'user__extra_data__name','user__user__username').order_by('-wpm')
     test_history_word_default = TestHistory.objects.filter(
-        user=F('user'),
-        mode="words",
-        type="15",
-        wpm=Subquery(max_wpm.filter(user=OuterRef('user'), mode="words").values('max_wpm')[:1]),
-        test_taken__date=today
-    ).values('wpm', 'accuracy', 'test_taken__date', 'user__extra_data__picture', 'user__extra_data__name')
+            user=F('user'),
+            mode='words',
+            type="15",
+            wpm__lte=Subquery(max_wpm.filter(user=OuterRef('user'), mode="words", type="15").values('max_wpm')[:1]),
+            test_taken__date=today
+        ).values('id','user','wpm', 'accuracy', 'test_taken__date', 'user__extra_data__picture', 'user__extra_data__name','user__user__username').order_by('-wpm')
 
-    context["test_history_time_default"] = test_history_time_default
-    context["test_history_word_default"] = test_history_word_default
+    test_history_list_time = list(test_history_time_default)
+
+    unique_user_records_time = []
+    seen_users_time = set()  # To track which users we've already added
+
+    for record in test_history_list_time:
+        user_id = record['user']
+        # If this user hasn't been added yet, or if the current record has a higher WPM
+        if user_id not in seen_users_time or record['wpm'] > next((r['wpm'] for r in unique_user_records_time if r['user'] == user_id), 0):
+            # Add to the list (instead of a dictionary) with all relevant fields
+            unique_user_records_time.append({
+                'id': record['id'],
+                'user': record['user'],
+                'wpm': record['wpm'],
+                'accuracy': record['accuracy'],
+                'test_taken__date': record['test_taken__date'],
+                'user__extra_data__picture': record['user__extra_data__picture'],
+                'user__extra_data__name': record['user__extra_data__name'],
+                'user__user__username': record['user__user__username']
+            })
+        seen_users_time.add(user_id)
+
+    test_history_list_word = list(test_history_word_default)
+
+    unique_user_records_word = []
+    seen_users_word = set()  # To track which users we've already added
+
+    for record in test_history_list_word:
+        user_id = record['user']
+        # If this user hasn't been added yet, or if the current record has a higher WPM
+        if user_id not in seen_users_word or record['wpm'] > next((r['wpm'] for r in unique_user_records_word if r['user'] == user_id), 0):
+            # Add to the list (instead of a dictionary) with all relevant fields
+            unique_user_records_word.append({
+                'id': record['id'],
+                'user': record['user'],
+                'wpm': record['wpm'],
+                'accuracy': record['accuracy'],
+                'test_taken__date': record['test_taken__date'],
+                'user__extra_data__picture': record['user__extra_data__picture'],
+                'user__extra_data__name': record['user__extra_data__name'],
+                'user__user__username': record['user__user__username'],
+            })
+        seen_users_word.add(user_id)
+    
+
+
+    context["test_history_time_default"] = unique_user_records_time
+    context["test_history_word_default"] = unique_user_records_word
     return render(request, 'html/leaderboard.html', context)
 
 def getTypeLeaderboarrd(request):
@@ -307,28 +357,169 @@ def getTypeLeaderboarrd(request):
     if not request.method == 'GET':
         return HttpResponseBadRequest('Invalid request method. Please use GET')
     
+    table_type = request.GET.get('table_type')
     mode = request.GET.get('mode')
     type = request.GET.get('type')
+    date = request.GET.get('date')
 
-
-    
-    today = timezone.now().date()
     max_wpm = TestHistory.objects.values('user', 'mode', 'type').annotate(max_wpm=Max('wpm'))
+    if not table_type == "all":
+        test_history = TestHistory.objects.filter(
+            user=F('user'),
+            mode=mode,
+            type=type,
+            wpm__lte=Subquery(max_wpm.filter(user=OuterRef('user'), mode=mode, type=type).values('max_wpm')[:1]),
+            test_taken__date=date
+        ).values('id','user','wpm', 'accuracy', 'test_taken__date', 'user__extra_data__picture', 'user__extra_data__name','user__user__username').order_by('-wpm')
 
-    test_history = TestHistory.objects.filter(
-        user=F('user'),
-        mode=mode,
-        type=type,
-        wpm__lte=Subquery(max_wpm.filter(user=OuterRef('user'), mode=mode, type=type).values('max_wpm')[:1]),
-        test_taken__date=today
-    ).values('wpm', 'accuracy', 'test_taken__date', 'user__extra_data__picture', 'user__extra_data__name')
-    context = {
-        "test_history": test_history
-    }
+        test_history_list = list(test_history)
 
-    return render(request, 'html/leaderboard-table.html', context)
+        unique_user_records = []
+        seen_users = set()  # To track which users we've already added
+
+        for record in test_history_list:
+            user_id = record['user']
+            # If this user hasn't been added yet, or if the current record has a higher WPM
+            if user_id not in seen_users or record['wpm'] > next((r['wpm'] for r in unique_user_records if r['user'] == user_id), 0):
+                # Add to the list (instead of a dictionary) with all relevant fields
+                unique_user_records.append({
+                    'id': record['id'],
+                    'user': record['user'],
+                    'wpm': record['wpm'],
+                    'accuracy': record['accuracy'],
+                    'test_taken__date': record['test_taken__date'],
+                    'user__extra_data__picture': record['user__extra_data__picture'],
+                    'user__extra_data__name': record['user__extra_data__name'],
+                    'user__user__username': record['user__user__username']
+                })
+            seen_users.add(user_id)
 
 
+
+        context = {
+            "test_history": unique_user_records
+        }
+        test_history_table = render_to_string('html/leaderboard-table.html', context)
+        return JsonResponse({
+            'success': True,
+            'test_history': test_history_table,
+        })
+    else:
+        test_history_time_default = TestHistory.objects.filter(
+            user=F('user'),
+            mode='time',
+            type="15",
+            wpm__lte=Subquery(max_wpm.filter(user=OuterRef('user'), mode="time", type="15").values('max_wpm')[:1]),
+            test_taken__date=date
+        ).values('id','user','wpm', 'accuracy', 'test_taken__date', 'user__extra_data__picture', 'user__extra_data__name','user__user__username').order_by('-wpm')
+        test_history_word_default = TestHistory.objects.filter(
+                user=F('user'),
+                mode='words',
+                type="15",
+                wpm__lte=Subquery(max_wpm.filter(user=OuterRef('user'), mode="words", type="15").values('max_wpm')[:1]),
+                test_taken__date=date
+            ).values('id','user','wpm', 'accuracy', 'test_taken__date', 'user__extra_data__picture', 'user__extra_data__name','user__user__username').order_by('-wpm')
+
+        test_history_list_time = list(test_history_time_default)
+
+        unique_user_records_time = []
+        seen_users_time = set()  # To track which users we've already added
+
+        for record in test_history_list_time:
+            user_id = record['user']
+            # If this user hasn't been added yet, or if the current record has a higher WPM
+            if user_id not in seen_users_time or record['wpm'] > next((r['wpm'] for r in unique_user_records_time if r['user'] == user_id), 0):
+                # Add to the list (instead of a dictionary) with all relevant fields
+                unique_user_records_time.append({
+                    'id': record['id'],
+                    'user': record['user'],
+                    'wpm': record['wpm'],
+                    'accuracy': record['accuracy'],
+                    'test_taken__date': record['test_taken__date'],
+                    'user__extra_data__picture': record['user__extra_data__picture'],
+                    'user__extra_data__name': record['user__extra_data__name'],
+                    'user__user__username': record['user__user__username']
+                })
+            seen_users_time.add(user_id)
+
+        test_history_list_word = list(test_history_word_default)
+
+        unique_user_records_word = []
+        seen_users_word = set()  # To track which users we've already added
+
+        for record in test_history_list_word:
+            user_id = record['user']
+            # If this user hasn't been added yet, or if the current record has a higher WPM
+            if user_id not in seen_users_word or record['wpm'] > next((r['wpm'] for r in unique_user_records_word if r['user'] == user_id), 0):
+                # Add to the list (instead of a dictionary) with all relevant fields
+                unique_user_records_word.append({
+                    'id': record['id'],
+                    'user': record['user'],
+                    'wpm': record['wpm'],
+                    'accuracy': record['accuracy'],
+                    'test_taken__date': record['test_taken__date'],
+                    'user__extra_data__picture': record['user__extra_data__picture'],
+                    'user__extra_data__name': record['user__extra_data__name'],
+                    'user__user__username': record['user__user__username']
+                })
+        seen_users_word.add(user_id)
+        test_history_time = render_to_string('html/leaderboard-table.html', context={"test_history": unique_user_records_time})
+        test_history_word = render_to_string('html/leaderboard-table.html', context={"test_history": unique_user_records_word})
+        return JsonResponse({
+            'success': True,
+            'test_history_time': test_history_time,
+            'test_history_word': test_history_word,
+        })
+
+def showPublicProfile(request, username):
+
+    user = None
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        user = None
+       
+    context = getUser(user)
+    user = get_object_or_404(UserSocialAuth, user=user)
+    test_count = TestHistory.objects.filter(user=user).count()
+    user_settings = UserSettings.objects.filter(user = user).first() 
+    if(test_count != 0):
+        avg_wpm = TestHistory.objects.filter(user=user).aggregate(Avg('wpm'))
+        avg_accuracy = TestHistory.objects.filter(user=user).aggregate(Avg('accuracy'))
+        total_day_active = (
+            TestHistory.objects
+            .filter(user=user)
+            .annotate(date=TruncDate('test_taken'))  # Truncate to date level
+            .values('date')  # Group by date
+            .annotate(count=Count('id'))  # Count entries per date
+            .order_by('date')  # Sort by date
+        )
+        bpr = TestHistory.objects.filter(user=user,bpr=True).order_by('-test_taken').first()
+
+        context["test_count"] = test_count
+        context["avg_wpm"] = f"{avg_wpm["wpm__avg"]:.2f}" if avg_wpm["wpm__avg"] % 1 else f"{int(avg_wpm["wpm__avg"])}"
+        context["avg_accuracy"] = f"{avg_accuracy["accuracy__avg"]:.2f}" if avg_accuracy["accuracy__avg"] % 1 else f"{int(avg_accuracy["accuracy__avg"])}"
+        context["total_day_active"] = len(total_day_active)
+        context["bpr"] = bpr.wpm
+    else:
+        context["test_count"] = 0
+        context["avg_wpm"] = 0
+        context["avg_accuracy"] = 0
+        context["total_day_active"] = 0
+        context["bpr"] = 0
+    
+    challenge_achieved_count = 0
+    if user_settings:
+        challenge_achieved = user_settings.challenge_achieved  # Access the challenge_achieved field
+        challenge_achieved_count = 0
+
+        for x in challenge_achieved:
+            if x == 3:
+                challenge_achieved_count += 1
+            else:
+                break
+        context["challenge_achieved"] = f'{challenge_achieved_count}/{len(challenge_achieved)}'
+    return render(request, 'html/public-profile.html', context)
 
 
 

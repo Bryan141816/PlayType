@@ -1,7 +1,7 @@
 {% extends 'html/template.html' %}
 {% load static %}
 {% block head %}
-    <title>PlayType| A interactive typing test website.</title>
+    <title>Leaderboards | PlayType</title>
     <link rel="stylesheet" href="{% static 'css/leaderboards.css' %}">
 {% endblock %}
 
@@ -35,7 +35,10 @@
                             {{forloop.counter}}
                         {% endif %}
                     </div>
-                    <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}"><img src="{{item.user__extra_data__picture}}" alt="">{{item.user__extra_data__name}}</div>
+                    <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
+                        <img src="{{item.user__extra_data__picture}}" alt="">
+                        <a href="/profile/{{item.user__user__username}}">{{item.user__extra_data__name}}</a>
+                    </div>
                     <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.wpm}}</div>
                     <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.accuracy}}%</div>
                     <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} table-ending-content">{{item.test_taken__date}}</div>
@@ -69,7 +72,10 @@
                             {{forloop.counter}}
                         {% endif %}
                     </div>
-                <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}"><img src="{{item.user__extra_data__picture}}" alt="">{{item.user__extra_data__name}}</div>
+                <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
+                    <img src="{{item.user__extra_data__picture}}" alt="">
+                    <a href="/profile/{{item.user__user__username}}">{{item.user__extra_data__name}}</a>
+                </div>
                 <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.wpm}}</div>
                 <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.accuracy}}%</div>
                 <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} table-ending-content">{{item.test_taken__date}}</div>
@@ -83,10 +89,41 @@
         $(document).ready(function(){
             settings_init(userSettings)
             profile_init()
+            $('#word-type-query-selector').val("15")
+            $('#time-type-query-selector').val("15")
         })
         const today = new Date().toISOString().split('T')[0];
         $('#leaderboardsdateInput').attr('max', today);
         $('#leaderboardsdateInput').val(today);
+
+        $('#leaderboardsdateInput').on('change', function() {
+            let selectedDate = $(this).val();
+            $('#time-type-query-selector').val("15")
+            $('#word-type-query-selector').val("15")
+            data = {
+                table_type: "all",
+                mode: null,
+                type: null,
+                date: selectedDate
+            }
+            $.ajax({
+                url: '/user/leaderboards/getData/', // The URL for the request
+                type: 'GET', 
+                contentType: 'application/x-www-form-urlencoded', // Data type
+                data: data, // Use the prepared data object
+                beforeSend: function(xhr, settings) {
+                    // Include CSRF token if needed
+                    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                },
+                success: function(response) {
+                    $("#time-leaderboard-table-contaier").html(response.test_history_time)
+                    $("#word-leaderboard-table-contaier").html(response.word_history_time)
+                },
+                error: function(xhr, status, error) {
+                }
+            });
+
+        });
         
         function getCookie(name) {
             let cookieValue = null;
@@ -105,8 +142,10 @@
         }
         $('#time-type-query-selector').on('change', function() {
             data = {
+                table_type: "time",
                 mode: "time",
-                type: $(this).val()
+                type: $(this).val(),
+                date: $('#leaderboardsdateInput').val()
             }
             $.ajax({
                 url: '/user/leaderboards/getData/', // The URL for the request
@@ -118,7 +157,7 @@
                     xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
                 },
                 success: function(response) {
-                    $("#time-leaderboard-table-contaier").html(response)
+                    $("#time-leaderboard-table-contaier").html(response.test_history)
                 },
                 error: function(xhr, status, error) {
                 }
@@ -126,8 +165,10 @@
         });
         $('#word-type-query-selector').on('change', function() {
             data = {
+                table_type: "words",
                 mode: "words",
-                type: $(this).val()
+                type: $(this).val(),
+                date: $('#leaderboardsdateInput').val()
             }
             $.ajax({
                 url: '/user/leaderboards/getData/', // The URL for the request
@@ -139,7 +180,7 @@
                     xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
                 },
                 success: function(response) {
-                    $("#word-leaderboard-table-contaier").html(response)
+                    $("#word-leaderboard-table-contaier").html(response.test_history)
                 },
                 error: function(xhr, status, error) {
                 }

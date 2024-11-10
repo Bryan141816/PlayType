@@ -22,7 +22,9 @@ urlpatterns = [
     path('user/stat/', views.userStat, name='userstat'),
     path('user/leaderboards/', views.leaderboard, name='leaderboards'),
     path('user/leaderboards/getData/', views.getTypeLeaderboarrd, name="getTypeLeaderboard"),
-    
+
+    path('profile/<str:username>/', views.showPublicProfile, name="publicProfile"),
+
     path('settings', views.settings, name="settings"),
     
     path('login/', views.login_view, name='login'),

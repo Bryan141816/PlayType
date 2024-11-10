@@ -89,6 +89,10 @@ span{
     font-size: 70%;
     color: var(--high-color-value);
 }
+.table-container a{
+    text-decoration: none;
+    color: var(--high-color-value);
+}
 .table-starting-content{
     border-radius: 10px 0 0 10px;
     justify-content: center;
