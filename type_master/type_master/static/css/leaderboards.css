@@ -74,6 +74,7 @@ span{
 }
 .table-content{
     font-size: 230%;
+    font-size: clamp(100%, 210%, 230%);
     color: var(--high-color-value);
     padding: 10px;
     display: flex;

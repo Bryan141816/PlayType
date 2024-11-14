@@ -84,42 +84,40 @@
     <script src="{% static 'js/profile.js' %}"></script>
     {{ user_settings|json_script:"user_settings"}}
     <script>
-            const userSettings = JSON.parse(document.getElementById('user_settings').textContent);
-            const themesjson = "{% static 'json/themes.json' %}"
-            const loginUrl =  "{% url 'login'%}"
-            const lazychameleon = new LazyChameleon('playtype', themesjson, userSettings.theme);
-            let clickOutsideEnabled = false;
-
-            const user = {
-                isAuthenticated: ("{{ user.is_authenticated|lower }}"  === "true"),
-                username: "{{ user.username|escapejs }}",
-                email: "{{ user.email|escapejs }}",
-            };
-
-            $(document).on('click', function(event) {
-
-                if (clickOutsideEnabled && $('#side-panel').hasClass('active-side-panel')) {
-                    if (!$(event.target).closest('#side-panel-container').length) {
-                        $('#side-panel').removeClass('active-side-panel');
-                        setTimeout(()=>{
-                            $('#side-panel-container').removeClass('side-panel-container-active');
-                        },500)
-                        clickOutsideEnabled = false; // Reset the flag
-                    }
+        const devicePixelRatio = window.devicePixelRatio;
+        const userSettings = JSON.parse(document.getElementById('user_settings').textContent);
+        const themesjson = "{% static 'json/themes.json' %}"
+        const loginUrl =  "{% url 'login'%}"
+        const lazychameleon = new LazyChameleon('playtype', themesjson, userSettings.theme);
+        let clickOutsideEnabled = false;
+        const user = {
+            isAuthenticated: ("{{ user.is_authenticated|lower }}"  === "true"),
+            username: "{{ user.username|escapejs }}",
+            email: "{{ user.email|escapejs }}",
+        };
+        $(document).on('click', function(event) {
+            if (clickOutsideEnabled && $('#side-panel').hasClass('active-side-panel')) {
+                if (!$(event.target).closest('#side-panel-container').length) {
+                    $('#side-panel').removeClass('active-side-panel');
+                    setTimeout(()=>{
+                        $('#side-panel-container').removeClass('side-panel-container-active');
+                    },500)
+                    clickOutsideEnabled = false; // Reset the flag
                 }
-                if (clickOutsideEnabled && $('#settings-modal-container').hasClass('settings-modal-container-active')) {
-                    if (!$(event.target).closest('#settings-modal').length) {
-                        $('#settings-modal-container').removeClass('settings-modal-container-active');
-                        clickOutsideEnabled = false; // Reset the flag
-                    }
+            }
+            if (clickOutsideEnabled && $('#settings-modal-container').hasClass('settings-modal-container-active')) {
+                if (!$(event.target).closest('#settings-modal').length) {
+                    $('#settings-modal-container').removeClass('settings-modal-container-active');
+                    clickOutsideEnabled = false; // Reset the flag
                 }
-                if (clickOutsideEnabled && $('#custom-sentence-modal-container').hasClass('custom-sentence-modal-container-active')) {
-                    if (!$(event.target).closest('#sentence-modal').length) {
-                        $('#custom-sentence-modal-container').removeClass('custom-sentence-modal-container-active');
-                        clickOutsideEnabled = false; // Reset the flag
-                    }
+            }
+            if (clickOutsideEnabled && $('#custom-sentence-modal-container').hasClass('custom-sentence-modal-container-active')) {
+                if (!$(event.target).closest('#sentence-modal').length) {
+                    $('#custom-sentence-modal-container').removeClass('custom-sentence-modal-container-active');
+                    clickOutsideEnabled = false; // Reset the flag
                 }
-            });
+            }
+        });
     </script>
 
 </body>

@@ -9,13 +9,6 @@ $(document).ready(function() {
 
     loadAndSetUserSettingsDefaultByLocalAndOnlineDB()
     addTextButtonClickListener()
-    document.onreadystatechange = () => {
-      if (document.readyState === "complete") {
-        setTimeout(()=>{
-            optionBoxResizeTransition()
-        },0)
-      }
-    };
 
     function setMode() {
         const activeMode = $('.text-mode.option-active').text();
@@ -292,7 +285,7 @@ $(document).ready(function() {
                 <div id="paragraph-container">
                 </div>
             </div>
-            <input type="text" id="text_input">
+            <input type="text" id="text_input" spellcheck="false" autocomplete="off" autocomplete="off" autocapitalize="off" autocorrect="off" data-gramm="false" data-gramm_editor="false" data-enable-grammarly="false" list="autocompleteOff" spellcheck="false">
             <button id="retry_button">
                 <i class="fas fa-redo"></i>
             </button>`
@@ -598,4 +591,11 @@ $(document).ready(function() {
         $('#custom-sentence-modal-container').removeClass('custom-sentence-modal-container-active')
         clickOutsideEnabled = false;
     })
+    setTimeout(()=>{
+        optionBoxResizeTransition()
+    },500)
+    document.onreadystatechange = () => {
+      if (document.readyState === "complete") {
+      }
+    };
 });

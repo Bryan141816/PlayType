@@ -229,7 +229,6 @@ def temp(request):
 
 def userStat(request):
     user = request.user
-    print(user)
     if( not user.is_authenticated):
         return redirect('login')
        

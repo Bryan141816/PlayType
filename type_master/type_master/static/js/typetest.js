@@ -185,34 +185,22 @@ class TypingTest {
         }).get();
         this.spaceCounter++;
         const activeELement = document.querySelector('.active')
+
         const relativePosition = this.getRelativePosition(activeELement);
-
-        let scrollOffset = 0;
-
-        const container = document.querySelector('.paragraph');
-        if (relativePosition.elementPos.top - relativePosition.containerPos.top > relativePosition.containerPos.height * 0.6) {
-    
-            scrollOffset = relativePosition.containerPos.height / 2;
-        
-            if ((container.scrollTop + (scrollOffset + (scrollOffset/2))) >= (container.scrollHeight - container.clientHeight)) {
-                scrollOffset = (container.scrollHeight - container.scrollTop - container.clientHeight);
-            }
-        
-            scrollOffset = Math.max(scrollOffset, 0);
-
-            container.scrollBy({
-                top: scrollOffset,
-                behavior: 'smooth'
+        let prevY = null;
+        if (relativePosition.elementPos.top - relativePosition.containerPos.top > relativePosition.containerPos.height * 0.50) {
+            const prev_element = $('.word_container').eq(this.currentIndex - 1);
+            prevY = prev_element.offset().top;
+            activeELement.scrollIntoView({
+              behavior: 'smooth', // Adds smooth scrolling animation
+              block: 'center',    // Aligns the element vertically in the center of the viewport
             });
-
-            let topValue = parseInt($('.pointer-area-field').css('top'), 10);
-            $('.pointer-area-field').css(
-                'top', topValue + scrollOffset + 'px'
-            );
         }
-        
         let x = relativePosition.elementPos.x - relativePosition.containerPos.x;
-        let y = relativePosition.elementPos.y - relativePosition.containerPos.y - scrollOffset;
+        let y = relativePosition.elementPos.y - relativePosition.containerPos.y;
+        if(prevY){
+            y = prevY - relativePosition.containerPos.y;
+        }
         this.movePointerTo(x,y);
     }
 
