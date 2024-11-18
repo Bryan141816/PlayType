@@ -13,16 +13,16 @@ jobs:
     - name: 🚚 Get latest code
       uses: actions/checkout@v4
 
-    # - name: 🐍 Setup Python
-    #   uses: actions/setup-python@v5
-    #   with:
-    #     python-version: '3.12.6'
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12.6'
 
-    # - name: 👨‍💻 Run Collect Static
-    #   run: |
-    #     cd type_master
-    #     pip install -r requirements.txt
-    #     python manage.py collectstatic --settings=type_master.min-settings
+    - name: 👨‍💻 Run Collect Static
+      run: |
+        cd type_master
+        pip install -r requirements.txt
+        python manage.py collectstatic --settings=type_master.min-settings
     
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
