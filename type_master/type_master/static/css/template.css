@@ -147,6 +147,7 @@ main{
     margin-left: auto;
     border-radius: 100%;
     border: none;
+    transition: opacity 0.2s ease;
     & i{
         color: var(--medium-color-value);
         transition: color 0.1s ease-in;
@@ -162,7 +163,7 @@ main{
     height: fit-content;
     border: none;
     color: var(--medium-color-value);
-    transition: color 0.1s ease-in;
+    transition: opacity 0.2s ease, color 0.1s ease-in;
     & i{
         margin-top: 50%;
     }
@@ -206,6 +207,7 @@ main{
 }
 #playtype img{
     pointer-events: none;
+    transition: filter 0.2s ease;
 }
 #playtpe-name{
     pointer-events: none;

@@ -6,6 +6,7 @@ $(document).ready(function() {
     let currentChallenge = null;
     let localUserSettings = null;
     let star_array = [];
+    let testStarted = false;
 
     loadAndSetUserSettingsDefaultByLocalAndOnlineDB()
     addTextButtonClickListener()
@@ -27,7 +28,7 @@ $(document).ready(function() {
     
         function initializeTypingTest(timer, doneCallback, mode) {
             if (!typingTest) {
-                typingTest = new TypingTest('#text_input', '#paragraph', '#retry_button', timer, doneCallback, resetTest,word_amount, mode);
+                typingTest = new TypingTest('#text_input', '#paragraph', '#retry_button', timer, doneCallback, resetTest,word_amount, mode, testStatusCallBack);
                 if(mode === 'custom'){
                     typingTest.useCustomSentence();
                 }
@@ -50,6 +51,35 @@ $(document).ready(function() {
             resetTest();
         }
     }
+
+    function testStatusCallBack(isStarted){
+        if(isStarted){
+            if(!($('#option-selector').hasClass('testStartedHidder')))
+            {
+                $('#option-selector').addClass('testStartedHidder')
+                $('.tap-bar-button').addClass('testStartedHidder')
+                $('#profile_image').addClass('testStartedHidder')
+                $('#logo-image').addClass('testStartedHidderImage')
+                $('body').css('cursor', 'none'); 
+                testStarted = true;
+            }
+        }
+        else{
+            $('#option-selector').removeClass('testStartedHidder')
+            $('.tap-bar-button').removeClass('testStartedHidder')
+            $('#profile_image').removeClass('testStartedHidder')
+            $('#logo-image').removeClass('testStartedHidderImage')
+            $('body').css('cursor', 'auto'); 
+            testStarted = false;
+        }
+    }
+    $(document).on('mousemove', function() {
+        if(testStarted){
+            $('body').css('cursor', 'auto');
+            testStatusCallBack(false)
+        }
+    });
+
     function checkOrCreateLocalUserSettings(userSettingsData, callback) {
         openDatabaseAndHandleUserSettings(userSettingsData)
             .then(result => {
@@ -275,6 +305,7 @@ $(document).ready(function() {
     function displayTypeTest(){
         $('#typingtest-container').html(
             `<div id="counter-container">
+                <div id="warning-text" class="hidden"><i class="fas fa-lock"></i> Caps Lock</div>
                 <div id="counter" class="hidden"></div>
                 <div id="challenge-counter" class="hidden">10</div>
             </div>

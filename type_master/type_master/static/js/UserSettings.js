@@ -1,3 +1,5 @@
+let userSettingsDebounce = null;
+
 function openDatabaseAndHandleUserSettings(userSettings) {
     return new Promise((resolve, reject) => {
         const request = indexedDB.open('UserSettingsDB', 1);
@@ -202,48 +204,52 @@ function getCookie(name) {
 }
 
 function updateUserSettings(theme=null, mode_used=null, time_selected=null, word_amount_selected=null, challenge_achieved=null, custome_sentence=null, ultra_wide_config=null, font_size = null, font_family = null) {
-    // Prepare data object with optional parameters
-    const data = {};
-    if (theme !== undefined && theme !== null) {
-        data.theme = theme;
+    if(userSettingsDebounce){
+        clearTimeout(userSettingsDebounce)
     }
-    if (mode_used !== undefined && mode_used !== null) {
-        data.mode_used = mode_used;
-    }
-    if (time_selected !== undefined && time_selected !== null) {
-        data.time_selected = time_selected; // Ensure this is a valid integer
-    }
-    if (word_amount_selected !== undefined && word_amount_selected !== null) {
-        data.word_amount_selected = word_amount_selected; // Ensure this is a valid integer
-    }
-    if (challenge_achieved !== undefined && challenge_achieved !== null) {
-        data.challenge_achieved = JSON.stringify(challenge_achieved);
-    }
-    if (custome_sentence !== undefined && custome_sentence !== null) {
-        data.custome_sentence = custome_sentence;
-    }
-    if(ultra_wide_config !== undefined && ultra_wide_config !==null){
-        data.ultra_wide_config = ultra_wide_config
-    }
-    if(font_size !== undefined && font_size !==null){
-        data.font_size = font_size
-    }
-    if(font_family !== undefined && font_family !==null){
-        data.font_family = font_family
-    }
-    
-    $.ajax({
-        url: '/user/settings/update/', // The URL for the request
-        type: 'POST', // or 'PUT'
-        contentType: 'application/x-www-form-urlencoded', // Data type
-        data: data, // Use the prepared data object
-        beforeSend: function(xhr, settings) {
-            // Include CSRF token if needed
-            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-        },
-        success: function(response) {
-        },
-        error: function(xhr, status, error) {
+    userSettingsDebounce = setTimeout(()=>{
+        const data = {};
+        if (theme !== undefined && theme !== null) {
+            data.theme = theme;
         }
-    });
+        if (mode_used !== undefined && mode_used !== null) {
+            data.mode_used = mode_used;
+        }
+        if (time_selected !== undefined && time_selected !== null) {
+            data.time_selected = time_selected; // Ensure this is a valid integer
+        }
+        if (word_amount_selected !== undefined && word_amount_selected !== null) {
+            data.word_amount_selected = word_amount_selected; // Ensure this is a valid integer
+        }
+        if (challenge_achieved !== undefined && challenge_achieved !== null) {
+            data.challenge_achieved = JSON.stringify(challenge_achieved);
+        }
+        if (custome_sentence !== undefined && custome_sentence !== null) {
+            data.custome_sentence = custome_sentence;
+        }
+        if(ultra_wide_config !== undefined && ultra_wide_config !==null){
+            data.ultra_wide_config = ultra_wide_config
+        }
+        if(font_size !== undefined && font_size !==null){
+            data.font_size = font_size
+        }
+        if(font_family !== undefined && font_family !==null){
+            data.font_family = font_family
+        }
+        
+        $.ajax({
+            url: '/user/settings/update/', // The URL for the request
+            type: 'POST', // or 'PUT'
+            contentType: 'application/x-www-form-urlencoded', // Data type
+            data: data, // Use the prepared data object
+            beforeSend: function(xhr, settings) {
+                // Include CSRF token if needed
+                xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+            },
+            success: function(response) {
+            },
+            error: function(xhr, status, error) {
+            }
+        });
+    },1000)
 }

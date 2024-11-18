@@ -1,5 +1,5 @@
 class TypingTest {
-    constructor(textInput, paragraphElement,retryButton, timer, onDone, resetTestBinding, amount, testType) {
+    constructor(textInput, paragraphElement,retryButton, timer, onDone, resetTestBinding, amount, testType, testStatusCallBack) {
         if(testType != 'custom'){
             this.getText(null, amount)
         }
@@ -18,6 +18,7 @@ class TypingTest {
         this.testDone = onDone;
         this.resetTestBinding = resetTestBinding
         this.testType = testType;
+        this.testStatusCallBack = testStatusCallBack
         this.init();
     }
 
@@ -30,8 +31,18 @@ class TypingTest {
         this.textInput.on('focus', () => this.textInputFocus('focus'));
         this.textInput.on('blur', () => this.textInputFocus('blue'));
         this.retryButton.click(this.resetTest.bind(this));
+
+        this.textInput.on('keydown', this.checkCapsLock.bind(this));
+        this.textInput.on('keyup', this.checkCapsLock.bind(this));
+
     }
-    
+     checkCapsLock(event) {
+        if (event.originalEvent && event.originalEvent.getModifierState('CapsLock')) {
+            $('#warning-text').removeClass('hidden')
+        } else {
+            $('#warning-text').addClass('hidden')
+        }
+    }
     textInputFocus(type){
         if(!this.test_finished){
             if(type == 'focus'){
@@ -39,6 +50,7 @@ class TypingTest {
             }
             else{
                 this.paragraphElement.addClass('text_input_unfocused')
+                this.testStatusCallBack(false)
             }
         }
     }
@@ -52,7 +64,8 @@ class TypingTest {
         }).get();
     }
 
-    handleInput() {     
+    handleInput() {
+
         let activeContainer = document.querySelector('.active');
         if(activeContainer){
             const currentInput = this.textInput.val().split('');
@@ -74,12 +87,14 @@ class TypingTest {
                     $('#challenge-counter').text(this.timer.formatMinutesAndSeconds(this.timer.set_time));
                 }
                 this.timer.start();
+                this.testStatusCallBack(true)
             }
             this.started = true;
             $('#pointer').removeClass('flash-animation');
             this.calculatePointerPosition(currentInput);
             this.previousInputLength = currentInput.length;
-        }     
+        } 
+        this.testStatusCallBack(true)   
     }
     calculatePointerPosition(currentInput){
 
@@ -149,6 +164,7 @@ class TypingTest {
             }
             this.textInput.val('');
             event.preventDefault();
+            this.testStatusCallBack(true)
         } else if (event.key === "Enter" || event.keyCode === 13) {
             event.preventDefault(); 
         }
@@ -291,6 +307,7 @@ class TypingTest {
     }
 
     resetTest(origin) {
+        this.testStatusCallBack(false)
         if(this.testType != 'custom'){
             this.getText(this.resetValues.bind(this), this.amount);
         }
