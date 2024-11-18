@@ -96,8 +96,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': config('MYSQL_DATABASE', default='playtypedb'),
         'USER': config('MYSQL_USER', default='bryan'),
-        'PASSWORD': config('MYSQL_PASSWORD'),
-        'HOST': 'db',  # Docker service name for the MySQL container
+        'PASSWORD': config('MYSQL_PASSWORD', default=''),
+        'HOST': config('MYSQL_HOST', default='db'),
         'PORT': '3306',  # Default MySQL port
     }
 }
