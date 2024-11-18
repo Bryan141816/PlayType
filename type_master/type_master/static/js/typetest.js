@@ -310,7 +310,7 @@ class TypingTest {
         selectedWords.forEach((word) => {
             const word_container = $(`<div class="word_container"></div>`);
             word.forEach((letter) => {
-                const letter_container = $(`<span class="letter">${letter}</span>`);
+                const letter_container = $(`<span class="letter">${letter.toLowerCase()}</span>`);
                 word_container.append(letter_container);
             });
             paragraph_container.append(word_container);
