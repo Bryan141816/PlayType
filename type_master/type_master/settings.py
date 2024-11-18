@@ -123,11 +123,11 @@ AUTH_PASSWORD_VALIDATORS = [
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('google_app_id')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('google_secret')
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('google_app_id',default='')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('google_secret',default='')
 
-SOCIAL_AUTH_GITHUB_KEY = config('github_app_id')
-SOCIAL_AUTH_GITHUB_SECRET = config('github_secret')
+SOCIAL_AUTH_GITHUB_KEY = config('github_app_id',default='')
+SOCIAL_AUTH_GITHUB_SECRET = config('github_secret',default='')
 
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 
