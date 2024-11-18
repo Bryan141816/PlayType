@@ -2,7 +2,6 @@ name: 🚀 Deploy website on push
 on:
   push:
     branches:
-      - 'master'
       - 'release'
 jobs:
   web-deploy:
@@ -32,6 +31,5 @@ jobs:
         password: ${{ secrets.ftp_password }}
         local-dir: "./type_master/"
         exclude: |
-          settings.py
           dockerfile
           docker-compose.yml
