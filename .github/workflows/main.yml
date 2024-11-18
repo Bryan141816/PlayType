@@ -20,6 +20,7 @@ jobs:
     - name: 👨‍💻 Run Collect Static
       run: |
         cd type_master
+        pip install -r requirements.txt
         python manage.py collectstatic
     
     - name: 📂 Sync files
