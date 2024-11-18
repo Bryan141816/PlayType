@@ -11,6 +11,14 @@ jobs:
     steps:
     - name: 🚚 Get latest code
       uses: actions/checkout@v4
+
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12.6'
+
+    - name: 👨‍💻 Run Collect Static
+    - run: python manage.py collectstatic
     
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
