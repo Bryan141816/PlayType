@@ -31,7 +31,7 @@ function initIndexedDB(background_fecth_callback) {
 
                 // Fetch next 4 batches of words in the background
                 const fetchPromises = [];
-                for (let i = 0; i < 4; i++) {
+                for (let i = 0; i < 9; i++) {
                     fetchPromises.push(fetchWordsFromAPI().then((words) => {
                         return insertWords(db, words.words);
                     }));
@@ -109,7 +109,7 @@ function insertWords(db, words) {
                 const wordCount = event.target.result;
 
                 // If more than 1000 words, remove the first 200
-                if (wordCount > 1000) {
+                if (wordCount > 2000) {
                     cleanupOldWords(db);
                 }
 
