@@ -30,6 +30,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR/'static/'
 
 
 # Directory where static files will be collected for production
@@ -96,8 +97,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': config('MYSQL_DATABASE', default='playtypedb'),
         'USER': config('MYSQL_USER', default='bryan'),
-        'PASSWORD': config('MYSQL_PASSWORD'),
-        'HOST': 'db',  # Docker service name for the MySQL container
+        'PASSWORD': config('MYSQL_PASSWORD', default=''),
+        'HOST': config('MYSQL_HOST', default='db'),
         'PORT': '3306',  # Default MySQL port
     }
 }
@@ -123,11 +124,11 @@ AUTH_PASSWORD_VALIDATORS = [
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('google_app_id')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('google_secret')
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('google_app_id',default='')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('google_secret',default='')
 
-SOCIAL_AUTH_GITHUB_KEY = config('github_app_id')
-SOCIAL_AUTH_GITHUB_SECRET = config('github_secret')
+SOCIAL_AUTH_GITHUB_KEY = config('github_app_id',default='')
+SOCIAL_AUTH_GITHUB_SECRET = config('github_secret',default='')
 
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 
