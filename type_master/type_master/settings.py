@@ -30,6 +30,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR/'static/'
 
 
 # Directory where static files will be collected for production
