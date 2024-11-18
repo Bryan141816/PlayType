@@ -9,4 +9,4 @@ DATABASES = {
 
 # Keep only the necessary static file settings
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR/'/type_master/static/'
+STATIC_ROOT = BASE_DIR/'type_master/static/'
