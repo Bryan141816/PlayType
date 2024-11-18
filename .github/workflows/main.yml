@@ -2,6 +2,7 @@ name: 🚀 Deploy website on push
 on:
   push:
     branches:
+      - 'master'
       - 'release'
 jobs:
   web-deploy:
@@ -21,7 +22,7 @@ jobs:
       run: |
         cd type_master
         pip install -r requirements.txt
-        python manage.py collectstatic --settings=min-settings.py
+        python manage.py collectstatic --settings=min-settings
     
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
