@@ -50,7 +50,7 @@
             <form action="{% url 'index' %}" id="playtype">
                 <button id="logo-button">
                     <img src="{% static 'images/logo.svg' %}" alt="logo" style=" height:30px;" id="logo-image"> 
-                    <span id="playtype-name">PlayType alpha-build</span>
+                    <span id="playtype-name">PlayType</span>
                 </button>
             </form>
             <form action="{% url 'index' %}" id="keyboard-form">
@@ -61,6 +61,7 @@
             <button id="settings-button" class="tap-bar-button">
                 <i class="fas fa-cog"></i>
             </button>
+            <span id="build-version">alpha-build</span>
         </div>
         <button id="profile-button">
             {% if user.is_authenticated %}
@@ -79,6 +80,7 @@
     </main>
     <script src="{% static 'js/template.js' %}"></script>
     <script src="{% static 'js/UserSettings.js' %}"></script>
+    <script src="{% static 'js/words_preloader.js' %}"></script>
     <script src="{% static 'js/lazychameleon.js' %}"></script>
     <script src="{% static 'js/settings.js' %}"></script>
     <script src="{% static 'js/profile.js' %}"></script>
