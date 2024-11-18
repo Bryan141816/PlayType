@@ -12,7 +12,7 @@
     flex-wrap: wrap;
     gap: 5px;
     width: 100%;
-    height:calc((3 * var(--test-font-size)) + 8px);
+    height:calc((3 * var(--test-font-size)) + 10px);
     overflow-y: hidden;
     position: relative;
     align-items: start;
