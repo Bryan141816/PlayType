@@ -1,8 +1,20 @@
 class TypingTest {
     constructor(textInput, paragraphElement,retryButton, timer, onDone, resetTestBinding, amount, testType, testStatusCallBack) {
-        if(testType != 'custom'){
-            this.getText(null, amount)
-        }
+        this.all_words = null;
+        (async () => { 
+            try {
+                const db = await initIndexedDB(this.background_word_prefetch_callback);
+                const words = await getAllWords(db);
+                const all_words = words.map(item => item.word);
+                this.all_words = all_words; 
+                if(testType != 'custom'){
+                    this.getText(null, amount)
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        })();
+
         this.amount = amount
         this.textInput = $(textInput);
         this.paragraphElement = $(paragraphElement);
@@ -21,7 +33,16 @@ class TypingTest {
         this.testStatusCallBack = testStatusCallBack
         this.init();
     }
-
+    background_word_prefetch_callback = async (db) => { 
+        try {
+            const words = await getAllWords(db);
+            const all_words = words.map(item => item.word);
+            this.all_words = all_words;
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+    
     init() {
         this.test_finished = false;
         this.textInput.on('input', this.handleInput.bind(this));
@@ -31,9 +52,9 @@ class TypingTest {
         this.textInput.on('focus', () => this.textInputFocus('focus'));
         this.textInput.on('blur', () => this.textInputFocus('blue'));
         this.retryButton.click(this.resetTest.bind(this));
-
         this.textInput.on('keydown', this.checkCapsLock.bind(this));
         this.textInput.on('keyup', this.checkCapsLock.bind(this));
+
 
     }
      checkCapsLock(event) {
@@ -262,15 +283,59 @@ class TypingTest {
         return data;
     }
     
-    getText(param=null,amount=100) {
-        $.get('/refresh_words/', { amount: amount}, (response) =>{
-            this.paragraphElement.html(response);
-            this.setupInitialWord();
-            if(param){
-                param()
+    getText(param = null) {
+        const letters = this.all_words.map(word => word.split(""));
+    
+        // Shuffle the words array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]]; // Swap elements
             }
+        }
+        
+        shuffleArray(letters);  // Shuffle the letters array
+    
+        // Select the first 'this.amount' words from the shuffled array
+        const selectedWords = letters.slice(0, this.amount);
+    
+        const pointer = $(`<div class="pointer-area-field">
+            <div id="pointer" class="flash-animation"></div>
+        </div>`);
+        const paragraph_container = $(`<div id="paragraph-container"></div>`);
+        
+        this.paragraphElement.html(""); // Clear existing content
+        this.paragraphElement.append(pointer);
+    
+        selectedWords.forEach((word) => {
+            const word_container = $(`<div class="word_container"></div>`);
+            word.forEach((letter) => {
+                const letter_container = $(`<span class="letter">${letter}</span>`);
+                word_container.append(letter_container);
+            });
+            paragraph_container.append(word_container);
         });
+    
+        this.paragraphElement.append(paragraph_container);
+        $('.word_container').first().addClass('active'); // Set first word as active
+        this.activeWordsType = $('.word_container.active');
+    
+        // Extract active letters
+        this.activeText = this.activeWordsType.find('.letter').map(function () {
+            return $(this).text();
+        }).get();
+    
+        if (param) {
+            param(); // Execute param if passed
+        }
+    
+        this.setupInitialWord();
+    
+        if (param) {
+            param(); // Execute param again if passed
+        }
     }
+    
     useCustomSentence(param=null){
         let sentence    =   $('#sentence-text').val().trim();
         const words     =   sentence.split(" ");

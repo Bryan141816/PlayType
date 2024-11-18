@@ -98,7 +98,8 @@ def settings(request):
 
 def get_words(request):
     if request.method == 'GET':
-        amount = int(request.GET.get('amount', 100))
+        #amount = int(request.GET.get('amount', 100))
+        amount = 200
         all_random_words = list(Word.objects.order_by('?').values_list('word', 'length')[:(max(1000, (10 * amount)))])
 
         short_words = [word for word, length in all_random_words if length <= 5]
@@ -113,11 +114,17 @@ def get_words(request):
 
         random_words = selected_words[:amount]
 
-        context = {
-            'random_word': random_words
-        }
+        print(random_words)
 
-        return render(request, 'html/words_container.html', context)
+        # context = {
+        #     'random_word': random_words
+        # }
+
+        # return render(request, 'html/words_container.html', context)
+        return JsonResponse({
+            'success': True,
+            'words': random_words
+        })
     
 def updateUserSettings(request):
     # Check if the request is a POST or PUT request
