@@ -1,4 +1,4 @@
-from type_master.settings import *  # Import base settings
+#from type_master.settings import *  # Import base settings
 
 # Disable database connections
 DATABASES = {
@@ -12,4 +12,4 @@ MIDDLEWARE = []
 
 # Keep only the necessary static file settings
 STATIC_URL = '/static/'
-STATIC_ROOT = './static/'
+STATIC_ROOT = BASE_DIR/'/static/'
