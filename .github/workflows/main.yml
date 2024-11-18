@@ -21,7 +21,7 @@ jobs:
       run: |
         cd type_master
         pip install -r requirements.txt
-        python manage.py collectstatic
+        python manage.py collectstatic --settings=type_master.min-settings.yml
     
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
