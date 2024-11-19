@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSE Example</title>
+</head>
+<body>
+    <h1>Server-Sent Events (SSE)</h1>
+    <div id="output">Waiting for server updates...</div>
+
+    <script>
+        // Create an EventSource instance
+        const eventSource = new EventSource('/sse/');
+
+        // Handle incoming messages
+        eventSource.onmessage = function(event) {
+            const output = document.getElementById('output');
+            output.textContent = event.data; // Display server data
+        };
+
+        // Handle errors
+        eventSource.onerror = function() {
+            console.error('SSE connection error!');
+        };
+    </script>
+</body>
+</html>

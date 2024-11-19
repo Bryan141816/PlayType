@@ -13,6 +13,22 @@ from datetime import datetime
 from django.utils import timezone
 import json
 from django.contrib.auth.models import User
+from django.http import StreamingHttpResponse
+import time
+
+def event_stream():
+    while True:
+        time.sleep(1)  # Simulate periodic updates (every second)
+        yield f"data: Server time is {time.ctime()}\n\n"  # SSE format
+
+# SSE view
+def sse_view(request):
+    response = StreamingHttpResponse(event_stream(), content_type="text/event-stream")
+    response['Cache-Control'] = 'no-cache'
+    response['X-Accel-Buffering'] = 'no'  # For nginx (if used)
+    return response
+def sse_render(request):
+    return render(request, 'html/sse.html')
 
 
 
