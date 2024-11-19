@@ -4,26 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSE Example</title>
+    <title>Short Polling Example</title>
 </head>
 <body>
-    <h1>Server-Sent Events (SSE)</h1>
+    <h1>Short Polling Example</h1>
     <div id="output">Waiting for server updates...</div>
 
     <script>
-        // Create an EventSource instance
-        const eventSource = new EventSource('/sse/');
+        // Function to fetch data from the server
+        function fetchServerTime() {
+            fetch('/short-polling/')
+                .then(response => response.json())
+                .then(data => {
+                    const output = document.getElementById('output');
+                    output.textContent = `Server time is ${data.server_time}`;
+                })
+                .catch(error => {
+                    console.error('Error fetching server data:', error);
+                });
+        }
 
-        // Handle incoming messages
-        eventSource.onmessage = function(event) {
-            const output = document.getElementById('output');
-            output.textContent = event.data; // Display server data
-        };
+        // Poll the server every 1 second
+        setInterval(fetchServerTime, 1000);
 
-        // Handle errors
-        eventSource.onerror = function() {
-            console.error('SSE connection error!');
-        };
+        // Initial fetch to display the first update
+        fetchServerTime();
     </script>
 </body>
 </html>
