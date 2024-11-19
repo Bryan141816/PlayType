@@ -33,6 +33,6 @@ urlpatterns = [
     path('refresh_words/', views.get_words, name='refresh_words'),
     path('social-auth/', include('social_django.urls', namespace='social_')),
 
-    path('sse/', views.sse_view, name='sse'),
-    path('sse_render/', views.sse_render, name='sse_render'),
+    path('short-polling/', views.short_polling_view, name='short_polling'),
+    path('short_polling_render/', views.shortpolling_render, name='short_polling_render'),
 ]
