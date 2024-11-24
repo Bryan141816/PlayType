@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 from django.template.defaulttags import register
-from .models import Word, UserSettings, TestHistory
+from .models import Word, UserSettings, TestHistory, bsitTypingMaster, bsitTypeingMasterPlayers
 from django.contrib.auth import logout
 from social_django.models import UserSocialAuth
 import random
+from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.db.models import Max, Count, Avg, OuterRef, Subquery, F
 from django.db.models.functions import TruncDate
@@ -15,6 +16,23 @@ import json
 from django.contrib.auth.models import User
 from django.http import StreamingHttpResponse
 import time
+from decouple import config
+import pusher
+from django.utils.html import escape
+
+pusher_client = pusher.Pusher(
+  app_id='1899886',
+  key='373895b0f6d1611ac721',
+  secret='5e794e3ee96037bf92a4',
+  cluster='ap1',
+  ssl=True
+)
+
+def pusherTest(request):
+    pusher_client.trigger('my-channel', 'my-event', {'message': 'hello world'})
+    return JsonResponse({
+        'success': True,
+    })
 
 def short_polling_view(request):
     return JsonResponse({"server_time": time.ctime()})
@@ -22,10 +40,203 @@ def short_polling_view(request):
 def shortpolling_render(request):
     return render(request, 'html/sse.html')
 
+def typing_master_competetion(request):
+    user = request.user
+    context = getUser(user)
+    user = get_object_or_404(UserSocialAuth, user=user)
+    created_lobby = bsitTypingMaster.objects.filter(host=user)
+    context["created_lobby"] = created_lobby
+    return render(request, 'html/type_master.html', context)
+
+def createTypingTestLobby(request):
+
+    if request.method not in ['POST', 'PUT']:
+        return HttpResponseBadRequest('Invalid request method. Please use POST or PUT.')
+    
+    user = request.user
+
+    context = getUser(user)
+    # Check if the user is authenticated
+    if not user.is_authenticated:
+        return JsonResponse({'error': 'User is not authenticated.'}, status=401)
+
+    user = get_object_or_404(UserSocialAuth, user=user)
+
+    # Retrieve parameters from the request
+    code = request.POST.get('code')
+    name = request.POST.get('name')
+    test_time = request.POST.get('test_time')
+    test_amount = request.POST.get('test_amount')
+
+    try:
+        bsitTypingMaster.objects.create(
+            code = code,
+            name = name,
+            host = user,
+            test_time = test_time,
+            test_ammount = test_amount,
+        )
+        created_lobby = bsitTypingMaster.objects.filter(host=user)
+        context["created_lobby"] = created_lobby
+
+        lobby = render_to_string('html/type_master.html', context)
+        return JsonResponse({
+            'success': True,
+            'lobby': lobby
+        })
+    except:
+        return JsonResponse({
+            'success': False,
+        })
+def getLobbyLeaderBoard(code):
+    max_wpm = TestHistory.objects.values('user', 'mode', 'type').annotate(max_wpm=Max('wpm'))
+    test_history = TestHistory.objects.filter(
+        user=F('user'),
+        mode='lobby',
+        type=code,
+        wpm__lte=Subquery(max_wpm.filter(user=OuterRef('user'), mode='lobby', type=code).values('max_wpm')[:1]),
+    ).values('id','user','wpm', 'accuracy', 'test_taken__date', 'user__extra_data__picture', 'user__extra_data__name','user__user__username').order_by('-wpm')
+    test_history_list = list(test_history)
+    unique_user_records = []
+    seen_users = set()  # To track which users we've already added
+    for record in test_history_list:
+        user_id = record['user']
+        # If this user hasn't been added yet, or if the current record has a higher WPM
+        if user_id not in seen_users or record['wpm'] > next((r['wpm'] for r in unique_user_records if r['user'] == user_id), 0):
+            # Add to the list (instead of a dictionary) with all relevant fields
+            unique_user_records.append({
+                'id': record['id'],
+                'user': record['user'],
+                'wpm': record['wpm'],
+                'accuracy': record['accuracy'],
+                'test_taken__date': record['test_taken__date'],
+                'user__extra_data__picture': record['user__extra_data__picture'],
+                'user__extra_data__name': record['user__extra_data__name'],
+                'user__user__username': record['user__user__username']
+            })
+        seen_users.add(user_id)
+    return unique_user_records
+
+def manageLobby(request, code):
+    if request.method == 'POST':
+        event_type = request.POST.get('event')
+        print(event_type)
+        if(event_type == 'lobby_started'):      
+            try:
+                # Use atomic transaction to ensure data consistency
+                with transaction.atomic():
+                    # Fetch the lobby and update its state
+                    lobby = bsitTypingMaster.objects.get(code=code)
+                    if lobby.is_started:  # Optional: Add a check if it's already started
+                        return HttpResponseBadRequest('already_started')
+
+                    lobby.is_started = True
+                    lobby.save()
+
+                # Trigger the Pusher event after successful save
+                pusher_client.trigger(code, 'lobby-status', {'status': True})
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Lobby started successfully.'
+                })
+
+            except bsitTypingMaster.DoesNotExist:
+                # Handle the case where the lobby does not exist
+                return HttpResponseBadRequest('lobby dont exist')
+
+            except Exception as e:
+                # Handle other exceptions and log the error for debugging
+                print(f"Error starting lobby: {e}")
+                return HttpResponseBadRequest('idk bruh')
+        elif(event_type == 'lobby_stopped'):
+            try:
+                # Use atomic transaction to ensure data consistency
+                with transaction.atomic():
+                    # Fetch the lobby and update its state
+                    lobby = bsitTypingMaster.objects.get(code=code)
+
+                    lobby.is_started = False
+                    lobby.save()
+
+                # Trigger the Pusher event after successful save
+                pusher_client.trigger(code, 'lobby-status', {'status': False})
+                print('hello')
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Lobby started successfully.'
+                })
+
+            except bsitTypingMaster.DoesNotExist:
+                # Handle the case where the lobby does not exist
+                print('bruh')
+                return HttpResponseBadRequest('lobby dont exist')
+
+            except Exception as e:
+                # Handle other exceptions and log the error for debugging
+                print(f"Error starting lobby: {e}")
+                return HttpResponseBadRequest('idk bruh')
+    else:
+        user = request.user
+        context = getUser(user)
+        user = get_object_or_404(UserSocialAuth, user=user)
+        
+        lobby = bsitTypingMaster.objects.filter(code = code).first()
+
+        player = bsitTypeingMasterPlayers.objects.filter(lobby = lobby)
+
+        context["lobby"] = lobby
+        context["players"] = player
+
+        unique_user_records = getLobbyLeaderBoard(code)
+
+        context["test_history"] = unique_user_records
+
+        return render(request, 'html/manage_lobby.html', context)
+
+
+
+def connectToLobby(request, code):
+    user = request.user
+    context = getUser(user)
+    user = get_object_or_404(UserSocialAuth, user=user)
+
+    lobby = bsitTypingMaster.objects.filter(code = code).first()
+
+    players = bsitTypeingMasterPlayers.objects.filter(lobby = lobby, user = user)
+
+
+    if not lobby:
+        # Optional: Handle cases where the lobby with the given code does not exist.
+        return render(request, 'html/lobby_not_found.html')
+
+    context["lobby"] = lobby
+    is_player_in_lobby = players.exists()
+    if is_player_in_lobby:
+        return render(request, 'html/joinlobby.html', context)
+    try:
+        # Notify others in the lobby that a player has joined
+        pusher_client.trigger(code, 'player-joined', {'name': user.extra_data.get('name')})
+
+        # Add the player to the lobby
+        bsitTypeingMasterPlayers.objects.create(
+            user=user,
+            lobby=lobby
+        )
+
+        return render(request, 'html/joinlobby.html', context)
+    except Exception as e:
+        # Handle unexpected errors (e.g., logging the exception for debugging)
+        print(f"Error: {e}")
+        return render(request, 'html/sse.html')  # Render an error page if needed
+
+
+
+
 
 
 def login_view(request):
     return render(request, 'html/login.html')
+
 def logout_view(request):
     logout(request)
     return redirect('index')
@@ -122,13 +333,6 @@ def get_words(request):
 
         random_words = selected_words[:amount]
 
-        print(random_words)
-
-        # context = {
-        #     'random_word': random_words
-        # }
-
-        # return render(request, 'html/words_container.html', context)
         return JsonResponse({
             'success': True,
             'words': random_words
@@ -217,6 +421,15 @@ def addTestHistory(request):
             type=data.get('type', ''),
             bpr=bpr
         )
+        if(data.get('mode', '') == 'lobby'):
+
+            lobby_leaderboard = getLobbyLeaderBoard(data.get('type', ''))
+            context = {
+                "test_history": lobby_leaderboard
+            }
+            test_history_table = render_to_string('html/leaderboard-table.html', context)
+            code = data.get('type', '')
+            pusher_client.trigger(code, 'new-leaderboard', {'val': f'{test_history_table}'})
         if(bpr):
             confitte_html = render_to_string('html/confitte.html')
             return JsonResponse({
@@ -239,7 +452,7 @@ def addTestHistory(request):
 
 
 def temp(request):
-    return render(request, 'html/confitte.html')
+    return render(request, 'html/pusher_test.html')
 
 
 def userStat(request):

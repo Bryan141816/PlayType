@@ -6,6 +6,7 @@
     width: 70%;
     flex-direction: column;
     position: relative;
+    padding: 10px;
 }
 .paragraph {
     display: flex;
@@ -58,10 +59,11 @@
     height: var(--test-font-size);
     background-color: #0057d6;
     border-radius: 1px;
+    
 }
 .pointer-area-field{
     position: sticky;
-    z-index: 900;
+    z-index: 800;
     top: 0;
     left: 0;
     height: 100%;
@@ -168,6 +170,9 @@
 }
 #retry_button:hover, #retry_button:focus{
     color: var(--high-color-value);
+}
+.hidden-display{
+    display: none !important;
 }
 .hidden{
     opacity: 0;

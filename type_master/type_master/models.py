@@ -61,3 +61,20 @@ class TestHistory(models.Model):
             "bpr":          self.bpr,
             "test_taken":   self.test_taken.isoformat()
         }
+
+
+class bsitTypingMaster(models.Model):
+    id  = models.AutoField(primary_key=True)
+    code = models.CharField(max_length=10)
+    name = models.CharField(max_length=255)
+    host = models.ForeignKey(UserSocialAuth, on_delete=models.CASCADE)
+    date_created = models.DateField(auto_now=True)
+    test_time = models.IntegerField(default=15)
+    test_ammount = models.IntegerField(default=0)
+    is_started = models.BooleanField(default=False)
+
+class bsitTypeingMasterPlayers(models.Model):
+    id = models.AutoField(primary_key=True)
+    user =  models.ForeignKey(UserSocialAuth, on_delete=models.CASCADE)
+    lobby = models.ForeignKey(bsitTypingMaster, on_delete=models.CASCADE)
+

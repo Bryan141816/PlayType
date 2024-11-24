@@ -1,0 +1,17 @@
+#message-lobby{
+    width: 100%;
+    color: var(--high-color-value);
+    text-align: center;
+    font-size: 50px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background-color);
+    z-index: 900;
+}
