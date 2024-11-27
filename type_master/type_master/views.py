@@ -21,9 +21,9 @@ import pusher
 from django.utils.html import escape
 
 pusher_client = pusher.Pusher(
-  app_id='1899886',
-  key='373895b0f6d1611ac721',
-  secret='5e794e3ee96037bf92a4',
+  app_id='',
+  key='',
+  secret='',
   cluster='ap1',
   ssl=True
 )
