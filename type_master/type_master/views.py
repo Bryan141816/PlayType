@@ -18,7 +18,6 @@ from django.http import StreamingHttpResponse
 import time
 from decouple import config
 import pusher
-from django.utils.html import escape
 
 pusher_app_id   =config('pusher_app_id')
 pusher_key      =config('pusher_key')
