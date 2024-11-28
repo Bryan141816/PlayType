@@ -41,6 +41,7 @@ urlpatterns = [
 
     path('connect_to_lobby/<str:code>/', views.connectToLobby, name="connect_to_lobby"),
     path('managelobby/<str:code>/', views.manageLobby, name="managelobby"),
+    path('update_player_to_cant/<str:code>/', views.update_player_canplay_in_lobby, name="update_player_to_cant"),
 
     path('pusher_test/', views.pusherTest, name="pusher_test"),
 ]

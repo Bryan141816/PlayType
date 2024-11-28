@@ -65,7 +65,7 @@
             cluster: 'ap1'
         });
     
-        var channel = pusher.subscribe('{{lobby.code}}');
+        var channel = pusher.subscribe(`{{lobby.code}}-host`);
         channel.bind('player-joined', function(data) {
             $('#player-lobby').append(
                 `<div class="lobby-box">${data.name}</div>`

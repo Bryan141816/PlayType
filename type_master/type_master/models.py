@@ -77,4 +77,5 @@ class bsitTypeingMasterPlayers(models.Model):
     id = models.AutoField(primary_key=True)
     user =  models.ForeignKey(UserSocialAuth, on_delete=models.CASCADE)
     lobby = models.ForeignKey(bsitTypingMaster, on_delete=models.CASCADE)
+    is_can_play = models.BooleanField(default=True)
 
