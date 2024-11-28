@@ -236,11 +236,12 @@ def connectToLobby(request, code):
         return render(request, 'html/lobby_not_found.html')
 
     context["lobby"] = lobby
-    if not (players.first()).is_can_play:
-        return render(request, 'html/lobby_test_limit.html', context)
     is_player_in_lobby = players.exists()
     if is_player_in_lobby:
-        return render(request, 'html/joinlobby.html', context)
+        if not (players.first()).is_can_play:
+            return render(request, 'html/lobby_test_limit.html', context)
+        else:
+            return render(request, 'html/joinlobby.html', context)
     try:
         # Notify others in the lobby that a player has joined
         pusher_client.trigger(f'{code}-host', 'player-joined', {'name': user.extra_data.get('name')})
