@@ -44,7 +44,7 @@
             cluster: 'ap1'
         });
 
-        var channel = pusher.subscribe('{{lobby.code}}');
+        var channel = pusher.subscribe('{{lobby.code}}-client');
         
         channel.bind('lobby-status', function(data) {
             if(data.status){
@@ -79,12 +79,38 @@
                 let timer = null;
                 let testStarted = false;
                 const lobbycode = "{{lobby.code}}"
+                let test_completed = 0;
+                const test_ammount = parseInt("{{lobby.test_ammount}}")
                 setMode()
         
                 function setMode() {
                     let word_amount = 50;
                     function resetTest(initialValue = '0') {
                         $('#counter').text(initialValue).addClass('hidden');
+                        if(test_ammount !== 0){
+                        if(test_completed == test_ammount){
+                            typingTest.changeTestActivity(false)
+                            $('#message-lobby').removeClass('hidden-display')
+                            $('#message-lobby').text("You've reached the max test limit")
+                            $('#retry_button').addClass('hidden-display')
+                            $.ajax({
+                                url: `/update_player_to_cant/${lobbycode}/`, // The URL where Django expects the request
+                                type: 'POST',
+                                contentType: 'application/x-www-form-urlencoded', // Data type
+                                data: {'event': 'lobby_started'},
+                                beforeSend: function(xhr, settings) {
+                                    // Include CSRF token if needed
+                                    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                                },
+                                success: function (response) {
+
+                                },
+                                error: function (xhr, status, error) {
+                                    console.log(error)
+                                }
+                            });
+                        }
+                    }
                     }
                 
                     function initializeTypingTest(timer, doneCallback, mode) {
@@ -151,6 +177,8 @@
              
         
                 function testDone(type, origin=null) {
+                    test_completed++;
+
                     typingTest.test_finished = true;
                     const resultData = typingTest.requestResultData();
                     resultData.totalCharacters += resultData.previousInputLength;

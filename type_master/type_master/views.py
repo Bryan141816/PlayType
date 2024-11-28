@@ -20,10 +20,15 @@ from decouple import config
 import pusher
 from django.utils.html import escape
 
+pusher_app_id   =config('pusher_app_id')
+pusher_key      =config('pusher_key')
+pusher_secret   =config('pusher_secret')
+
+print(pusher_app_id, pusher_key, pusher_secret)
 pusher_client = pusher.Pusher(
-  app_id='1899886',
-  key='373895b0f6d1611ac721',
-  secret='5e794e3ee96037bf92a4',
+  app_id=   pusher_app_id,
+  key=      pusher_key,
+  secret=   pusher_secret,
   cluster='ap1',
   ssl=True
 )
@@ -117,6 +122,28 @@ def getLobbyLeaderBoard(code):
         seen_users.add(user_id)
     return unique_user_records
 
+def update_player_canplay_in_lobby(request, code):
+    if not request.method == "POST":
+        return HttpResponseBadRequest('why?')
+    try:
+        # Use atomic transaction to ensure data consistency
+        with transaction.atomic():
+            # Fetch the lobby and update its state
+            lobby = bsitTypingMaster.objects.get(code=code)
+            player = bsitTypeingMasterPlayers.objects.get(lobby = lobby)
+            player.is_can_play = False
+            player.save()
+        return JsonResponse({
+            'success': True,
+            'message': 'updated succesfully'
+        })
+    except bsitTypingMaster.DoesNotExist:
+        # Handle the case where the lobby does not exist
+        return HttpResponseBadRequest('huh')
+    except Exception as e:
+        # Handle other exceptions and log the error for debugging
+        print(f"Error updating: {e}")
+
 def manageLobby(request, code):
     if request.method == 'POST':
         event_type = request.POST.get('event')
@@ -134,7 +161,7 @@ def manageLobby(request, code):
                     lobby.save()
 
                 # Trigger the Pusher event after successful save
-                pusher_client.trigger(code, 'lobby-status', {'status': True})
+                pusher_client.trigger(f'{code}-client', 'lobby-status', {'status': True})
                 return JsonResponse({
                     'success': True,
                     'message': 'Lobby started successfully.'
@@ -159,7 +186,7 @@ def manageLobby(request, code):
                     lobby.save()
 
                 # Trigger the Pusher event after successful save
-                pusher_client.trigger(code, 'lobby-status', {'status': False})
+                pusher_client.trigger(f'{code}-client', 'lobby-status', {'status': False})
                 print('hello')
                 return JsonResponse({
                     'success': True,
@@ -210,12 +237,14 @@ def connectToLobby(request, code):
         return render(request, 'html/lobby_not_found.html')
 
     context["lobby"] = lobby
+    if not (players.first()).is_can_play:
+        return render(request, 'html/lobby_test_limit.html', context)
     is_player_in_lobby = players.exists()
     if is_player_in_lobby:
         return render(request, 'html/joinlobby.html', context)
     try:
         # Notify others in the lobby that a player has joined
-        pusher_client.trigger(code, 'player-joined', {'name': user.extra_data.get('name')})
+        pusher_client.trigger(f'{code}-host', 'player-joined', {'name': user.extra_data.get('name')})
 
         # Add the player to the lobby
         bsitTypeingMasterPlayers.objects.create(
@@ -429,7 +458,7 @@ def addTestHistory(request):
             }
             test_history_table = render_to_string('html/leaderboard-table.html', context)
             code = data.get('type', '')
-            pusher_client.trigger(code, 'new-leaderboard', {'val': f'{test_history_table}'})
+            pusher_client.trigger(f'{code}-host', 'new-leaderboard', {'val': f'{test_history_table}'})
         if(bpr):
             confitte_html = render_to_string('html/confitte.html')
             return JsonResponse({

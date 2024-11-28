@@ -54,5 +54,6 @@ class bsitTypingMasterAdmin(admin.ModelAdmin):
 class bsitTyepingMasterPlayers(admin.ModelAdmin):
     list_display = (
         "user",
-        "lobby"
+        "lobby",
+        "is_can_play"
     )

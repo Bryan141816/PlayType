@@ -1,0 +1,24 @@
+{% extends 'html/template.html' %}
+{% load static %}
+{% block head %}
+    <title>Stats | PlayType</title>
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'css/lobby.css' %}">
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<main>
+    <div id="typingtest-container">
+        <span id="message-lobby">You've reached the max test limit</span>
+    </div>
+</main>
+<script src="{% static 'js/timer.js' %}"></script>
+<script src="{% static 'js/typetest.js' %}"></script>
+<script>
+    $(document).ready(function(){
+        settings_init(userSettings)
+        profile_init()
+    })
+</script>
+{% endblock %}
