@@ -33,3 +33,4 @@ jobs:
         exclude: |
           dockerfile
           docker-compose.yml
+          type_master/migrations
