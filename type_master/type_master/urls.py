@@ -35,4 +35,12 @@ urlpatterns = [
 
     path('short-polling/', views.short_polling_view, name='short_polling'),
     path('short_polling_render/', views.shortpolling_render, name='short_polling_render'),
+
+    path('type_master_competetion/', views.typing_master_competetion, name='type_master_competetion'),
+    path('create_lobby/', views.createTypingTestLobby, name='create_lobby'),
+
+    path('connect_to_lobby/<str:code>/', views.connectToLobby, name="connect_to_lobby"),
+    path('managelobby/<str:code>/', views.manageLobby, name="managelobby"),
+
+    path('pusher_test/', views.pusherTest, name="pusher_test"),
 ]

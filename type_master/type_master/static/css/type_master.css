@@ -1,0 +1,216 @@
+main{
+    display: flex;
+    flex-direction: column;
+    height: 70%;
+    width: 100%;
+    justify-content: flex-start !important;
+    overflow: auto;
+    gap: 20px;
+}
+h3{
+    color: var(--high-color-value);
+    font-size: 50px;
+    margin: 10px;
+}
+#lobby-code-container{
+    display: flex;
+    width: 50%;
+    gap: 10px;
+}
+#lobby-code-input{
+    width: 100%;
+    height: 40px;
+    border-radius: 5px;
+    background-color: var(--opaque-background-color);
+    border-style: solid;
+    color: var(--high-color-value);
+    text-indent: 10px;
+    font-size: 25px;
+}
+#lobby-code-input:focus{
+    border-style: solid !important;
+    outline: none;
+}
+.action-button{
+    height: 40px;
+    border: none;
+    border-radius: 5px;
+    font-size: 25px;
+    white-space: nowrap;
+    width: fit-content;
+    display: inline-block; 
+}
+.action-button-disabled{
+    background-color: #5c5c5c !important;
+    color: white !important;
+}
+#create-button{
+    background-color: #238636;
+    color: white;
+    transition: background-color 0.2s ease-in;
+}
+#enter-button{
+    background-color: #0057d6;
+    color: white;
+    transition: background-color 0.1s ease;
+}
+#enter-button:hover{
+    background-color: #2078fc;
+}
+#create-button:hover{
+    background-color: #32c04f;
+}
+.text-info{
+    color: var(--high-color-value);
+    font-size: 30px;
+    width: 50%;
+}
+#create-lobby-container {
+    height: 0;
+    width: 50%;
+    background-color: var(--opaque-background-color);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: hidden;
+    transition: height 0.2s ease;
+}
+#form-lobby-wrapper{
+    display: flex;
+    height: fit-content;
+    width: 100%;
+    padding: 20px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+}
+#form-lobby-wrapper span{
+    color: var(--high-color-value);
+    font-size: 30px;
+}
+#form-lobby-wrapper input{
+    border: none;
+    outline: none;
+    background-color: var(--background-color);
+    height: 40px;
+    color: var(--high-color-value);
+    border-radius: 5px;
+    text-indent: 10px;
+    font-size: 25px;
+    min-width: 90px;
+}
+#form-lobby-wrapper input:focus{
+    outline: 1px solid #656c76;
+}
+#form-lobby-wrapper button{
+    height: 40px;
+    border: none;
+    border-radius: 5px;
+    font-size: 25px;
+    white-space: nowrap;
+    width: fit-content;
+    display: inline-block;
+}
+#generate-lobby-button{
+    background-color: #238636;
+    color: white;
+    transition: background-color 0.2s ease-in; 
+}
+#generate-lobby-button:hover{
+    background-color: #32c04f;
+}
+#cancel-create-button{
+    background-color: #b60606;
+    color: white;
+    transition: background-color 0.2s ease-in; 
+}
+#cancel-create-button:hover{
+    background-color: #df2b2b;
+}
+#generated_code{
+    background-color: var(--background-color);
+    font-size: 80px !important;
+    border-radius: 5px;
+    color: var(--high-color-value);
+    height: fit-content !important;
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+    width: 65px;
+    aspect-ratio: 1;
+    position: relative;
+  }
+  .loader:before,
+  .loader:after {
+    content: "";
+    position: absolute;
+    border-radius: 50px;
+    box-shadow: 0 0 0 3px inset var(--high-color-value);
+    animation: l4 2.5s infinite;
+  }
+  .loader:after {
+    animation-delay: -1.25s;
+  }
+  @keyframes l4 {
+    0% {
+      inset: 0 35px 35px 0;
+    }
+    12.5% {
+      inset: 0 35px 0 0;
+    }
+    25% {
+      inset: 35px 35px 0 0;
+    }
+    37.5% {
+      inset: 35px 0 0 0;
+    }
+    50% {
+      inset: 35px 0 0 35px;
+    }
+    62.5% {
+      inset: 0 0 0 35px;
+    }
+    75% {
+      inset: 0 0 35px 35px;
+    }
+    87.5% {
+      inset: 0 0 35px 0;
+    }
+    100% {
+      inset: 0 35px 35px 0;
+    }
+  }
+.info-text{
+  width: 50%;
+  font-size: 30px;
+  color: var(--high-color-value);
+
+}
+#created-lobby{
+  min-height: 50px;
+  width: 50%;
+  background-color: var(--opaque-background-color);
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  overflow-y: hidden;
+  transition: height 0.2s ease;
+  padding: 20px;
+}
+.lobby-box{
+  width: 100%;
+  height: 70px;
+  background-color: #0057d6;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: clamp(15px, 40px, 80px);
+  border: none;
+  outline: none;
+}

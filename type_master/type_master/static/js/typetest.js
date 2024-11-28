@@ -1,5 +1,5 @@
 class TypingTest {
-    constructor(textInput, paragraphElement,retryButton, timer, onDone, resetTestBinding, amount, testType, testStatusCallBack) {
+    constructor(textInput, paragraphElement,retryButton, timer, onDone, resetTestBinding, amount, testType, testStatusCallBack, test_active = true) {
         this.all_words = null;
         (async () => { 
             try {
@@ -8,12 +8,15 @@ class TypingTest {
                 const all_words = words.map(item => item.word);
                 this.all_words = all_words; 
                 if(testType != 'custom'){
+        
                     this.getText(null, amount)
+                    
                 }
             } catch (error) {
                 console.error("Error:", error);
             }
         })();
+        this.test_active = test_active
 
         this.amount = amount
         this.textInput = $(textInput);
@@ -58,6 +61,9 @@ class TypingTest {
 
     }
      checkCapsLock(event) {
+        if(!this.test_active){
+            return
+        }
         if (event.originalEvent && event.originalEvent.getModifierState('CapsLock')) {
             $('#warning-text').removeClass('hidden')
         } else {
@@ -65,6 +71,9 @@ class TypingTest {
         }
     }
     textInputFocus(type){
+        if(!this.test_active){
+            return
+        }
         if(!this.test_finished){
             if(type == 'focus'){
                 this.paragraphElement.removeClass('text_input_unfocused')
@@ -86,7 +95,9 @@ class TypingTest {
     }
 
     handleInput() {
-
+        if(!this.test_active){
+            return
+        }
         let activeContainer = document.querySelector('.active');
         if(activeContainer){
             const currentInput = this.textInput.val().split('');
@@ -95,7 +106,7 @@ class TypingTest {
                 $('.word_container.active .letter:last').remove();
             }
             if (!this.started) {
-                if(this.testType == 'time'){
+                if(this.testType == 'time' || this.testType == 'lobby'){
                     $('#counter').text(this.timer.formatMinutesAndSeconds(this.timer.set_time));
                 }
                 else if(this.testType == 'words' || this.testType == 'custom'){
@@ -153,6 +164,9 @@ class TypingTest {
     }
 
     updateLetterClasses(currentInput) {
+        if(!this.test_active){
+            return
+        }
         this.activeWordsType.find('.letter').removeClass('correct incorrect');
         currentInput.forEach((value, index) => {
             if (index < this.activeText.length) {
@@ -177,6 +191,9 @@ class TypingTest {
     }
 
     handleKeydown(event) {
+        if(!this.test_active){
+            return
+        }
         if (event.key === " " || event.keyCode === 32) {
             let inputted = this.textInput.val().trim();
             if (inputted !== "") {
@@ -192,6 +209,9 @@ class TypingTest {
     }
 
     handleKeyPress(event) {
+        if(!this.test_active){
+            return
+        }
         const char = String.fromCharCode(event.which);
         if (/^[a-z0-9]$/i.test(char)) {
             this.textInput.focus();
@@ -418,5 +438,8 @@ class TypingTest {
     }
     changeTestFinishedStat(stat){
         this.test_finished = stat;
+    }
+    changeTestActivity(bool){
+        this.test_active = bool
     }
 }

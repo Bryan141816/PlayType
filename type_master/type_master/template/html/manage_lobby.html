@@ -1,0 +1,125 @@
+{% extends 'html/template.html' %}
+{% load static %}
+{% block head %}
+    <title>Stats | PlayType</title>
+    <link rel="stylesheet" href="{% static 'css/manage_lobby.css' %}">
+    <link rel="stylesheet" href="{% static 'css/leaderboards.css' %}">
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<main>
+    <h3>Manage Lobby</h3>
+    <div id="lobby-control">
+        <span id="lobby-name">{{lobby.name}}</span>
+        <span id="lobby-name">{{lobby.code}}</span>
+        {% if lobby.is_started %}
+            <button class="action-button stop-button" id="start-lobby">Stop Test</button>
+        {% else %}
+            <button class="action-button start-button" id="start-lobby">Start Test</button>
+        {% endif %}
+    </div>
+    <span class="info-text">Players</span>
+    <div id="player-lobby">
+        {% for player in players %}
+            <div class="lobby-box">{{player.user.extra_data.name}}</div>
+        {% endfor%}
+    </div>
+    <span class="info-text">Leaderboard</span>
+    <div id="leaderboard-player">
+        <div id="player-leaderboard" class="table-container">
+            <div></div>
+            <div class="table-head">name</div>
+            <div class="table-head">wpm</div>
+            <div class="table-head">accuracy</div>
+            <div class="table-head">date</div>
+            {% for item in  test_history %}
+                <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} table-starting-content">
+                    {% if forloop.counter == 1%}
+                        <i class="fas fa-medal"></i>
+                    {% else %}
+                        {{forloop.counter}}
+                    {% endif %}
+                </div>
+                <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
+                    <img src="{{item.user__extra_data__picture}}" alt="">
+                    <a href="/profile/{{item.user__user__username}}">{{item.user__extra_data__name}}</a>
+                </div>
+                <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.wpm}}</div>
+                <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{{item.accuracy}}%</div>
+                <div class="table-content {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} table-ending-content">{{item.test_taken__date}}</div>
+            {% empty %}
+                <div class="full-width">no data available in table</div>
+            {% endfor %}
+        </div>
+    </div>
+</main>
+<script>
+    $(document).ready(function(){
+        settings_init(userSettings)
+        profile_init()
+        Pusher.logToConsole = true;
+        const lobby_code = '{{lobby.code}}'
+    
+        var pusher = new Pusher('373895b0f6d1611ac721', {
+            cluster: 'ap1'
+        });
+    
+        var channel = pusher.subscribe('{{lobby.code}}');
+        channel.bind('player-joined', function(data) {
+            $('#player-lobby').append(
+                `<div class="lobby-box">${data.name}</div>`
+            )
+        });
+        channel.bind('new-leaderboard', function(data) {
+            leaderboard = data.val
+            $('#player-leaderboard').html(leaderboard)
+        });
+        $('#start-lobby').on('click',()=>{
+            if($('#start-lobby').hasClass('start-button')){
+                $.ajax({
+                    url: `/managelobby/${lobby_code}/`, // The URL where Django expects the request
+                    type: 'POST',
+                    contentType: 'application/x-www-form-urlencoded', // Data type
+                    data: {'event': 'lobby_started'},
+                    beforeSend: function(xhr, settings) {
+                        // Include CSRF token if needed
+                        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                    },
+                    success: function (response) {
+                        $('#start-lobby').removeClass('start-button')
+                        $('#start-lobby').addClass('stop-button')
+                        $('#start-lobby').text('Stop Test')
+    
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(error)
+                    }
+                });
+            }
+            else{
+                $.ajax({
+                    url: `/managelobby/${lobby_code}/`, // The URL where Django expects the request
+                    type: 'POST',
+                    contentType: 'application/x-www-form-urlencoded', // Data type
+                    data: {'event': 'lobby_stopped'},
+                    beforeSend: function(xhr, settings) {
+                        // Include CSRF token if needed
+                        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                    },
+                    success: function (response) {
+                        $('#start-lobby').addClass('start-button')
+                        $('#start-lobby').removeClass('stop-button')
+                        $('#start-lobby').text('Start Test')
+    
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(error)
+                    }
+                });
+            }
+        })
+
+    })
+</script>
+{% endblock %}

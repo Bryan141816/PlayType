@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Word, UserSettings, TestHistory
+from .models import Word, UserSettings, TestHistory, bsitTypingMaster, bsitTypeingMasterPlayers
 
 @admin.register(Word)
 class WordAdmin(admin.ModelAdmin):
@@ -36,4 +36,23 @@ class TestHistoryAdmin(admin.ModelAdmin):
             "type",
             "bpr",
             "test_taken"
+    )
+
+@admin.register(bsitTypingMaster)
+class bsitTypingMasterAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        'code',
+        "name",
+        "host",
+        "date_created",
+        "test_time",
+        "test_ammount",
+    )
+
+@admin.register(bsitTypeingMasterPlayers)
+class bsitTyepingMasterPlayers(admin.ModelAdmin):
+    list_display = (
+        "user",
+        "lobby"
     )

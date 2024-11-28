@@ -1,0 +1,163 @@
+{% extends 'html/template.html' %}
+{% load static %}
+{% block head %}
+    <title>Stats | PlayType</title>
+    <link rel="stylesheet" href="{% static 'css/type_master.css' %}">
+{% endblock %}
+
+{% block content %}
+<main>
+    <h3>Typing Master</h3>
+    <div id="lobby-code-container">
+        <input type="text" id="lobby-code-input" placeholder="Enter Lobby Code...">
+        <button class="action-button" id="enter-button">Join Lobby</button>
+        <button class="action-button" id="create-button">Create Lobby</button>
+    </div>
+    <form id="create-lobby-container">
+        <div id="form-lobby-wrapper">
+
+            <div style="display: flex; gap: 10px;">
+                <span>Lobby Name: <input type="text" placeholder="Enter lobby name..." required id="lobby-name-input"></span>
+                <span>Test Duration: <input type="number" value="15" required id="test_duration"></span>
+                <span>Test Amount: <input type="number" value="0" required id="test_amount"></span>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button id="generate-lobby-button" class="action-button">Generate</button>
+                <button id="cancel-create-button" class="action-button">Cancel</button>
+            </div>
+        </div>
+    </form>
+    <span class="info-text">Created Lobby</span>
+    <div id="created-lobby">
+        {% for lobby in created_lobby %}
+            <form action="/managelobby/{{lobby.code}}">
+                <button class="lobby-box">
+                    {{lobby.name}}
+                </button>
+            </form>
+        {% endfor %}
+
+    </div> 
+</main>
+<script>
+    $(document).ready(function(){
+        settings_init(userSettings)
+        profile_init()
+        $('#create-button').on('click',(event)=>{
+            event.preventDefault()
+            const optionBox = document.getElementById("create-lobby-container");
+            const container = document.getElementById("form-lobby-wrapper");
+            const containerRect = container.getBoundingClientRect();
+            const height = containerRect.height;
+            optionBox.style.height = `${height}px`;
+
+            $('#enter-button').addClass('action-button-disabled')
+        })
+        $('#cancel-create-button').on('click',(event)=>{
+            event.preventDefault()
+            const optionBox = document.getElementById("create-lobby-container");
+            optionBox.style.height = `0`;
+            $('#enter-button').removeClass('action-button-disabled')
+        })
+        $('#generate-lobby-button').on('click',(event)=>{
+            event.preventDefault()
+            const username = `{{name}}`
+            const lobbyName = $('#lobby-name-input').val()
+            const currentDate = new Date();
+            const date = currentDate.toISOString().split('T')[0]
+            const combined = username+lobbyName+date;
+            const test_time = $('#test_duration').val()
+            const test_amount = $('#test_amount').val()
+            generateCode(combined).then(code => {
+                    const loader = '<div class="loader"></div>'
+                    $('#form-lobby-wrapper').html(loader)
+                    const optionBox = document.getElementById("create-lobby-container");
+                    const container = document.getElementById("form-lobby-wrapper");
+                    const containerRect = container.getBoundingClientRect();
+                    const height = containerRect.height;
+                    optionBox.style.height = `${height}px`;
+
+                    const formData = {
+                        code: code,
+                        name: lobbyName,
+                        test_time: test_time,
+                        test_amount: test_amount,
+                    };
+                    $.ajax({
+                        url: '/create_lobby/', // The URL where Django expects the request
+                        type: 'POST',
+                        contentType: 'application/x-www-form-urlencoded', // Data type
+                        data: formData,
+                        beforeSend: function(xhr, settings) {
+                            // Include CSRF token if needed
+                            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                        },
+                        success: function (response) {
+                            const generatedCodeHtml = `
+                                <span id="info-tab">Click to Copy</span>
+                                <button id="generated_code">${code}</button>
+                                <button id="cancel-create-button" class="action-button">Close</button>
+                            `
+                            //<button id="procced_to_lobby" class="action-button">Proceed to Lobby</button>
+                            $('#form-lobby-wrapper').html(generatedCodeHtml)
+                            const optionBox = document.getElementById("create-lobby-container");
+                            const container = document.getElementById("form-lobby-wrapper");
+                            const containerRect = container.getBoundingClientRect();
+                            const height = containerRect.height;
+                            optionBox.style.height = `${height}px`;
+                            // $('#procced_to_lobby').on('click',(event)=>{
+                            //     event.preventDefault()
+                            //     window.location.href = `/connect_to_lobby/${code}`;
+
+                            // })
+
+                            $('#generated_code').on('click', (even)=>{
+                                even.preventDefault()
+                                navigator.clipboard.writeText(code)
+                                $('#info-tab').text(`Code Copied`)
+                            })
+
+                            const $html = $(response.lobby);
+
+                            // Select the desired element
+                            const lobby = $html.find('#created-lobby').children();
+
+                            $('#created-lobby').html(lobby)
+
+                            $('#cancel-create-button').on('click',(event)=>{
+                                event.preventDefault()
+                                const optionBox = document.getElementById("create-lobby-container");
+                                optionBox.style.height = `0`;
+                                $('#enter-button').removeClass('action-button-disabled')
+                            })
+                        },
+                        error: function (xhr, status, error) {
+                        console.log(error)
+                        }
+                    });
+
+                }
+            );
+        })
+
+        function generateCode(inputString) {
+            // Create a hash using SHA-256
+            const hashBuffer = crypto.subtle.digest("SHA-256", new TextEncoder().encode(inputString));
+            
+            // Convert the hash to a hexadecimal string and get the first 10 characters
+            return hashBuffer.then(buffer => {
+                const hashArray = Array.from(new Uint8Array(buffer));
+                const hexString = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+                return hexString.substring(0, 10);  // Get the first 10 characters
+            });
+        }
+
+        $('#enter-button').on('click',(event)=>{
+            event.preventDefault()
+            const code = $("#lobby-code-input").val()
+            window.location.href = `/connect_to_lobby/${code}`;
+        })
+
+    })
+</script>
+{% endblock %}

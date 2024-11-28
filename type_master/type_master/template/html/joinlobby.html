@@ -1,0 +1,235 @@
+{% extends 'html/template.html' %}
+{% load static %}
+{% block head %}
+    <title>Stats | PlayType</title>
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'css/lobby.css' %}">
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<main>
+    <div id="typingtest-container">
+        <span id="message-lobby" class="{% if lobby.is_started %}hidden-display{%endif%}">Waiting for the host to start.</span>
+        <div id="counter-container">
+            <div id="warning-text" class="hidden"><i class="fas fa-lock"></i> Caps Lock</div>
+            <div id="counter" class="hidden"></div>
+            <div id="challenge-counter" class="hidden"></div>
+        </div>
+        <div class="paragraph" id="paragraph">
+            <div class="pointer-area-field">
+                <div id="pointer" class="flash-animation"></div>
+            </div>
+            <div id="paragraph-container">
+            </div>
+        </div>
+        
+        <input type="text" id="text_input" spellcheck="false" autocomplete="off" autocomplete="off" autocapitalize="off" autocorrect="off" data-gramm="false" data-gramm_editor="false" data-enable-grammarly="false" list="autocompleteOff" spellcheck="false">
+        <button id="retry_button" aria-label="Reset Test" title="Reset Test">
+            <i class="fas fa-redo"></i>
+        </button>
+    </div>
+</main>
+<script src="{% static 'js/timer.js' %}"></script>
+<script src="{% static 'js/typetest.js' %}"></script>
+<script>
+    $(document).ready(function(){
+        let typingTest = null;
+        settings_init(userSettings)
+        const lobby_is_started = ("{{lobby.is_started}}" === "True")
+        profile_init()
+        typeTestController()
+        
+        var pusher = new Pusher('373895b0f6d1611ac721', {
+            cluster: 'ap1'
+        });
+
+        var channel = pusher.subscribe('{{lobby.code}}');
+        
+        channel.bind('lobby-status', function(data) {
+            if(data.status){
+                let startlobbycountdowntime = 3;
+                let startlobbycountdownt = null;
+                $('#message-lobby').text(startlobbycountdowntime);
+                startlobbycountdownt = setInterval(() => { 
+                    startlobbycountdowntime--;
+                    $('#message-lobby').text(startlobbycountdowntime);
+                    
+                    if (startlobbycountdowntime <= 0) {
+                        clearInterval(startlobbycountdownt);
+                        typingTest.changeTestActivity(true)
+                        $('#message-lobby').addClass('hidden-display')
+                        $('#retry_button').removeClass('hidden-display')
+                    }
+                }, 1000);
+            }
+            else{
+                typingTest.changeTestActivity(false)
+                $('#message-lobby').removeClass('hidden-display')
+                $('#retry_button').addClass('hidden-display')
+                typingTest.resetTest()
+            }
+        });
+        if(!lobby_is_started){
+            $('#retry_button').addClass('hidden-display')
+        }
+            function typeTestController(){
+
+                
+                let timer = null;
+                let testStarted = false;
+                const lobbycode = "{{lobby.code}}"
+                setMode()
+        
+                function setMode() {
+                    let word_amount = 50;
+                    function resetTest(initialValue = '0') {
+                        $('#counter').text(initialValue).addClass('hidden');
+                    }
+                
+                    function initializeTypingTest(timer, doneCallback, mode) {
+                        if (!typingTest) {
+                            typingTest = new TypingTest('#text_input', '#paragraph', '#retry_button', timer, doneCallback, resetTest,word_amount, mode, testStatusCallBack, lobby_is_started);
+                            if(mode === 'custom'){
+                                typingTest.useCustomSentence();
+                            }
+                        } else {
+                            typingTest.updateTimer(timer);
+                        }
+                    }
+                    timer = new CountdownTimer(parseInt('{{lobby.test_time}}'), '#counter', testDone, 'lobby');
+                    initializeTypingTest(timer, testDone, 'lobby');
+                    resetTest(parseInt('{{lobby.test_time}}'));
+                
+                }
+        
+                function testStatusCallBack(isStarted){
+                    if(isStarted){
+                        if(!($('#option-selector').hasClass('testStartedHidder')))
+                        {
+                            $('#option-selector').addClass('testStartedHidder')
+                            $('.tap-bar-button').addClass('testStartedHidder')
+                            $('#profile_image').addClass('testStartedHidder')
+                            $('#logo-image').addClass('testStartedHidderImage')
+                            $('body').css('cursor', 'none'); 
+                            testStarted = true;
+                        }
+                    }
+                    else{
+                        $('#option-selector').removeClass('testStartedHidder')
+                        $('.tap-bar-button').removeClass('testStartedHidder')
+                        $('#profile_image').removeClass('testStartedHidder')
+                        $('#logo-image').removeClass('testStartedHidderImage')
+                        $('body').css('cursor', 'auto'); 
+                        testStarted = false;
+                    }
+                }
+                $(document).on('mousemove', function() {
+                    if(testStarted){
+                        $('body').css('cursor', 'auto');
+                        testStatusCallBack(false)
+                    }
+                });
+                function calculateWordAmountByTime(time){
+                    let word_amount = 0;
+                    switch (time) {
+                        case 15:
+                            word_amount = 50;
+                            break;
+                        case 30:
+                            word_amount = 70;
+                            break;
+                        case 60:
+                            word_amount = 100;
+                            break;
+                        case 120:
+                            word_amount = 200;
+                            break;
+                    }
+                    return word_amount;
+                }
+             
+        
+                function testDone(type, origin=null) {
+                    typingTest.test_finished = true;
+                    const resultData = typingTest.requestResultData();
+                    resultData.totalCharacters += resultData.previousInputLength;
+                    const correctCount = $('.letter.correct').length;
+        
+                    const minute = (timer instanceof CountdownTimer)
+                        ? (timer.original_time - timer.getRemainingTime()) / 60
+                        : (timer instanceof CountupTimer)
+                            ? (timer.getRemainingTime()) / 60 
+                            : null;
+        
+                    let wpm = ((correctCount + resultData.spaceCounter) / 5) / minute;
+                    let accuracy = ((resultData.totalCharacters + resultData.spaceCounter - (resultData.incorrectCounter + resultData.extraLetterCounter)) / (resultData.totalCharacters + resultData.spaceCounter)) * 100;
+                    wpm = Math.ceil(wpm);
+                    accuracy = Math.ceil(accuracy);
+                    let stat = `${correctCount}/${resultData.incorrectCounter}/${resultData.extraLetterCounter}`
+        
+                    if(accuracy<=0){
+                        wpm = '0'
+                        accuracy = '0'
+                        stat = 'invalid'
+                    }
+        
+                    let resultDisplay = $(`
+                            <div class="wpm_container">
+                            <div>
+                            <div class="blocker" id="blocker1"></div>
+                            <h2>${wpm}</h2>
+                            <h3>wpm</h3>
+                            </div>
+                            <div>
+                            <div class="blocker" id="blocker2"></div>
+                            <h2>${accuracy}%</h2>
+                            <h3>acc</h3>
+                            </div>
+                            <div>
+                            <div class="blocker" id="blocker3"></div>
+                            <h2>${stat}</h2>
+                            <h3>cor/mis/ex</h3>
+                            </div>
+                            </div>
+                    `);
+        
+                    const formData = {
+                    wpm: wpm,
+                    accuracy: accuracy,
+                    cormisex: stat,
+                    mode: 'lobby',
+                    type: lobbycode,
+                    };
+                    $.ajax({
+                        url: '/user/test/history', // The URL where Django expects the request
+                        type: 'POST',
+                        contentType: 'application/x-www-form-urlencoded', // Data type
+                        data: formData,
+                        beforeSend: function(xhr, settings) {
+                            // Include CSRF token if needed
+                            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                        },
+                        success: function (response) {
+                        if(response.bpr){
+                            let icon = '<i class="fas fa-crown"></i>'
+                            showNotification(icon, 'Notification' ,response.message)
+                            $('body').append(response.confitte);
+                            setTimeout(()=>{
+                                $('.confetti-wrapper').remove()
+                            },5000)
+                        }
+                        },
+                        error: function (xhr, status, error) {
+                        console.log(error)
+                        }
+                    });
+                    
+                    $('#paragraph').html(resultDisplay);
+                    $('#counter').addClass('hidden');
+                    $('#challenge-counter').addClass('hidden')
+                }
+            }
+    })
+</script>
+{% endblock %}
