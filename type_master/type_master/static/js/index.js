@@ -463,12 +463,6 @@ $(document).ready(function() {
         if(!(type === 'challenge')){
 
             resultDisplay = $(`
-                <ins class="adsbygoogle"
-                    style="display:block; height: 100px"
-                    data-ad-client="ca-pub-8110498301533293"
-                    data-ad-slot="8493252080"
-                    data-ad-format="auto"
-                    data-full-width-responsive="true"></ins>
                     <div class="wpm_container">
                     <div>
                     <div class="blocker" id="blocker1"></div>
@@ -570,9 +564,6 @@ $(document).ready(function() {
             }
         }
         $('#paragraph').html(resultDisplay);
-        setTimeout(()=>{
-            (adsbygoogle = window.adsbygoogle || []).push({});
-        },20)
         if(type === "challenge"){
             if(accuracy>=40){
                 if(accuracy >= 40 && accuracy < 55){
