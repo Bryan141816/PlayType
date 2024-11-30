@@ -424,3 +424,6 @@
 #edit-custom-sentence:hover, #edit-custom-sentence:focus{
     color: var(--high-color-value);
 }
+.adsbygoogle{
+    min-width: 100%;
+}
