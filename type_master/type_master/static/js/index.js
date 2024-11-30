@@ -464,7 +464,7 @@ $(document).ready(function() {
 
             resultDisplay = $(`
                 <ins class="adsbygoogle"
-                    style="display:block"
+                    style="display:block; height: 100px"
                     data-ad-client="ca-pub-8110498301533293"
                     data-ad-slot="8493252080"
                     data-ad-format="auto"
