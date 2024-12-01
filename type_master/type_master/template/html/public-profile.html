@@ -9,16 +9,16 @@
     <div id="user-stat-container">
         <div id="profile-info">
             {% if profile_image %}
-                <img src="{{ profile_image }}" id="profile-picture">
+                <img src="{{ public_profile.profile_image }}" id="profile-picture">
             {% else %}
                 <img src="{% static 'images/default-profile.jpg' %}" id="profile-picture">
             {% endif %}
             <div id="name_datecreated">
-                <span id="user-name">{{name}}</span>
-                <span id="date_joined">Joined {{date_joined}}</span>
+                <span id="user-name">{{public_profile.name}}</span>
+                <span id="date_joined">Joined {{public_profile.date_joined}}</span>
             </div>
             <div class="stat-lvl-amount-container">
-                <span class="normal-text name">LVL 36</span>
+                <span class="normal-text name" id="public-level-value">LVL 1</span>
                 <div id="stat-lvl-bar-bg">
                     <div id="stat-lvl-amount"></div>
                 </div>
@@ -62,6 +62,11 @@
         $(document).ready(function(){
             settings_init(userSettings)
             profile_init()
+            setLevel(userSettings.exp)
+            const publicExp = '{{public_exp}}';
+            const public_level = calculateLevel(publicExp)
+            $('#public-level-value').text(`LVL ${public_level.currentLevel}`)
+            $('#stat-lvl-amount').css('width', `${public_level.progressPercentage}%`)
         })
     </script>
 {% endblock %}

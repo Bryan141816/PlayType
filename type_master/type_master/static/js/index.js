@@ -117,6 +117,7 @@ $(document).ready(function() {
         $('#sentence-text').val(data.custome_sentence);
         settings_init(data)
         profile_init()
+        setLevel(data.exp)
         setMode();
     }
     function calculateWordAmountByTime(time){
@@ -461,7 +462,16 @@ $(document).ready(function() {
         }
         let resultDisplay = null;
         if(!(type === 'challenge')){
-
+            if(accuracy>0){
+                getLocalUserSettings(localUserSettings.user, (data)=>{
+                    const levelDeduction = Math.ceil((10 * (userLevel.currentLevel + 0.2)) - (((100-accuracy)/2)/100))
+                    const addedExp = data.exp + levelDeduction
+                    setLevel(addedExp)
+                    updateUserSettings(null,null,null,null,null,null,null,null,null, addedExp);
+                    updateLocalUserSettings(localUserSettings.user,null,null,null,null,null,null,null,null,null, addedExp);
+                })
+            }
+            
             resultDisplay = $(`
                     <div class="wpm_container">
                     <div>

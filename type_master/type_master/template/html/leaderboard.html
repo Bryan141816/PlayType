@@ -89,6 +89,7 @@
         $(document).ready(function(){
             settings_init(userSettings)
             profile_init()
+            setLevel(userSettings.exp)
             $('#word-type-query-selector').val("15")
             $('#time-type-query-selector').val("15")
         })

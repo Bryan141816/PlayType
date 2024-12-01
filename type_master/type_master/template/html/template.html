@@ -117,6 +117,7 @@
             username: "{{ user.username|escapejs }}",
             email: "{{ user.email|escapejs }}",
         };
+        console.log(userSettings)
         $(document).on('click', function(event) {
             if (clickOutsideEnabled && $('#side-panel').hasClass('active-side-panel')) {
                 if (!$(event.target).closest('#side-panel-container').length) {

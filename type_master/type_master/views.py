@@ -384,6 +384,7 @@ def updateUserSettings(request):
 
     # Retrieve parameters from the request
     theme = request.POST.get('theme')
+    exp = request.POST.get('exp')
     mode_used = request.POST.get('mode_used')
     time_selected = request.POST.get('time_selected')
     word_amount_selected = request.POST.get('word_amount_selected')
@@ -404,6 +405,8 @@ def updateUserSettings(request):
     # Update fields only if the new value is not None
     if theme is not None:
         user_settings.theme = theme
+    if exp is not None:
+        user_settings.exp = exp
     if mode_used is not None:
         user_settings.mode_used = mode_used
     if time_selected is not None:
@@ -729,28 +732,32 @@ def getTypeLeaderboarrd(request):
 
 def showPublicProfile(request, username):
 
-    user = None
-    try:
-        user = User.objects.get(username=username)
-    except User.DoesNotExist:
-        user = None
-       
+    user = request.user
     context = getUser(user)
-    user = get_object_or_404(UserSocialAuth, user=user)
-    test_count = TestHistory.objects.filter(user=user).count()
-    user_settings = UserSettings.objects.filter(user = user).first() 
+    publicuser = None
+    try:
+        publicuser = User.objects.get(username=username)
+    except User.DoesNotExist:
+        publicuser = None
+    context["public_profile"] = getUser(publicuser)
+       
+    publicuser = get_object_or_404(UserSocialAuth, user=publicuser)
+
+    test_count = TestHistory.objects.filter(user=publicuser).count()
+    public_user_settings = UserSettings.objects.filter(user = publicuser).first()
+    context["public_exp"] = public_user_settings.exp
     if(test_count != 0):
-        avg_wpm = TestHistory.objects.filter(user=user).aggregate(Avg('wpm'))
-        avg_accuracy = TestHistory.objects.filter(user=user).aggregate(Avg('accuracy'))
+        avg_wpm = TestHistory.objects.filter(user=publicuser).aggregate(Avg('wpm'))
+        avg_accuracy = TestHistory.objects.filter(user=publicuser).aggregate(Avg('accuracy'))
         total_day_active = (
             TestHistory.objects
-            .filter(user=user)
+            .filter(user=publicuser)
             .annotate(date=TruncDate('test_taken'))  # Truncate to date level
             .values('date')  # Group by date
             .annotate(count=Count('id'))  # Count entries per date
             .order_by('date')  # Sort by date
         )
-        bpr = TestHistory.objects.filter(user=user,bpr=True).order_by('-test_taken').first()
+        bpr = TestHistory.objects.filter(user=publicuser,bpr=True).order_by('-test_taken').first()
 
         context["test_count"] = test_count
         context["avg_wpm"] = f"{avg_wpm["wpm__avg"]:.2f}" if avg_wpm["wpm__avg"] % 1 else f"{int(avg_wpm["wpm__avg"])}"
@@ -765,8 +772,8 @@ def showPublicProfile(request, username):
         context["bpr"] = 0
     
     challenge_achieved_count = 0
-    if user_settings:
-        challenge_achieved = user_settings.challenge_achieved  # Access the challenge_achieved field
+    if public_user_settings:
+        challenge_achieved = public_user_settings.challenge_achieved  # Access the challenge_achieved field
         challenge_achieved_count = 0
 
         for x in challenge_achieved:
