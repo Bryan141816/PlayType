@@ -739,7 +739,10 @@ def showPublicProfile(request, username):
         publicuser = User.objects.get(username=username)
     except User.DoesNotExist:
         publicuser = None
-    context["public_profile"] = getUser(publicuser)
+    public_profile = getUser(publicuser)
+    public_profile.pop('user_settings')
+    public_profile.pop('login_origin')
+    context["public_profile"] = public_profile
        
     publicuser = get_object_or_404(UserSocialAuth, user=publicuser)
 
