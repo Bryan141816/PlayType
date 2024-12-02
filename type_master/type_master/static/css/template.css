@@ -8,6 +8,7 @@
     color: transparent !important;
 }
 #build-version{
+    margin-top: auto;
     color: var(--medium-color-value);
     font-size: 30px;
 }
