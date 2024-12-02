@@ -18,6 +18,7 @@ from django.http import StreamingHttpResponse
 import time
 from decouple import config
 import pusher
+from django_ratelimit.decorators import ratelimit
 
 pusher_app_id   =config('pusher_app_id')
 pusher_key      =config('pusher_key')
@@ -32,18 +33,7 @@ pusher_client = pusher.Pusher(
   ssl=True
 )
 
-def pusherTest(request):
-    pusher_client.trigger('my-channel', 'my-event', {'message': 'hello world'})
-    return JsonResponse({
-        'success': True,
-    })
-
-def short_polling_view(request):
-    return JsonResponse({"server_time": time.ctime()})
-
-def shortpolling_render(request):
-    return render(request, 'html/sse.html')
-
+@ratelimit(key='ip', rate='20/second', method='GET', block=True)
 def typing_master_competetion(request):
     user = request.user
     context = getUser(user)
@@ -52,6 +42,7 @@ def typing_master_competetion(request):
     context["created_lobby"] = created_lobby
     return render(request, 'html/type_master.html', context)
 
+@ratelimit(key='ip', rate='20/second', method='GET', block=True)
 def createTypingTestLobby(request):
 
     if request.method not in ['POST', 'PUT']:
@@ -120,7 +111,7 @@ def getLobbyLeaderBoard(code):
             })
         seen_users.add(user_id)
     return unique_user_records
-
+@ratelimit(key='ip', rate='20/second', method='POST', block=True)
 def update_player_canplay_in_lobby(request, code):
     if not request.method == "POST":
         return HttpResponseBadRequest('why?')
@@ -142,7 +133,7 @@ def update_player_canplay_in_lobby(request, code):
     except Exception as e:
         # Handle other exceptions and log the error for debugging
         print(f"Error updating: {e}")
-
+@ratelimit(key='ip', rate='20/second', method='ALL', block=True)
 def manageLobby(request, code):
     if request.method == 'POST':
         event_type = request.POST.get('event')
@@ -220,7 +211,7 @@ def manageLobby(request, code):
         return render(request, 'html/manage_lobby.html', context)
 
 
-
+@ratelimit(key='ip', rate='20/second', method='GET', block=True)
 def connectToLobby(request, code):
     user = request.user
     context = getUser(user)
@@ -262,10 +253,10 @@ def connectToLobby(request, code):
 
 
 
-
+@ratelimit(key='ip', rate='20/second', method='GET', block=True)
 def login_view(request):
     return render(request, 'html/login.html')
-
+@ratelimit(key='ip', rate='20/second', method='GET', block=True)
 def logout_view(request):
     logout(request)
     return redirect('index')
@@ -321,13 +312,13 @@ def getUser(user):
         context = {}
     return context
 
-
+@ratelimit(key='ip', rate='20/second', method='GET', block=True)
 def index(request):
     user = request.user
     context = getUser(user)
     return render(request, 'html/index.html', context)
 
-
+@ratelimit(key='ip', rate='20/second', method='GET', block=True)
 def show_profile(request):
     user = request.user
     context = getUser(user)
@@ -338,12 +329,14 @@ def letter_token(word):
     word = word.lower()
     return list(word)
 
+@ratelimit(key='ip', rate='20/second', method='GET', block=True)
 def challenges(request):
     return render(request, 'html/challenges-template.html')
-
+@ratelimit(key='ip', rate='20/second', method='GET', block=True)
 def settings(request):
     return render(request, 'html/settings.html')
-
+    
+@ratelimit(key='ip', rate='20/second', method='GET', block=True)
 def get_words(request):
     if request.method == 'GET':
         #amount = int(request.GET.get('amount', 100))
@@ -366,11 +359,11 @@ def get_words(request):
             'success': True,
             'words': random_words
         })
-    
+@ratelimit(key='ip', rate='20/second', method='POST', block=True)    
 def updateUserSettings(request):
     # Check if the request is a POST or PUT request
-    if request.method not in ['POST', 'PUT']:
-        return HttpResponseBadRequest('Invalid request method. Please use POST or PUT.')
+    if not request.method  == 'POST':
+        return HttpResponseBadRequest('Invalid request method. Please use POST.')
 
     # Get the authenticated user
     user = request.user
@@ -429,8 +422,9 @@ def updateUserSettings(request):
 
     return JsonResponse({'message': 'User settings updated successfully.'})
 
+@ratelimit(key='ip', rate='20/second', method='POST', block=True)
 def addTestHistory(request):
-    if request.method not in ['POST', 'PUT']:
+    if not request.method =='POST':
         return HttpResponseBadRequest('Invalid request method. Please use POST or PUT.')
     
     user = request.user
@@ -482,11 +476,11 @@ def addTestHistory(request):
     except Exception as e:
         return JsonResponse({'success': False, 'message': str(e)})
 
-
+@ratelimit(key='ip', rate='20/second', method='GET', block=True)
 def temp(request):
     return render(request, 'html/pusher_test.html')
 
-
+@ratelimit(key='ip', rate='20/second', method='GET', block=True)
 def userStat(request):
     user = request.user
     if( not user.is_authenticated):
@@ -537,7 +531,7 @@ def userStat(request):
     return render(request, 'html/user-stat.html', context)
 
 
-
+@ratelimit(key='ip', rate='20/second', method='GET', block=True)
 def leaderboard(request):
     user = request.user
     today = timezone.now().date()
@@ -611,6 +605,7 @@ def leaderboard(request):
     context["test_history_word_default"] = unique_user_records_word
     return render(request, 'html/leaderboard.html', context)
 
+@ratelimit(key='ip', rate='20/second', method='GET', block=True)
 def getTypeLeaderboarrd(request):
 
     if not request.method == 'GET':
@@ -729,7 +724,7 @@ def getTypeLeaderboarrd(request):
             'test_history_time': test_history_time,
             'test_history_word': test_history_word,
         })
-
+@ratelimit(key='ip', rate='20/second', method='GET', block=True)
 def showPublicProfile(request, username):
 
     user = request.user
