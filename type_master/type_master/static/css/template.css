@@ -8,9 +8,8 @@
     color: transparent !important;
 }
 #build-version{
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+    color: var(--medium-color-value);
+    font-size: 30px;
 }
 html{
     height: 100dvh;
