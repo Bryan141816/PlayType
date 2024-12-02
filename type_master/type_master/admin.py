@@ -13,6 +13,7 @@ class WordAdmin(admin.ModelAdmin):
 class UserSettingsAdmin(admin.ModelAdmin):
     list_display = (
         'user',
+        'exp',
         'theme',
         'font_size',
         'ultra_wide_config',

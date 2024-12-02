@@ -206,6 +206,10 @@ class TypingTest {
         } else if (event.key === "Enter" || event.keyCode === 13) {
             event.preventDefault(); 
         }
+        else if (event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'ArrowLeft' || event.key === 'ArrowRight' || 
+            event.keyCode === 37 || event.keyCode === 38 || event.keyCode === 39 || event.keyCode === 40) {
+          event.preventDefault();  // Prevent the default behavior (e.g., scrolling)
+        }
     }
 
     handleKeyPress(event) {

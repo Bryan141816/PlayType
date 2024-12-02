@@ -1,11 +1,3 @@
-{% load static %}
-<!DOCTYPE html>
-<head>
-  <title>Pusher Test</title>
-</head>
-<body>
-<script>
-// Configuration
 const baseExp = 0; // EXP required for level 1 (starts at 0)
 const growthRate = 100; // Initial EXP increment for level 2
 const multiplier = 1.1; // Growth rate for each subsequent level
@@ -40,15 +32,6 @@ function calculateLevel(exp) {
     };
 }
 
-// Example usage
-const userExp = 0; // Replace with any current EXP value
-const result = calculateLevel(userExp);
 
-console.log(`Level: ${result.currentLevel}`);
-console.log(`EXP for next level: ${result.requiredExp}`);
-console.log(`Remaining EXP to level up: ${result.remainingExp}`);
-console.log(`Progress to next level: ${result.progressPercentage}%`);
-
-
-</script>
-</body>
+// const userExp = 0; 
+// const result = calculateLevel(userExp);

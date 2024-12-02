@@ -43,6 +43,7 @@
     $(document).ready(function(){
         settings_init(userSettings)
         profile_init()
+        setLevel(userSettings.exp)
         $('#create-button').on('click',(event)=>{
             event.preventDefault()
             const optionBox = document.getElementById("create-lobby-container");

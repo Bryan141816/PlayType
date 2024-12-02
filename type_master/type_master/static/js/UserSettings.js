@@ -7,6 +7,7 @@ function openDatabaseAndHandleUserSettings(userSettings) {
             const db = event.target.result;
             const objectStore = db.createObjectStore('UserSettings', { keyPath: 'user' });
             objectStore.createIndex('theme', 'theme', { unique: false });
+            objectStore.createIndex('exp', 'exp', { unique: false });
             objectStore.createIndex('mode_used', 'mode_used', { unique: false });
             objectStore.createIndex('time_selected', 'time_selected', { unique: false });
             objectStore.createIndex('word_amount_selected', 'word_amount_selected', { unique: false });
@@ -45,6 +46,7 @@ function openDatabaseAndHandleUserSettings(userSettings) {
                         const updatedSettings = {
                             user: userSettings.user,
                             theme: userSettings.theme,
+                            exp: userSettings.exp,
                             mode_used: userSettings.mode_used,
                             time_selected: userSettings.time_selected,
                             word_amount_selected: userSettings.word_amount_selected,
@@ -74,6 +76,7 @@ function openDatabaseAndHandleUserSettings(userSettings) {
                     // If not found, create new user settings with default values
                     const defaultValues = {
                         theme: 'dark',
+                        exp: 0,
                         mode_used: 'time',
                         time_selected: 15,
                         word_amount_selected: 15,
@@ -88,6 +91,7 @@ function openDatabaseAndHandleUserSettings(userSettings) {
                     const finalSettings = {
                         user: userSettings.user,
                         theme: userSettings.theme || defaultValues.theme,
+                        exp: userSettings.exp || defaultValues.exp,
                         mode_used: userSettings.mode_used || defaultValues.mode_used,
                         time_selected: userSettings.time_selected || defaultValues.time_selected,
                         word_amount_selected: userSettings.word_amount_selected || defaultValues.word_amount_selected,
@@ -135,7 +139,7 @@ function getLocalUserSettings(user, callback){
         }
     }
 }
-function updateLocalUserSettings(user, theme=null, mode_used=null, time_selected=null, word_amount_selected=null, challenge_achieved=null, custome_sentence=null, ultra_wide_config=null, font_size=null, font_family = null){
+function updateLocalUserSettings(user, theme=null, mode_used=null, time_selected=null, word_amount_selected=null, challenge_achieved=null, custome_sentence=null, ultra_wide_config=null, font_size=null, font_family = null, exp = null){
     const now = new Date().toISOString();
     const request = indexedDB.open('UserSettingsDB', 1);
     request.onsuccess = function(event) {
@@ -148,6 +152,9 @@ function updateLocalUserSettings(user, theme=null, mode_used=null, time_selected
             const data = event.target.result;
             if (theme !== undefined && theme !== null) {
                 data.theme = theme;
+            }
+            if(exp !== undefined && exp !== null){
+                data.exp = exp;
             }
             if (mode_used !== undefined && mode_used !== null) {
                 data.mode_used = mode_used;
@@ -203,7 +210,7 @@ function getCookie(name) {
     return cookieValue;
 }
 
-function updateUserSettings(theme=null, mode_used=null, time_selected=null, word_amount_selected=null, challenge_achieved=null, custome_sentence=null, ultra_wide_config=null, font_size = null, font_family = null) {
+function updateUserSettings(theme=null, mode_used=null, time_selected=null, word_amount_selected=null, challenge_achieved=null, custome_sentence=null, ultra_wide_config=null, font_size = null, font_family = null, exp = null) {
     if(userSettingsDebounce){
         clearTimeout(userSettingsDebounce)
     }
@@ -211,6 +218,9 @@ function updateUserSettings(theme=null, mode_used=null, time_selected=null, word
         const data = {};
         if (theme !== undefined && theme !== null) {
             data.theme = theme;
+        }
+        if(exp !== undefined && exp !== null){
+            data.exp = exp;
         }
         if (mode_used !== undefined && mode_used !== null) {
             data.mode_used = mode_used;

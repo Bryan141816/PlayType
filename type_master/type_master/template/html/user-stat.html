@@ -18,7 +18,7 @@
                 <span id="date_joined">Joined {{date_joined}}</span>
             </div>
             <div class="stat-lvl-amount-container">
-                <span class="normal-text name">LVL 36</span>
+                <span class="normal-text name" id="lvl-value-stat">LVL 1</span>
                 <div id="stat-lvl-bar-bg">
                     <div id="stat-lvl-amount"></div>
                 </div>
@@ -94,6 +94,9 @@
         $(document).ready(function(){
             settings_init(userSettings)
             profile_init()
+            setLevel(userSettings.exp)
+            $('#lvl-value-stat').text(`LVL ${userLevel.currentLevel}`)
+            $('#stat-lvl-amount').css('width', `${userLevel.progressPercentage}%`)
         })
     </script>
 {% endblock %}
