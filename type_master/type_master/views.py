@@ -801,11 +801,3 @@ def ask_username(request, backend=None):
     # Render the form if GET request or no username provided
     return render(request, 'html/ask-username.html')
 
-
-
-def ThreeDOBject(request):
-    return render(request, 'html/test3d.html')
-def data_privary(request):
-    return render(request, 'html/data-privacy.html')
-def deletion(request):
-    return render(request, 'html/user-deletetion.html')
