@@ -8,10 +8,6 @@ urlpatterns = [
     path('', views.index, name="index"),
     path('show-profile', views.show_profile, name="show-profile"),
 
-    path('3D', views.ThreeDOBject, name="test3d"),
-    path('data-privacy', views.data_privary, name="test3d"),
-    path('user-data-deletion', views.deletion, name="test3d"),
-
     path('challenges', views.challenges, name="challenges"),
     
     path('temp', views.temp, name="temp"),

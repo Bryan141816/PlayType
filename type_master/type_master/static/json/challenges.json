@@ -25,7 +25,7 @@
         "level_number": 4,
         "description": "Complete 70 words in a minute.",
         "time": 60,
-        "word_amount": 20
+        "word_amount": 70
     },
     {
         "difficulty": "medium",
