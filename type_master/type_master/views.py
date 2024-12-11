@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 from django.template.defaulttags import register
-from .models import Word, UserSettings, TestHistory, bsitTypingMaster, bsitTypeingMasterPlayers, achivement
+from .models import Word, UserSettings, TestHistory, bsitTypingMaster, bsitTypeingMasterPlayers
 from django.contrib.auth import logout
 from social_django.models import UserSocialAuth
 import random
@@ -316,8 +316,6 @@ def getUser(user):
 def index(request):
     user = request.user
     context = getUser(user)
-    achivements = [achivement.to_dict() for achivement in achivement.objects.all()]
-    context["achivements"] = achivements
     return render(request, 'html/index.html', context)
 
 @ratelimit(key='ip', rate='20/second', method='GET', block=True)
