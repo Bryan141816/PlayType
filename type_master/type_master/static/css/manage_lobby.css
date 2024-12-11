@@ -9,12 +9,12 @@ main{
 }
 h3{
     color: var(--high-color-value);
-    font-size: 50px;
+    font-size: clamp(1rem, 1vw, 2rem);  
     margin: 10px;
 }
 #lobby-control{
     display: flex;
-    width: 50%;
+    width: 80%;
     gap: 10px;
     background-color: var(--opaque-background-color);
     padding: 20px;
@@ -25,13 +25,13 @@ h3{
 }
 #lobby-name{
     color: var(--high-color-value);
-    font-size: 30px;
+    font-size: clamp(2rem, 1vw, 2rem);  
 }
 .action-button{
     height: 40px;
     border: none;
     border-radius: 5px;
-    font-size: 25px;
+    font-size: clamp(2rem, 1vw, 2rem);  
     white-space: nowrap;
     width: fit-content;
     display: inline-block; 
@@ -62,13 +62,13 @@ h3{
 }
 .text-info{
     color: var(--high-color-value);
-    font-size: 30px;
-    width: 50%;
+    font-size: clamp(1rem, 1vw, 2rem);  
+    width: 80%;
 }
 #player-lobby{
     min-height: 100px;
     height: auto;
-    width: 50%;
+    width: 80%;
     background-color: var(--opaque-background-color);
     border-radius: 10px;
     display: grid;
@@ -80,7 +80,7 @@ h3{
 }
 #leaderboard-player{
     max-height: fit-content;
-    width: 50%;
+    width: 80%;
     height: fit-content;
     background-color: var(--opaque-background-color);
     border-radius: 10px;
@@ -90,8 +90,8 @@ h3{
     padding: 20px;
 }
 .info-text{
-  width: 50%;
-  font-size: 30px;
+  width: 80%;
+  font-size: clamp(1rem, 1vw, 2rem);  
   color: var(--high-color-value);
 
 }
@@ -104,7 +104,7 @@ h3{
   justify-content: center;
   align-items: center;
   color: white;
-  font-size: clamp(15px, 40px, 80px);
+  font-size: clamp(2rem, 1vw, 2rem);
   border: none;
   outline: none;
 }
