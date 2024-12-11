@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Word, UserSettings, TestHistory, bsitTypingMaster, bsitTypeingMasterPlayers
+from .models import Word, UserSettings, TestHistory, bsitTypingMaster, bsitTypeingMasterPlayers, achivement
 
 @admin.register(Word)
 class WordAdmin(admin.ModelAdmin):
@@ -57,4 +57,15 @@ class bsitTyepingMasterPlayers(admin.ModelAdmin):
         "user",
         "lobby",
         "is_can_play"
+    )
+
+@admin.register(achivement)
+class Achivements(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "title",
+        "description",
+        "category",
+        "condition",
+        "value"
     )

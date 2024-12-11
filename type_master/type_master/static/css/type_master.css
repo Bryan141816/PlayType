@@ -7,6 +7,13 @@ main{
     overflow: auto;
     gap: 20px;
 }
+#container-lobby{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: max-content;
+  align-items: center;
+}
 h3{
     color: var(--high-color-value);
     font-size: 50px;
@@ -14,7 +21,7 @@ h3{
 }
 #lobby-code-container{
     display: flex;
-    width: 50%;
+    width: 80%;
     gap: 10px;
 }
 #lobby-code-input{
@@ -63,22 +70,22 @@ h3{
 .text-info{
     color: var(--high-color-value);
     font-size: 30px;
-    width: 50%;
+    width: 80%;
 }
 #create-lobby-container {
     height: 0;
-    width: 50%;
+    max-width: 100%;
     background-color: var(--opaque-background-color);
     border-radius: 10px;
     display: flex;
     flex-direction: column;
     gap: 20px;
     overflow-y: hidden;
-    transition: height 0.2s ease;
+    transition: min-height 0.2s ease;
 }
 #form-lobby-wrapper{
     display: flex;
-    height: fit-content;
+    height: auto;
     width: 100%;
     padding: 20px;
     align-items: center;
@@ -167,7 +174,7 @@ h3{
     37.5% {
       inset: 35px 0 0 0;
     }
-    50% {
+    80% {
       inset: 35px 0 0 35px;
     }
     62.5% {
@@ -184,14 +191,14 @@ h3{
     }
   }
 .info-text{
-  width: 50%;
+  width: 80%;
   font-size: 30px;
   color: var(--high-color-value);
 
 }
 #created-lobby{
   min-height: 50px;
-  width: 50%;
+  width: 80%;
   background-color: var(--opaque-background-color);
   border-radius: 10px;
   display: grid;

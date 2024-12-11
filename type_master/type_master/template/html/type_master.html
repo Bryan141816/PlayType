@@ -6,39 +6,38 @@
 {% endblock %}
 
 {% block content %}
-<main>
-    <h3>Typing Master</h3>
-    <div id="lobby-code-container">
-        <input type="text" id="lobby-code-input" placeholder="Enter Lobby Code...">
-        <button class="action-button" id="enter-button">Join Lobby</button>
-        <button class="action-button" id="create-button">Create Lobby</button>
-    </div>
-    <form id="create-lobby-container">
-        <div id="form-lobby-wrapper">
+    <div id="container-lobby">
 
-            <div style="display: flex; gap: 10px;">
-                <span>Lobby Name: <input type="text" placeholder="Enter lobby name..." required id="lobby-name-input"></span>
-                <span>Test Duration: <input type="number" value="15" required id="test_duration"></span>
-                <span>Test Amount: <input type="number" value="0" required id="test_amount"></span>
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <button id="generate-lobby-button" class="action-button">Generate</button>
-                <button id="cancel-create-button" class="action-button">Cancel</button>
-            </div>
+        <h3>Typing Master</h3>
+        <div id="lobby-code-container">
+            <input type="text" id="lobby-code-input" placeholder="Enter Lobby Code...">
+            <button class="action-button" id="enter-button">Join Lobby</button>
+            <button class="action-button" id="create-button">Create Lobby</button>
         </div>
-    </form>
-    <span class="info-text">Created Lobby</span>
-    <div id="created-lobby">
-        {% for lobby in created_lobby %}
-            <form action="/managelobby/{{lobby.code}}">
-                <button class="lobby-box">
-                    {{lobby.name}}
-                </button>
-            </form>
-        {% endfor %}
-
-    </div> 
-</main>
+        <form id="create-lobby-container">
+            <div id="form-lobby-wrapper">
+                <div style="display: flex; gap: 10px; flex-direction: column;">
+                    <span style="width: 100%; display: flex; gap: 10px;" >Lobby Name: <input type="text" placeholder="Enter lobby name..." required id="lobby-name-input" style="margin-left: auto;"></span>
+                    <span style="width: 100%; display: flex; gap: 10px;" >Test Duration: <input type="number" value="15" required id="test_duration" style="margin-left: auto;"></span>
+                    <span style="width: 100%; display: flex; gap: 10px;" >Test Amount: <input type="number" value="0" required id="test_amount" style="margin-left: auto;"></span>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button id="generate-lobby-button" class="action-button">Generate</button>
+                    <button id="cancel-create-button" class="action-button">Cancel</button>
+                </div>
+            </div>
+        </form>
+        <span class="info-text">Created Lobby</span>
+        <div id="created-lobby">
+            {% for lobby in created_lobby %}
+                <form action="/managelobby/{{lobby.code}}">
+                    <button class="lobby-box">
+                        {{lobby.name}}
+                    </button>
+                </form>
+            {% endfor %}
+        </div> 
+    </div>
 <script>
     $(document).ready(function(){
         settings_init(userSettings)
@@ -48,16 +47,32 @@
             event.preventDefault()
             const optionBox = document.getElementById("create-lobby-container");
             const container = document.getElementById("form-lobby-wrapper");
+
+
             const containerRect = container.getBoundingClientRect();
+
+            const heightWithPaddingAndBorder = container.getBoundingClientRect().height;
+
+            // Get computed styles to include margin
+            const computedStyle = window.getComputedStyle(container);
+            const marginTop = parseFloat(computedStyle.marginTop);
+            const marginBottom = parseFloat(computedStyle.marginBottom);
+
+            const totalHeight = heightWithPaddingAndBorder + marginTop + marginBottom;
+
+            console.log('Height with padding and border:', heightWithPaddingAndBorder);
+            console.log('Total height including margin:', totalHeight);
+
+
             const height = containerRect.height;
-            optionBox.style.height = `${height}px`;
+            optionBox.style.minHeight = `${height}px`;
 
             $('#enter-button').addClass('action-button-disabled')
         })
         $('#cancel-create-button').on('click',(event)=>{
             event.preventDefault()
             const optionBox = document.getElementById("create-lobby-container");
-            optionBox.style.height = `0`;
+            optionBox.style.minHeight = `0`;
             $('#enter-button').removeClass('action-button-disabled')
         })
         $('#generate-lobby-button').on('click',(event)=>{

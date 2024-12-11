@@ -5,7 +5,8 @@
     display: flex ;
     flex-direction: column;
     width: 25%;
-    max-width: 600px;
+    max-width: 800px;
+    min-width: 350px;
     height: 100%;
     background-color: var(--background-color);
     padding: 2rem;
@@ -21,8 +22,8 @@
     transform: translateX(0%);
 }
 #profile-image{
-    width: 200px;
-    height: 200px;
+    max-width: 200px;
+    max-height: 200px;
     border-radius: 100%;
     border: 2px solid var(--high-color-value);
 }
@@ -116,15 +117,22 @@
 }
 #profile-options {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); 
-    grid-template-rows: repeat(2, 1fr);    
-    gap: 30px;                               
+    grid-template-columns: repeat(3, 1fr);   
+    gap: calc(5px + .5vw);                          
     width: 100%;
     height: 30%;                        
     position: relative;
-    margin-top: 40px;                 
+    margin-top: 40px;        
+    justify-content: center;       
+    align-items: center;  
 }
-
+#profile-options form{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-content: center;
+    aspect-ratio: 1/1;
+}
 #profile-options button {
     display: flex;
     flex-direction: column;
@@ -133,17 +141,16 @@
     border-radius: 10px;
     width: 100%;
     height: 100%;
+    aspect-ratio: 1 / 1;
     border: none;                           
     background-color: var(--opaque-background-color);
-    color: var(--medium-color-value);
-    font-size: clamp(8px, 20px, 100px);                                 
-    line-height: clamp(8px, 20px, 100px);                                 
+    color: var(--medium-color-value);       
+    font-size: clamp(1rem, 1vw, 2rem);                                                       
     cursor: pointer;
-    gap: 10px; 
+    gap: calc(2px + .5vw); 
     transition: border 0.1s ease-in , color 0.1s ease-in;
     & i{
-        font-size: 180%;
-        line-height: 180%;
+        font-size: clamp(1rem, 2vw, 2rem);
     }
 }
 #profile-options button:hover{

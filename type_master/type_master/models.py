@@ -66,18 +66,42 @@ class TestHistory(models.Model):
 
 
 class bsitTypingMaster(models.Model):
-    id  = models.AutoField(primary_key=True)
-    code = models.CharField(max_length=10)
-    name = models.CharField(max_length=255)
-    host = models.ForeignKey(UserSocialAuth, on_delete=models.CASCADE)
-    date_created = models.DateField(auto_now=True)
-    test_time = models.IntegerField(default=15)
-    test_ammount = models.IntegerField(default=0)
-    is_started = models.BooleanField(default=False)
+    id              =   models.AutoField(primary_key=True)
+    code            =   models.CharField(max_length=10)
+    name            =   models.CharField(max_length=255)
+    host            =   models.ForeignKey(UserSocialAuth, on_delete=models.CASCADE)
+    date_created    =   models.DateField(auto_now=True)
+    test_time       =   models.IntegerField(default=15)
+    test_ammount    =   models.IntegerField(default=0)
+    is_started      =   models.BooleanField(default=False)
 
 class bsitTypeingMasterPlayers(models.Model):
+    id              =   models.AutoField(primary_key=True)
+    user            =   models.ForeignKey(UserSocialAuth, on_delete=models.CASCADE)
+    lobby           =   models.ForeignKey(bsitTypingMaster, on_delete=models.CASCADE)
+    is_can_play     =   models.BooleanField(default=True)
+
+class achivement(models.Model):
+    id              =   models.AutoField(primary_key=True)
+    title           =   models.CharField(max_length=255)
+    description     =   models.CharField(max_length=255)
+    category        =   models.CharField(max_length=255)
+    condition       =   models.CharField(max_length=255)
+    value           =   models.CharField(max_length=255)
+
+    def to_dict(self):
+        return {
+            "id"          : self.id,       
+            "title"       : self.title,      
+            "description" : self.description,
+            "category"    : self.category,   
+            "condition"   : self.condition,  
+            "value"       : self.value,         
+        }
+
+class PlayerAchivements(models.Model):
     id = models.AutoField(primary_key=True)
-    user =  models.ForeignKey(UserSocialAuth, on_delete=models.CASCADE)
-    lobby = models.ForeignKey(bsitTypingMaster, on_delete=models.CASCADE)
-    is_can_play = models.BooleanField(default=True)
+    user = models.ForeignKey(UserSocialAuth, on_delete= models.CASCADE)
+    achivement = models.ForeignKey(achivement, on_delete=models.CASCADE)
+    date_done = models.DateField(auto_now=True)
 
