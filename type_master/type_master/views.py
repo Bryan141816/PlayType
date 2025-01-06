@@ -911,13 +911,20 @@ def showAchivements(request):
     context["percentage"] = percentage
 
     # Annotate each achievement with the date_done or "Not achieved"
-    achievements = achivement.objects.annotate(
-        achieved_status=Case(
-            When(id__in=PlayerAchivements.objects.filter(user=user).values('achivement'), then=Subquery(subquery)),
-            default=Value("Not achieved"),
-            output_field=CharField()
+    if achievements_count > 0:
+        # Annotate with achieved status if there are achievements
+        achievements = achivement.objects.annotate(
+            achieved_status=Case(
+                When(id__in=PlayerAchivements.objects.filter(user=user).values('achivement'), then=Subquery(subquery)),
+                default=Value("Not achieved"),
+                output_field=CharField()
+            )
         )
-    )
+    else:
+        # If no achievements, set "Not achieved" for all
+        achievements = achivement.objects.annotate(
+            achieved_status=Value("Not achieved", output_field=CharField())
+        )
 
     grouped_achievements = [
     {
