@@ -900,7 +900,11 @@ def showAchivements(request):
     achieved_count = PlayerAchivements.objects.filter(user=user).count()
     achievements_count = achivement.objects.all().count()
 
-    percentage = round(((achieved_count/achievements_count) * 100), 2) 
+    percentage = 0
+
+    if achievements_count > 0:
+        percentage = round(((achieved_count / achievements_count) * 100), 2)
+
 
     context["achieved_count"] = achieved_count
     context["achievements_count"] = achievements_count
