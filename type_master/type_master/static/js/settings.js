@@ -36,7 +36,27 @@ function settings_init(data){
             lazychameleon.setTheme(selectedTheme);
             lazychameleon.sendChangeThemeEvent(selectedTheme)
             if(user.isAuthenticated){
+                console.log(selectedTheme)
                 updateUserSettings(selectedTheme);
+                if(selectedTheme == "light"){
+                    $.ajax({
+                        url: `/achivementCheck/Theme equal to/Light/`, // The URL where Django expects the request
+                        type: 'POST',
+                        contentType: 'application/x-www-form-urlencoded', // Data type
+                        beforeSend: function(xhr, settings) {
+                            // Include CSRF token if needed
+                            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                        },
+                        success: function (response) {
+                            let image = `<img src="/static/images//${response.data.achivement_image}">`
+                            showNotification(image, `Achivement` ,response.data.title)
+                        
+                        },
+                        error: function (xhr, status, error) {
+        
+                        }
+                      });
+                }
             }
         }
     });

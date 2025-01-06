@@ -1,13 +1,13 @@
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 from django.template.defaulttags import register
-from .models import Word, UserSettings, TestHistory, bsitTypingMaster, bsitTypeingMasterPlayers
+from .models import Word, UserSettings, TestHistory, bsitTypingMaster, bsitTypeingMasterPlayers, achivement, PlayerAchivements
 from django.contrib.auth import logout
 from social_django.models import UserSocialAuth
 import random
 from django.db import transaction
 from django.shortcuts import get_object_or_404
-from django.db.models import Max, Count, Avg, OuterRef, Subquery, F
+from django.db.models import Max, Count, Avg, OuterRef, Subquery, F, Q, Subquery, Value, Case, When, CharField
 from django.db.models.functions import TruncDate
 from django.http import JsonResponse, HttpResponseBadRequest
 from datetime import datetime
@@ -315,7 +315,36 @@ def getUser(user):
 @ratelimit(key='ip', rate='20/second', method='GET', block=True)
 def index(request):
     user = request.user
+    
+
+
+
+    
     context = getUser(user)
+
+    # user = get_object_or_404(UserSocialAuth, user=user)
+    # subquery = PlayerAchivements.objects.filter(
+    #     achivement=OuterRef('pk'),
+    #     user=user
+    # ).values('date_done')[:1]
+
+    # # Annotate each achievement with the date_done or "Not achieved"
+    # achievements = achivement.objects.annotate(
+    #     achieved_status=Case(
+    #         When(id__in=PlayerAchivements.objects.filter(user=user).values('achivement'), then=Subquery(subquery)),
+    #         default=Value("Not achieved"),
+    #         output_field=CharField()
+    #     )
+    # )
+
+    # # Convert achievements to a list of dictionaries with the status
+    # value =  [
+    #     {**achievement.to_dict(), "achieved_status": achievement.achieved_status}
+    #     for achievement in achievements
+    # ]
+
+
+
     return render(request, 'html/index.html', context)
 
 @ratelimit(key='ip', rate='20/second', method='GET', block=True)
@@ -434,19 +463,27 @@ def addTestHistory(request):
         
     try:
         max_value = TestHistory.objects.filter(user=user).aggregate(Max('wpm'))
-        bpr = False
         wpm = float(data.get('wpm', 0))
+        accuracy=float(data.get('accuracy', 0))
+        cormisex=data.get('cormisex', '')
+        mode=data.get('mode', '')
+        type=data.get('type', '')
+        bpr = False
+        if(type == 'NaN'):
+            type = ""
         if(max_value['wpm__max'] is None or wpm > max_value['wpm__max']):
             bpr = True
         test_history = TestHistory.objects.create(
             user=user,
             wpm=wpm,
-            accuracy=float(data.get('accuracy', 0)),
-            cormisex=data.get('cormisex', ''),
-            mode=data.get('mode', ''),
-            type=data.get('type', ''),
+            accuracy=accuracy,
+            cormisex=cormisex,
+            mode=mode,
+            type=type,
             bpr=bpr
         )
+        check = check_achivement(request.user, 'WPM equal to', str(int(wpm)))
+        print(check)
         if(data.get('mode', '') == 'lobby'):
 
             lobby_leaderboard = getLobbyLeaderBoard(data.get('type', ''))
@@ -458,21 +495,40 @@ def addTestHistory(request):
             pusher_client.trigger(f'{code}-host', 'new-leaderboard', {'val': f'{test_history_table}'})
         if(bpr):
             confitte_html = render_to_string('html/confitte.html')
-            return JsonResponse({
-                'success': True,
-                'message': 'You got a new personal best.',
-                'bpr': bpr,
-                'confitte': confitte_html,
-                'test_history_id': test_history.id
-            })
+            if(check):
+                return JsonResponse({
+                    'success': True,
+                    'message': 'You got a new personal best.',
+                    'bpr': bpr,
+                    'confitte': confitte_html,
+                    'achivement': check,
+                    'test_history_id': test_history.id
+                })
+            else:
+                return JsonResponse({
+                    'success': True,
+                    'message': 'You got a new personal best.',
+                    'bpr': bpr,
+                    'confitte': confitte_html,
+                    'test_history_id': test_history.id
+                })
         else:
-            return JsonResponse({
-                'success': True,
-                'message': 'Test history added successfully!',
-                'data': bpr,
-                'test_history_id': test_history.id
-            })
-            
+            if(check):
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Test history added successfully!',
+                    'data': bpr,
+                    'achivement': check,
+                    'test_history_id': test_history.id
+                })
+            else:
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Test history added successfully!',
+                    'data': bpr,
+                    'test_history_id': test_history.id
+                })
+                
     except Exception as e:
         return JsonResponse({'success': False, 'message': str(e)})
 
@@ -489,7 +545,14 @@ def userStat(request):
     context = getUser(user)
     user = get_object_or_404(UserSocialAuth, user=user)
     test_count = TestHistory.objects.filter(user=user).count()
-    user_settings = UserSettings.objects.filter(user = user).first() 
+    user_settings = UserSettings.objects.filter(user = user).first()
+
+    achieved_count = PlayerAchivements.objects.filter(user=user).count()
+    achievements_count = achivement.objects.all().count()
+
+    context["achieved_count"] = achieved_count
+    context["achievements_count"] = achievements_count
+ 
     if(test_count != 0):
         avg_wpm = TestHistory.objects.filter(user=user).aggregate(Avg('wpm'))
         avg_accuracy = TestHistory.objects.filter(user=user).aggregate(Avg('accuracy'))
@@ -529,7 +592,6 @@ def userStat(request):
                 break
         context["challenge_achieved"] = f'{challenge_achieved_count}/{len(challenge_achieved)}'
     return render(request, 'html/user-stat.html', context)
-
 
 @ratelimit(key='ip', rate='20/second', method='GET', block=True)
 def leaderboard(request):
@@ -724,6 +786,9 @@ def getTypeLeaderboarrd(request):
             'test_history_time': test_history_time,
             'test_history_word': test_history_word,
         })
+    
+
+
 @ratelimit(key='ip', rate='20/second', method='GET', block=True)
 def showPublicProfile(request, username):
 
@@ -738,8 +803,14 @@ def showPublicProfile(request, username):
     public_profile.pop('user_settings')
     public_profile.pop('login_origin')
     context["public_profile"] = public_profile
+
        
     publicuser = get_object_or_404(UserSocialAuth, user=publicuser)
+    achieved_count = PlayerAchivements.objects.filter(user=publicuser).count()
+    achievements_count = achivement.objects.all().count()
+
+    context["achieved_count"] = achieved_count
+    context["achievements_count"] = achievements_count
 
     test_count = TestHistory.objects.filter(user=publicuser).count()
     public_user_settings = UserSettings.objects.filter(user = publicuser).first()
@@ -783,9 +854,77 @@ def showPublicProfile(request, username):
     return render(request, 'html/public-profile.html', context)
 
 
+@ratelimit(key='ip', rate='20/second', method='POST', block=True)
+def achivementCheck(request, condition ,value):
+    check = check_achivement(request.user, condition, value)
+    if(check):
+        return JsonResponse({'data': check})
+    else:
+        return JsonResponse({'error': 'no achivements'}, status= 401)
 
 
 
+
+
+def check_achivement(user, condition, value):
+
+    user = get_object_or_404(UserSocialAuth, user=user)
+    achivement_exist = achivement.objects.filter(Q(condition = condition, value = value)).first()
+    if not achivement_exist:
+        return None
+    
+    user_done = PlayerAchivements.objects.filter(Q(user = user, achivement = achivement_exist))
+
+    if user_done:
+        return None
+    
+    player_achivement = PlayerAchivements(user = user, achivement = achivement_exist)
+    player_achivement.save()
+
+    return achivement_exist.to_dict()
+
+
+
+@ratelimit(key='ip', rate='20/second', method='GET', block=True)
+def showAchivements(request):
+    user = request.user
+    context = getUser(user)
+
+    user = get_object_or_404(UserSocialAuth, user=user)
+    subquery = PlayerAchivements.objects.filter(
+        achivement=OuterRef('pk'),
+        user=user
+    ).values('date_done')[:1]
+
+    achieved_count = PlayerAchivements.objects.filter(user=user).count()
+    achievements_count = achivement.objects.all().count()
+
+    percentage = round(((achieved_count/achievements_count) * 100), 2) 
+
+    context["achieved_count"] = achieved_count
+    context["achievements_count"] = achievements_count
+    context["percentage"] = percentage
+
+    # Annotate each achievement with the date_done or "Not achieved"
+    achievements = achivement.objects.annotate(
+        achieved_status=Case(
+            When(id__in=PlayerAchivements.objects.filter(user=user).values('achivement'), then=Subquery(subquery)),
+            default=Value("Not achieved"),
+            output_field=CharField()
+        )
+    )
+
+    grouped_achievements = [
+    {
+        **achievement.to_dict(),
+        "achieved_status": achievement.achieved_status
+    }
+    for achievement in achievements.order_by('category')  # Sort by category
+]
+
+
+    context["achivements"] = grouped_achievements
+    return render(request, 'html/achivements.html', context=context)
 
 
 def ask_username(request, backend=None):

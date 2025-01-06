@@ -25,14 +25,34 @@ function setLevel(exp){
     const levelResult = calculateLevel(exp)
     if(userLevel){
         if(levelResult.currentLevel > userLevel.currentLevel){
-            let icon = '<i class="fas fa-crown"></i>'
-            showNotification(icon, 'Notification' ,`You've reached level ${levelResult.currentLevel}`)
+            $.ajax({
+              url: `/achivementCheck/Level equal to/${levelResult.currentLevel}/`, // The URL where Django expects the request
+              type: 'POST',
+              contentType: 'application/x-www-form-urlencoded', // Data type
+              beforeSend: function(xhr, settings) {
+                  // Include CSRF token if needed
+                  xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+              },
+              success: function (response) {
+                let icon = '<i class="fas fa-crown"></i>'
+                showNotification(icon, 'Notification' ,`You've reached level ${levelResult.currentLevel}`)
+                setTimeout(()=>{
+                    let image = `<img src="/static/images//${response.data.achivement_image}">`
+                    showNotification(image, `Achivement` ,response.data.title)
+                },3000)
+              },
+              error: function (xhr, status, error) {
+                let icon = '<i class="fas fa-crown"></i>'
+                showNotification(icon, 'Notification' ,`You've reached level ${levelResult.currentLevel}`)
+              }
+            });
         }
     }
     userLevel = levelResult;
     $('#level-amount-profile').text(`LVL ${levelResult.currentLevel}`)
     $('#lvl-value-meter').text(`${exp}/${levelResult.requiredExp}`)
     $('#lvl-amount').css('width', `${levelResult.progressPercentage}%`);
+
 }
 
 const baseExp = 0; // EXP required for level 1 (starts at 0)

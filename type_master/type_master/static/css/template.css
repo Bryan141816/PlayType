@@ -84,6 +84,7 @@ body {
     display: flex;
     padding: 10px;
     gap: 10px;
+    z-index: 999;
 }
 .notification-container-active{
     transform: translateX(-50%) translateY(40%) !important;

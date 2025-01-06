@@ -81,27 +81,28 @@ class bsitTypeingMasterPlayers(models.Model):
     lobby           =   models.ForeignKey(bsitTypingMaster, on_delete=models.CASCADE)
     is_can_play     =   models.BooleanField(default=True)
 
-# class achivement(models.Model):
-#     id              =   models.AutoField(primary_key=True)
-#     title           =   models.CharField(max_length=255)
-#     description     =   models.CharField(max_length=255)
-#     category        =   models.CharField(max_length=255)
-#     condition       =   models.CharField(max_length=255)
-#     value           =   models.CharField(max_length=255)
+class achivement(models.Model):
+    id                  =   models.AutoField(primary_key=True)
+    title               =   models.CharField(max_length=255)
+    description         =   models.CharField(max_length=255)
+    category            =   models.CharField(max_length=255)
+    condition           =   models.CharField(max_length=255)
+    value               =   models.CharField(max_length=255)
+    achivement_image    =   models.CharField(max_length=255, default="default.jpg")
+    def to_dict(self):
+        return {
+            "id"                : self.id,       
+            "title"             : self.title,      
+            "description"       : self.description,
+            "category"          : self.category,   
+            "condition"         : self.condition,  
+            "value"             : self.value,
+            "achivement_image"  : self.achivement_image        
+        }
 
-#     def to_dict(self):
-#         return {
-#             "id"          : self.id,       
-#             "title"       : self.title,      
-#             "description" : self.description,
-#             "category"    : self.category,   
-#             "condition"   : self.condition,  
-#             "value"       : self.value,         
-#         }
-
-# class PlayerAchivements(models.Model):
-#     id = models.AutoField(primary_key=True)
-#     user = models.ForeignKey(UserSocialAuth, on_delete= models.CASCADE)
-#     achivement = models.ForeignKey(achivement, on_delete=models.CASCADE)
-#     date_done = models.DateField(auto_now=True)
+class PlayerAchivements(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(UserSocialAuth, on_delete= models.CASCADE)
+    achivement = models.ForeignKey(achivement, on_delete=models.CASCADE)
+    date_done = models.DateField(auto_now=True)
 

@@ -1,4 +1,5 @@
 $(document).ready(function() {
+
     let typingTest = null;
     let timer = null;
     let prev_test_type = null;
@@ -15,6 +16,24 @@ $(document).ready(function() {
         const activeMode = $('.text-mode.option-active').text();
         const activeTime = parseInt($('.text-button.option-active').text());
         let word_amount = 50;
+        if(activeMode == "challenge"){
+            prev_test_type = 'challenge';
+            $('#type-selector').html('')
+            $('#option-separator')
+                .css({
+                    'display': 'none',
+                });
+            optionBoxResizeTransition()
+            getChallanges()
+        }
+        if(activeMode == 'custom'){
+            prev_test_type = 'custom'
+            $('#type-selector').html(`<button id="edit-custom-sentence"><i class="fas fa-pen"></i>change</button>`)
+            setTimeout(()=>{
+                $('#edit-custom-sentence').on('click', edit_sentence);
+            },100)
+            optionBoxResizeTransition()
+        }
         if(localUserSettings && activeMode === 'words'){
             word_amount = localUserSettings.word_amount_selected;
         }
@@ -25,7 +44,6 @@ $(document).ready(function() {
         function resetTest(initialValue = '0') {
             $('#counter').text(initialValue).addClass('hidden');
         }
-    
         function initializeTypingTest(timer, doneCallback, mode) {
             if (!typingTest) {
                 typingTest = new TypingTest('#text_input', '#paragraph', '#retry_button', timer, doneCallback, resetTest,word_amount, mode, testStatusCallBack);
@@ -199,8 +217,8 @@ $(document).ready(function() {
             if(timer){
                 timer.stop()
             }
+            console.log(prev_test_type)
             const selected_mode = $(event.target).text();
-
             switch(selected_mode){
                 case 'time':
                     if(prev_test_type == 'custom'){
@@ -216,6 +234,7 @@ $(document).ready(function() {
                             });
                         optionBoxResizeTransition()
                         displayTypeTest()
+
                         typingTest.updateDocumentSelector('#text_input', '#paragraph', '#retry_button')
                     }
 
@@ -235,6 +254,7 @@ $(document).ready(function() {
                             });
                         optionBoxResizeTransition()
                         displayTypeTest()
+                        typingTest.resetTest()
                         typingTest.updateDocumentSelector('#text_input', '#paragraph', '#retry_button')
                     }
 
@@ -264,7 +284,9 @@ $(document).ready(function() {
 
                     $('#type-selector')
                         .html(`<button id="edit-custom-sentence"><i class="fas fa-pen"></i>change</button>`)
-                        $('#edit-custom-sentence').on('click',edit_sentence);
+                        setTimeout(()=>{
+                            $('#edit-custom-sentence').on('click',edit_sentence);
+                        },0)
                     optionBoxResizeTransition()
                     modeValueChanger(selected_mode)
                     break;
@@ -295,13 +317,13 @@ $(document).ready(function() {
             typingTest.updateTestType(type)
             timer.reset()
         }
-        function edit_sentence(){
-            $('#custom-sentence-modal-container').addClass('custom-sentence-modal-container-active');
-            setTimeout(function() {
-                clickOutsideEnabled = true;
-            }, 0);
-        }
     });
+    function edit_sentence(){
+        $('#custom-sentence-modal-container').addClass('custom-sentence-modal-container-active');
+        setTimeout(function() {
+            clickOutsideEnabled = true;
+        }, 0);
+    }
 
     function displayTypeTest(){
         $('#typingtest-container').html(
@@ -318,9 +340,15 @@ $(document).ready(function() {
                 </div>
             </div>
             <input type="text" id="text_input" spellcheck="false" autocomplete="off" autocomplete="off" autocapitalize="off" autocorrect="off" data-gramm="false" data-gramm_editor="false" data-enable-grammarly="false" list="autocompleteOff" spellcheck="false">
-            <button id="retry_button">
-                <i class="fas fa-redo"></i>
-            </button>`
+            <div id="button-control-container">
+                <button id="retry_button" aria-label="Reset Test" title="Reset Test">
+                    <i class="fas fa-redo"></i>
+                </button>
+                <button id="back-challenge" class="hidden-display">
+                    <i class="fas fa-bars" ></i>
+                </button>
+            </div>
+            `
         )      
     }   
     function getChallanges(){
@@ -390,6 +418,14 @@ $(document).ready(function() {
                     const challenge_selected = challenges[parseInt((target.find('.index')).val())]
                     currentChallenge = challenge_selected;
                     displayTypeTest()
+
+
+                    $('#back-challenge').on('click',()=>{
+                        $('#type-selector').html('')
+                        getChallanges()
+                        modeValueChanger(selected_mode)
+                    })
+                    $('#back-challenge').removeClass('hidden-display')
                     typingTest.updateDocumentSelector('#text_input', '#paragraph', '#retry_button')
                     typingTest.updateWordAmount(challenge_selected.word_amount)
                     timer = new CountdownTimer(challenge_selected.time, '#challenge-counter', testDone, "challenge");
@@ -511,6 +547,7 @@ $(document).ready(function() {
                     xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
                 },
                 success: function (response) {
+                    console.log(response)
                   if(response.bpr){
                     let icon = '<i class="fas fa-crown"></i>'
                     showNotification(icon, 'Notification' ,response.message)
@@ -518,6 +555,17 @@ $(document).ready(function() {
                     setTimeout(()=>{
                         $('.confetti-wrapper').remove()
                     },5000)
+
+                    if(response.achivement){
+                        setTimeout(()=>{
+                            let image = `<img src="/static/images//${response.achivement.achivement_image}">`
+                            showNotification(image, `Achivement` ,response.achivement.title)
+                        },3000)
+                    }
+                  }
+                  if(response.achivement && ! response.bpr){
+                    let image = `<img src="/static/images//${response.achivement.achivement_image}">`
+                    showNotification(image, `Achivement` ,response.achivement.title)
                   }
                 },
                 error: function (xhr, status, error) {

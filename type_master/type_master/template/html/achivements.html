@@ -1,0 +1,54 @@
+{% extends 'html/template.html' %}
+{% load static %}
+{% block head %}
+    <title>Achivements | PlayType</title>
+    <link rel="stylesheet" href="{% static 'css/achievement.css' %}">
+{% endblock %}
+
+{% block content %}
+<div id="main-achivement-container">
+    <span>Achivements</span>
+    <div id="achivement-progress-container">
+        <div id="top-progress">
+            <h2>Achivement Progress</h2>
+            <h2>{{percentage}}%</h2>
+        </div>
+        <div id="bottom-progress">
+            <div id="achivement-bar">
+                <div class="achivement-amount-container">
+                    <div id="achivement-bar-bg">
+                        <div id="achivement-amount" style="width: {{percentage}}%;"></div>
+                    </div>
+                </div>
+                <span id="achivement-value-meter">{{achieved_count}}/{{achievements_count}}</span>
+            </div>
+        </div>
+
+    </div>
+    <div id="achievement-container">
+        {% for achivement in achivements %}
+            <div class="achivement-box">
+                {% with 'images/'|add:achivement.achivement_image as image_path %}
+                    <img src="{% static image_path %}" class="achivement-image" alt="achivement-image">
+                {% endwith %}
+                <div class="achivement-main-content">
+                    <h3>{{ achivement.title }}</h3>
+                    <div class="content-achivements">
+                        <h2 class="achivement-desc">{{ achivement.description }}</h2>
+                        <h2 class="{% if achivement.achieved_status == 'Not achieved' %}not-achieved{% else %}achieved{% endif %} achievement-status">
+                            {{ achivement.achieved_status }}
+                        </h2>                    
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+</div>
+<script>
+    $(document).ready(function(){
+        settings_init(userSettings)
+        profile_init()
+    })
+</script>
+{% endblock %}

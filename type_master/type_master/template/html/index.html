@@ -8,6 +8,7 @@
 {% block content %} 
     <div id="typingtest-container">
         <div id="counter-container">
+            <i class="fas fa-bars hidden" id="back-challenge"></i>
             <div id="warning-text" class="hidden"><i class="fas fa-lock"></i> Caps Lock</div>
             <div id="counter" class="hidden"></div>
             <div id="challenge-counter" class="hidden"></div>
@@ -28,9 +29,14 @@
         </div>
         
         <input type="text" id="text_input" spellcheck="false" autocomplete="off" autocomplete="off" autocapitalize="off" autocorrect="off" data-gramm="false" data-gramm_editor="false" data-enable-grammarly="false" list="autocompleteOff" spellcheck="false">
-        <button id="retry_button" aria-label="Reset Test" title="Reset Test">
-            <i class="fas fa-redo"></i>
-        </button>
+        <div id="button-control-container">
+            <button id="retry_button" aria-label="Reset Test" title="Reset Test">
+                <i class="fas fa-redo"></i>
+            </button>
+            <button id="back-challenge" class="hidden-display">
+                <i class="fas fa-bars" ></i>
+            </button>
+        </div>
     </div>
     
 
