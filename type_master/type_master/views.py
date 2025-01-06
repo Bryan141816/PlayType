@@ -567,8 +567,9 @@ def userStat(request):
         bpr = TestHistory.objects.filter(user=user,bpr=True).order_by('-test_taken').first()
         history = TestHistory.objects.filter(user=user).order_by('-test_taken')
         context["test_count"] = test_count
-        context["avg_wpm"] = f"{avg_wpm["wpm__avg"]:.2f}" if avg_wpm["wpm__avg"] % 1 else f"{int(avg_wpm["wpm__avg"])}"
-        context["avg_accuracy"] = f"{avg_accuracy["accuracy__avg"]:.2f}" if avg_accuracy["accuracy__avg"] % 1 else f"{int(avg_accuracy["accuracy__avg"])}"
+        context["avg_wpm"] = f"{avg_wpm['wpm__avg']:.2f}" if avg_wpm['wpm__avg'] % 1 else f"{int(avg_wpm['wpm__avg'])}"
+        context["avg_accuracy"] = f"{avg_accuracy['accuracy__avg']:.2f}" if avg_accuracy['accuracy__avg'] % 1 else f"{int(avg_accuracy['accuracy__avg'])}"
+
         context["total_day_active"] = len(total_day_active)
         context["bpr"] = bpr.wpm
         context["history"] = history
