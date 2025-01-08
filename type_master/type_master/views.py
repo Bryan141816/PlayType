@@ -34,6 +34,15 @@ pusher_client = pusher.Pusher(
 )
 
 @ratelimit(key='ip', rate='20/second', method='GET', block=True)
+def aboutUs(request):
+    user = request.user
+    context = getUser(user)
+    return render(request, 'html/aboutus.html', context=context)
+
+
+
+
+@ratelimit(key='ip', rate='20/second', method='GET', block=True)
 def typing_master_competetion(request):
     user = request.user
     context = getUser(user)

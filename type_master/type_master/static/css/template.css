@@ -166,12 +166,35 @@ main{
     background-color: transparent;
     font-size: 20px;
     line-height: 20px;
-    height: fit-content;
+    height: 35px;
+    margin-right: 10px;
     border: none;
     color: var(--medium-color-value);
     transition: opacity 0.2s ease, color 0.1s ease-in;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     & i{
         margin-top: 50%;
+    }
+
+    & span{
+        display: flex;
+        font-size: 25px;
+        width: fit-content;
+        white-space: nowrap;
+        background-color: var(--opaque-background-color);
+        color: white;
+        position: absolute;
+        padding: 10px;
+        opacity: 0;
+        top: -100%;
+        justify-content: center;
+        align-items: center;
+        border-radius: 10px;
+        transition: opacity 0.2s ease;
     }
 }
 #keyboard-form{
@@ -182,6 +205,10 @@ main{
 }
 .tap-bar-button:hover, .tap-bar-button:focus{
     color: var(--high-color-value);
+
+    & span{
+        opacity: 1;
+    }
 }
 #logo{
     display: flex;
